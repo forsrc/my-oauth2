@@ -1,0 +1,34 @@
+server:
+  port:  22000
+  servlet:
+    session:
+      cookie:
+        name: CLIENT_SESSION
+
+oauth-server:  http://localhost:20000
+rource-server: http://localhost:21000
+
+security:
+  basic:
+    enabled: false
+  oauth2:
+    client:
+      client-id:              forsrc
+      client-secret:          forsrc
+      access-token-uri:       ${oauth-server}/oauth/token
+      user-authorization-uri: ${oauth-server}/oauth/authorize
+      scope:                  ui, read, write
+      registered-redirect-uri:
+      - http://localhost:22000/login
+    resource:
+      token-info-uri:         ${oauth-server}/oauth/check_token
+      user-info-uri:          ${oauth-server}/user/me
+
+spring:
+  thymeleaf:
+    prefix: classpath:/templates/
+    suffix: .html
+
+logging:
+  level:
+    org.springframework.security: DEBUG

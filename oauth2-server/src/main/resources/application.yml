@@ -1,0 +1,27 @@
+server:
+  port:  20000
+  servlet:
+    session:
+      cookie:
+        name: AUTH_SERVER_SESSION
+
+  
+security:
+  user:
+    username: forsrc
+    password: forsrc
+    roles:    USER, ADMIN
+  oauth2:
+    client:
+      client-id:           forsrc
+      client-secret:       forsrc
+      scope:               ui, read, write
+      auto-approve-scopes: .*
+      authorized-grant-types: authorization_code, client_credentials, refresh_token, password, implicit
+      registered-redirect-uri:      - http://localhost:22000/login
+    authorization:
+      check-token-access:  permitAll()
+
+logging:
+  level:
+    org.springframework.security: DEBUG
