@@ -54,15 +54,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-//        auth.inMemoryAuthentication()
-//            .withUser(username)
-//            .password(passwordEncoder().encode(password))
-//            .roles(roles);
-       
         auth.inMemoryAuthentication()
-        	.withUser("forsrc")
-        	.password(passwordEncoder().encode("forsrc"))
-        	.roles("USER", "ADMIN");
+            .withUser(username)
+            .password(passwordEncoder().encode(password))
+            .roles(roles);
+       
+//        auth.inMemoryAuthentication()
+//        	.withUser("forsrc")
+//        	.password(passwordEncoder().encode("forsrc"))
+//        	.roles("USER", "ADMIN");
     }
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {

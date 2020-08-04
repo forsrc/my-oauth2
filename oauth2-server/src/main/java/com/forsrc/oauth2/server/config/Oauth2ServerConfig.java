@@ -1,7 +1,9 @@
 package com.forsrc.oauth2.server.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -12,6 +14,8 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.E
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerSecurityConfigurer;
+import org.springframework.security.oauth2.provider.client.BaseClientDetails;
+import org.springframework.stereotype.Component;
 
 @Configuration
 @EnableAuthorizationServer
@@ -25,6 +29,15 @@ public class Oauth2ServerConfig extends AuthorizationServerConfigurerAdapter {
 
 	@Autowired
 	private AuthenticationManager authenticationManager;
+
+	@ConfigurationProperties(prefix = "security.oauth2.client")
+	@Component
+	static class MyClientDetails extends BaseClientDetails {
+		
+	}
+	
+	@Autowired
+	MyClientDetails myClientDetails;
 
     @Override
     public void configure(final AuthorizationServerSecurityConfigurer oauthServer) throws Exception {
@@ -41,12 +54,21 @@ public class Oauth2ServerConfig extends AuthorizationServerConfigurerAdapter {
     @Override
     public void configure(final ClientDetailsServiceConfigurer clients) throws Exception {
     	clients
-    		.inMemory()
-        	.withClient("forsrc")
-        	.secret(passwordEncoder.encode("forsrc"))
-        	.authorizedGrantTypes("authorization_code", "client_credentials", "refresh_token", "password", "implicit")
-        	.scopes("read", "write", "trust", "openid", "ui")
-        	.autoApprove(true) 
-        	.redirectUris("http://localhost:22000/login"); 
+		.inMemory()
+    	.withClient(myClientDetails.getClientId())
+    	.secret(passwordEncoder.encode(myClientDetails.getClientSecret()))
+    	.authorizedGrantTypes(myClientDetails.getAuthorizedGrantTypes().stream().toArray(String[]::new))
+    	.scopes(myClientDetails.getScope().stream().toArray(String[]::new))
+    	.autoApprove(true) 
+    	.redirectUris(myClientDetails.getRegisteredRedirectUri().stream().toArray(String[]::new)); 
+    	
+//    	clients
+//    		.inMemory()
+//        	.withClient("forsrc")
+//        	.secret(passwordEncoder.encode("forsrc"))
+//        	.authorizedGrantTypes("authorization_code", "client_credentials", "refresh_token", "password", "implicit")
+//        	.scopes("read", "write", "trust", "openid", "ui")
+//        	.autoApprove(true) 
+//        	.redirectUris("http://localhost:22000/login"); 
     }
 }

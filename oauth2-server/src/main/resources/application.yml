@@ -13,14 +13,31 @@ security:
     roles:    USER, ADMIN
   oauth2:
     client:
-      client-id:           forsrc
-      client-secret:       forsrc
-      scope:               ui, read, write
-      auto-approve-scopes: .*
+      client-id:              forsrc
+      client-secret:          forsrc
+      scope:                  ui, read, write
+      auto-approve-scopes:    .*
       authorized-grant-types: authorization_code, client_credentials, refresh_token, password, implicit
       registered-redirect-uri:      - http://localhost:22000/login
     authorization:
       check-token-access:  permitAll()
+
+spring:
+  application:
+    name: my-oauth2-server
+  datasource:
+    url:                 ${DB_URL:jdbc:h2:~/tmp/db/h2/my-oauth2-server.h2;AUTO_SERVER=TRUE;MODE=MYSQL;}
+    username:            ${DB_USERNAME:sa}
+    password:            ${DB_PASSWORD:sa}
+    driver-class-name:   ${DB_DRIVER:org.h2.Driver}
+  jpa:
+    database-platform:                     ${DB_DIALECT:org.hibernate.dialect.H2Dialect}
+    show-sql:                              true
+    properties:
+      hibernate.enable_lazy_load_no_trans: true
+      hibernate.show-sql:                  true
+      hibernate.hbm2ddl.auto:              update
+    open-in-view: true
 
 logging:
   level:
