@@ -14,4 +14,4 @@ WantedBy=multi-user.target
 
 # /var/my-oauth2/oauth2-server.conf
 # JAVA_OPTS=-Xmx1024M
-# LOG_FOLDER=/var/logs/my-oauth2/oauth2-server
+# LOG_FOLDER=/var/log/my-oauth2/oauth2-server
