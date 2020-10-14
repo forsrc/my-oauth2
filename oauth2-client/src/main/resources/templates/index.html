@@ -7,6 +7,8 @@
 
 <body>
 
-	<div>hello world</div>
+<p th:text="${#httpSession.id}"/>
+<p th:text="${#httpSession.getAttribute('hits')}"/>
+
 </body>
 </html>

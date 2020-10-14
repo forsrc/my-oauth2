@@ -5,13 +5,27 @@ server:
       cookie:
         name: RESOURCE_SERVER_SESSION
 
-  
+  ssl:
+    name:                 my-oauth2
+    key-store-provider:   SUN
+    key-store-type:       JKS
+    key-store:            classpath:ssl/${server.ssl.name}.server.keystore
+    key-store-password:   forsrc
+    key-alias:            ${server.ssl.name}.server
+    enabled:              true
+    #trust-store-provider: SUN
+    #trust-store-type:     JKS
+    #trust-store:          classpath:ssl/${server.ssl.name}.server.keystore
+    #trust-store-password: forsrc
+    #client-auth:          need 
+
+oauth-server:  https://my-oauth2:20000
 
 security:
   oauth2:
     resource:
-      token-info-uri: http://localhost:20000/oauth/check_token
-      user-info-uri:  http://localhost:20000/user/me
+      token-info-uri: ${oauth-server}/oauth/check_token
+      user-info-uri:  ${oauth-server}/user/me
     client:
       client-id:      forsrc
       client-secret:  forsrc

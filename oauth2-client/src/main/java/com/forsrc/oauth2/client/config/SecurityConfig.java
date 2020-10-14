@@ -17,10 +17,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     public void configure(HttpSecurity http) throws Exception {
     	http.antMatcher("/**")
         	.authorizeRequests()
-        	.antMatchers("/", "/login**")
+        	.antMatchers("/", "/login**", "/error", "/actuator/**")
         	.permitAll()
         	.anyRequest()
-        	.authenticated();
+        	.authenticated()
+        	.and()
+        	.csrf()
+        	.disable()
+        	.httpBasic();
+            ;
     }
 
 
