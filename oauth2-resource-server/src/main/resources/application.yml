@@ -1,6 +1,7 @@
 server:
   port:  21000
   servlet:
+    context-path: /oauth2-resource-server
     session:
       cookie:
         name: RESOURCE_SERVER_SESSION
@@ -19,13 +20,15 @@ server:
     #trust-store-password: forsrc
     #client-auth:          need 
 
-oauth-server:  https://my-oauth2:20000
+oauth2-server:        https://my-oauth2:20000/oauth2-server
+oauth2-rource-server: https://my-oauth2:21000/oauth2-resource-server
+oauth2-client:        https://my-oauth2:22000/oauth2-client
 
 security:
   oauth2:
     resource:
-      token-info-uri: ${oauth-server}/oauth/check_token
-      user-info-uri:  ${oauth-server}/user/me
+      token-info-uri: ${oauth2-server}/oauth/check_token
+      user-info-uri:  ${oauth2-server}/user/me
     client:
       client-id:      forsrc
       client-secret:  forsrc

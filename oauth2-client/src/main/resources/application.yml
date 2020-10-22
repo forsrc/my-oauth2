@@ -1,6 +1,7 @@
 server:
   port:  22000
   servlet:
+    context-path: /oauth2-client
     session:
       cookie:
         name: CLIENT_SESSION
@@ -22,9 +23,9 @@ server:
 #oauth-server:  https://my-oauth2:20000
 #rource-server: https://my-oauth2:21000
 
-oauth-server:  https://my-oauth2:20000
-rource-server: https://my-oauth2:21000
-oauth-client:  https://my-oauth2:22000
+oauth2-server:        https://my-oauth2:20000/oauth2-server
+oauth2-rource-server: https://my-oauth2:21000/oauth2-resource-server
+oauth2-client:        https://my-oauth2:22000/oauth2-client
 
 security:
   basic:
@@ -33,15 +34,13 @@ security:
     client:
       client-id:                    forsrc
       client-secret:                forsrc
-      access-token-uri:             ${oauth-server}/oauth/token
-      user-authorization-uri:       ${oauth-server}/oauth/authorize
+      access-token-uri:             ${oauth2-server}/oauth/token
+      user-authorization-uri:       ${oauth2-server}/oauth/authorize
       scope:                        ui, read, write
-#      pre-established-redirect-uri: ${oauth-client}/login
-#      use-current-uri:              false
     resource:
-      token-info-uri:               ${oauth-server}/oauth/check_token
-      user-info-uri:                ${oauth-server}/user/me
-#      prefer-token-info:            false
+      token-info-uri:               ${oauth2-server}/oauth/check_token
+      user-info-uri:                ${oauth2-server}/user/me
+
 
 spring:
   thymeleaf:

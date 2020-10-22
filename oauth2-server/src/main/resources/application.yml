@@ -1,6 +1,7 @@
 server:
   port:  20000
   servlet:
+    context-path: /oauth2-server
     session:
       cookie:
         name: AUTH_SERVER_SESSION
@@ -18,7 +19,9 @@ server:
     #trust-store-password: forsrc
     #client-auth:          need
 
-oauth-client:  https://my-oauth2:22000
+oauth2-server:        https://my-oauth2:20000/oauth2-server
+oauth2-rource-server: https://my-oauth2:21000/oauth2-resource-server
+oauth2-client:        https://my-oauth2:22000/oauth2-client
 
 security:
   user:
@@ -27,15 +30,15 @@ security:
     roles:    USER, ADMIN
   oauth2:
     client:
-      client-id:              forsrc
-      client-secret:          forsrc
-      scope:                  ui, read, write
-      auto-approve-scopes:    .*
-      authorized-grant-types: authorization_code, client_credentials, refresh_token, password, implicit
+      client-id:               forsrc
+      client-secret:           forsrc
+      scope:                   ui, read, write
+      auto-approve-scopes:     .*
+      authorized-grant-types:  authorization_code, client_credentials, refresh_token, password, implicit
       registered-redirect-uri:
-      - ${oauth-client}/login
+      -                        ${oauth2-client}/login
     authorization:
-      check-token-access:  permitAll()
+      check-token-access:      permitAll()
 
 spring:
   application:
