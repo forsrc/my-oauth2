@@ -26,10 +26,12 @@ oauth2-client:        https://my-oauth2:22000/oauth2-client
 
 security:
   oauth2:
-    resource:
-      token-info-uri: ${oauth2-server}/oauth/check_token
-      user-info-uri:  ${oauth2-server}/user/me
     client:
       client-id:      forsrc
       client-secret:  forsrc
+    resource:
+      token-info-uri: ${oauth2-server}/oauth/check_token
+      user-info-uri:  ${oauth2-server}/user/me
+#      jwt:
+#        key-uri:      ${oauth2-server}/oauth/token_key
 

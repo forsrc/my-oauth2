@@ -40,6 +40,8 @@ security:
     resource:
       token-info-uri:               ${oauth2-server}/oauth/check_token
       user-info-uri:                ${oauth2-server}/user/me
+#      jwt:
+#        key-uri:      ${oauth2-server}/oauth/token_key
 
 
 spring:

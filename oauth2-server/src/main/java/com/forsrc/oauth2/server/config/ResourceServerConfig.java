@@ -1,7 +1,5 @@
 package com.forsrc.oauth2.server.config;
 
-import com.forsrc.oauth2.server.config.Oauth2ServerConfig.MyClientDetails;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.context.annotation.Configuration;
@@ -11,13 +9,13 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.ResourceServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configurers.ResourceServerSecurityConfigurer;
-import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
-import org.springframework.security.oauth2.provider.token.TokenStore;
+
+import com.forsrc.oauth2.server.config.Oauth2ServerConfig.MyClientDetails;
 
 @Configuration
 @EnableResourceServer
-//@Order(200)
-@AutoConfigureAfter(Oauth2ServerConfig.class)
+@Order(-10)
+@AutoConfigureAfter(SecurityConfig.class)
 public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
 
     // @Autowired

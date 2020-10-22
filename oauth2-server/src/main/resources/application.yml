@@ -60,3 +60,48 @@ spring:
 logging:
   level:
     org.springframework.security: INFO
+
+# openssl pkcs12 -in my-oauth2.server.p12 -out my-oauth2.server.pem -password pass:forsrc -passin pass:forsrc -passout pass:forsrc
+# openssl rsa -in my-oauth2.server.pem -outform PEM -pubout -out my-oauth2.server.public.pem -passin pass:forsrc
+
+# openssl genrsa -out private.pem 2048
+# openssl rsa -in private.pem -outform PEM -pubout -out public.pem
+jwt:
+  verifier-key: |
+    -----BEGIN PUBLIC KEY-----
+    MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAs7bhjRMzACb2lDQqzNpq
+    XBBpceTupwCBoYcRD7b1JYjqPUQ04wlPXiEm99Q9GvqS32skcBcYVr0ErHb9X7R5
+    oypuDw/k45IU6OvPe9U6HmStgM5i318laOaJL4dlElHNHDzyMT0xavw/ys97roxi
+    oMk0BBQKV9+UHd/SzvHq9z9CVcJpqfR0pR15SlvY4Dp/kEzo/bNBw/4hvIY0nFoC
+    fP2PTi1G6W05O9o03sEMkvb0Y24SsPiX7Fmr1yqJW+9zBvgfZEuGfp+kS+7ynAkK
+    oasy3PFIP7Au445ueEHL0Xtm7u0NjlbavrkQZ5gOQq1P+B3ZFNsEHRrPzCY91lfq
+    LwIDAQAB
+    -----END PUBLIC KEY-----
+  signing-key: |
+    -----BEGIN RSA PRIVATE KEY-----
+    MIIEpgIBAAKCAQEAs7bhjRMzACb2lDQqzNpqXBBpceTupwCBoYcRD7b1JYjqPUQ0
+    4wlPXiEm99Q9GvqS32skcBcYVr0ErHb9X7R5oypuDw/k45IU6OvPe9U6HmStgM5i
+    318laOaJL4dlElHNHDzyMT0xavw/ys97roxioMk0BBQKV9+UHd/SzvHq9z9CVcJp
+    qfR0pR15SlvY4Dp/kEzo/bNBw/4hvIY0nFoCfP2PTi1G6W05O9o03sEMkvb0Y24S
+    sPiX7Fmr1yqJW+9zBvgfZEuGfp+kS+7ynAkKoasy3PFIP7Au445ueEHL0Xtm7u0N
+    jlbavrkQZ5gOQq1P+B3ZFNsEHRrPzCY91lfqLwIDAQABAoIBAQCVFY6Q+K9jXe9K
+    TOiAnmSDUT4YNMFiGwJu3Fxj+/PsGmOvRYjWGyATR09LYm76lYoH+5rzvcT8F7vr
+    0p4oqdAKcqVwq0/HFaVxAEZURTP8iKqCYzQUd5rSJgUCP8Cx7NhJp6mG/Wukg/Pr
+    rCm/SEh9d8xF4dYexaPbEJWSBZBVYGgi9HtwaqUEflifv0knI7icuKGs0RpY88uB
+    QQfHhl3bXRAWruVFmEAtCEO4TVhcQhBz9i9AOE8b8C+lTNdiTqfmIzWsFlYkQcl7
+    /aB2hBmiKPIsjzFSojIl3yFxrIkIW6PMfvt9uNnuBJ1y+90y5pg4yS+jXQ9h6Zt1
+    Lp/odmbBAoGBAO6aTEldj13We72O+w6NF8IdZZjJmk84kbqpI8x/9rOfVNXjC4hz
+    /yodxQNGpCQyKlg2HaXclTo5p19T1AlK5obtnN+puULkv/PlHGSKcHYUOGszKedB
+    ++9p6Ty/PnV+6GdTJdKy0+gz9mNcdVFzeD4JgROjooY2DMdAa5rsNMJhAoGBAMDR
+    YxnbepshqMSDZ943mEpHygmF8h+EfJ9BZUsA6WgMqX6Qresrq3ZLR6dbaYoRk9L0
+    IgibYHbAh4Rps4NyXA3XxJWWJ2cil6RR8E6t1E4jBzPYFmkwlF7t4kd6XjoGBpob
+    Nj0NmfmMm8GK4xMUTedCe4aLiNaVFcvdg8ZCCxaPAoGBAKyG7XpvKGdV24upg2d2
+    JiO6Vegwfl+iK92ox7XrIVuobhNqZMB5/5tYg0hnH/D8RRobpzxzT4QWhCut1bgS
+    bLZLwg8IDmmMNjAJDoq0f7Uh0dnR2Q7a62ymTHwcXPFgnnN37/V2UTuptxMJm9sV
+    f3B8NtUYkUAyfPLmZehTu6KBAoGBALXfi2Ojc4WKfT9HV5zywbIm/vp2nsh91nL9
+    Y0cZCBA+CU45t+LgYS4GmgLRJb63D8FmyAdoT9gTiIAsl8gAAbaI9IPIi0gsB+9V
+    3p7INj6xqaSMSa9UxE66gbq8QM7oSifoTQPPpZIOwAgSMlgXyde+DPf++8az/0g5
+    nIdQWlcfAoGBAKdmWEQTvvfq6mLZQEPBSV8/VQlSleVdbZzxaNqWIjipF8hXlzQF
+    DkK6QtJiN6+JRTnqd0FMmVMWraeN8QHhksuPYNDShaZcOrXovrD0BvYAsTS2pa1B
+    x7Gv6fFyIkvkQa0e/S3fxBeTX/MJp9vW3AKJkwOSBhnZZVHD7qIBXLEw
+    -----END RSA PRIVATE KEY-----

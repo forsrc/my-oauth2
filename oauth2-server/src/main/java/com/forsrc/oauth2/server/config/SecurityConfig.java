@@ -13,7 +13,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @Configuration
-@Order(-20)
+@Order(-30)
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true, jsr250Enabled = true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
@@ -36,10 +36,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http
         .httpBasic()
         .disable()
-        .antMatcher("/**").authorizeRequests()
+        .antMatcher("/**")
+        .authorizeRequests()
         .and()
         .logout()
-        .permitAll()
+    	.invalidateHttpSession(true)
+    	.clearAuthentication(true)
+    	.logoutSuccessUrl("/login?logout")
+    	.deleteCookies("AUTH_SERVER_SESSION")
+    	.permitAll()
         .and()
         .formLogin()
         .and()
@@ -47,7 +52,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         .antMatchers("/", "/login", "/logout", "/error", "/oauth/authorize", "/oauth/confirm_access")
         .and()
         .authorizeRequests()
-        .antMatchers("/oauth/token", "/actuator/**", "/static/**")
+        .antMatchers("/oauth/token_key", "/oauth/jwks", "/actuator/**", "/static/**", "/error")
         .permitAll()
         .anyRequest()
         .authenticated()
