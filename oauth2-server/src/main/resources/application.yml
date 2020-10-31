@@ -37,6 +37,7 @@ security:
       authorized-grant-types:  authorization_code, client_credentials, refresh_token, password, implicit
       registered-redirect-uri:
       -                        ${oauth2-client}/login
+      -                        ${oauth2-client}/login/oauth2/code/my-oauth2
     authorization:
       check-token-access:      permitAll()
 

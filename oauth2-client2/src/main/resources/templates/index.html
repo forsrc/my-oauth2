@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8" />
+<title>OAuth2 Client</title>
+</head>
+
+<body>
+
+<p th:text="${#httpSession.id}"/>
+<p th:text="${#httpSession.getAttribute('hits')}"/>
+
+</body>
+</html>

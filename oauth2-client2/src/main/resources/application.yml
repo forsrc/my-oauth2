@@ -1,0 +1,70 @@
+server:
+  port:  22000
+  servlet:
+    context-path: /oauth2-client
+    session:
+      cookie:
+        name: CLIENT_SESSION
+
+  ssl:
+    name:                 my-oauth2
+    key-store-provider:   SUN
+    key-store-type:       JKS
+    key-store:            classpath:ssl/${server.ssl.name}.server.keystore
+    key-store-password:   forsrc
+    key-alias:            ${server.ssl.name}.server
+    enabled:              true
+    #trust-store-provider: SUN
+    #trust-store-type:     JKS
+    #trust-store:          classpath:ssl/${server.ssl.name}.server.keystore
+    #trust-store-password: forsrc
+    #client-auth:          need
+
+#oauth-server:  https://my-oauth2:20000
+#rource-server: https://my-oauth2:21000
+
+oauth2-server:        https://my-oauth2:20000/oauth2-server
+oauth2-rource-server: https://my-oauth2:21000/oauth2-resource-server
+oauth2-client:        https://my-oauth2:22000/oauth2-client
+
+#security:
+#  oauth2:
+#    client:
+#      client-id:                    forsrc
+#      client-secret:                forsrc
+#      access-token-uri:             ${oauth2-server}/oauth/token
+#      user-authorization-uri:       ${oauth2-server}/oauth/authorize
+##      grant-type:                   client_credentials
+#      scope:                        ui, read, write
+#    resource:
+#      token-info-uri:               ${oauth2-server}/oauth/check_token
+#      user-info-uri:                ${oauth2-server}/user/me
+##      jwt:
+##        key-uri:      ${oauth2-server}/oauth/token_key
+
+
+spring:
+  main.allow-bean-definition-overriding: true
+  thymeleaf:
+    prefix: classpath:/templates/
+    suffix: .html
+  security:
+    oauth2:
+      client:
+        registration:
+          my-oauth2:
+            client-id:                    forsrc
+            client-secret:                forsrc
+            authorization-grant-type:     authorization_code
+            redirect-uri:                 '{baseUrl}/login/oauth2/code/{registrationId}'
+            scope:                        ui
+        provider:
+          my-oauth2:
+            authorization-uri:            ${oauth2-server}/oauth/authorize
+            token-uri:                    ${oauth2-server}/oauth/token
+            user-info-uri:                ${oauth2-server}/user/me
+            user-name-attribute:          name
+
+logging:
+  level:
+    org.springframework.security: INFO
