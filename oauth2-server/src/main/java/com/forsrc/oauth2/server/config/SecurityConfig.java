@@ -8,13 +8,12 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @Configuration
-@Order(-30)
-@EnableWebSecurity
+//@EnableWebSecurity
+@Order(1)
 @EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true, jsr250Enabled = true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
@@ -33,30 +32,37 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http
-        .httpBasic()
-        .disable()
-        .antMatcher("/**")
-        .authorizeRequests()
-        .and()
-        .logout()
-    	.invalidateHttpSession(true)
-    	.clearAuthentication(true)
-    	.logoutSuccessUrl("/login?logout")
-    	.deleteCookies("AUTH_SERVER_SESSION")
-    	.permitAll()
-        .and()
-        .formLogin()
-        .and()
-        .requestMatchers()
-        .antMatchers("/", "/login", "/logout", "/error", "/oauth/authorize", "/oauth/confirm_access")
-        .and()
-        .authorizeRequests()
-        .antMatchers("/oauth/token_key", "/oauth/jwks", "/actuator/**", "/static/**", "/error")
-        .permitAll()
-        .anyRequest()
-        .authenticated()
-        ;
+//    	http
+//        .antMatcher("/**")
+//            .authorizeRequests()
+//            .antMatchers("/login", "/oauth/authorize", "/oauth/confirm_access", "/oauth/token", "/oauth/token_key", "/oauth/jwks", "/actuator/**", "/static/**", "/error**")
+//            .permitAll()
+//        .and()
+//            .authorizeRequests()
+//            .anyRequest()
+//            .authenticated()
+//        .and()
+//            .formLogin()
+//            .permitAll()
+//        .and()
+//        	.logout()
+//        	.invalidateHttpSession(true)
+//        	.clearAuthentication(true)
+//    		.deleteCookies("AUTH_SERVER_SESSION")
+//    		.permitAll()
+//        ;
+    	
+    	http.requestMatchers()
+			.antMatchers("/login", "/oauth/authorize", "/oauth/token_key", "/oauth/jwks", "/actuator/**", "/static/**", "/error**")
+			.and()
+			.authorizeRequests()
+			.anyRequest()
+			.authenticated()
+			.and()
+			.formLogin()
+			.permitAll();
+    	
+
     }
 
     @Override
@@ -75,4 +81,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
+    
+
 }

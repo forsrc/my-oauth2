@@ -5,6 +5,7 @@ server:
     session:
       cookie:
         name: CLIENT_SESSION
+        path: /oauth2-client
 
   ssl:
     name:                 my-oauth2
@@ -23,6 +24,7 @@ server:
 #oauth-server:  https://my-oauth2:20000
 #rource-server: https://my-oauth2:21000
 
+#oauth2-server:        https://my-oauth2-server:20000/oauth2-server
 oauth2-server:        https://my-oauth2:20000/oauth2-server
 oauth2-rource-server: https://my-oauth2:21000/oauth2-resource-server
 oauth2-client:        https://my-oauth2:22000/oauth2-client
@@ -55,6 +57,7 @@ spring:
           my-oauth2:
             client-id:                    forsrc
             client-secret:                forsrc
+            client-authentication-method: basic
             authorization-grant-type:     authorization_code
             redirect-uri:                 '{baseUrl}/login/oauth2/code/{registrationId}'
             scope:                        ui
@@ -67,4 +70,4 @@ spring:
 
 logging:
   level:
-    org.springframework.security: INFO
+    org.springframework.security: debug

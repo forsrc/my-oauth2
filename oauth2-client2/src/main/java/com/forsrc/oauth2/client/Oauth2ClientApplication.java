@@ -6,7 +6,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.core.annotation.Order;
 import org.springframework.web.context.request.RequestContextListener;
 
-@SpringBootApplication()
+@SpringBootApplication
 public class Oauth2ClientApplication {
 
 	@Bean

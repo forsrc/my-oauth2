@@ -5,6 +5,7 @@ server:
     session:
       cookie:
         name: AUTH_SERVER_SESSION
+        path: /oauth2-server
   ssl:
     name:                 my-oauth2
     key-store-provider:   SUN
@@ -40,6 +41,7 @@ security:
       -                        ${oauth2-client}/login/oauth2/code/my-oauth2
     authorization:
       check-token-access:      permitAll()
+#    resource:#      filter-order:            3
 
 spring:
   application:
