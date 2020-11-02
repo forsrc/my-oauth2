@@ -66,6 +66,7 @@ spring:
             authorization-uri:            ${oauth2-server}/oauth/authorize
             token-uri:                    ${oauth2-server}/oauth/token
             user-info-uri:                ${oauth2-server}/user/me
+            logout-uri:                   ${oauth2-server}/oauth/logout?referer=${oauth2-client}
             user-name-attribute:          name
 
 logging:
