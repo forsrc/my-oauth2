@@ -60,14 +60,32 @@ spring:
             client-authentication-method: basic
             authorization-grant-type:     authorization_code
             redirect-uri:                 '{baseUrl}/login/oauth2/code/{registrationId}'
-            scope:                        ui
+            scope:                        ui, read, write
+#          my-oauth2-client-credentials:
+#            client-id:                    forsrc
+#            client-secret:                forsrc
+#            authorization-grant-type:     client_credentials
+#            scope:                        ui
+#          my-oauth2-password:
+#            client-id:                    forsrc
+#            client-secret:                forsrc
+#            authorization-grant-type:     password
+#            scope:                        ui
         provider:
           my-oauth2:
             authorization-uri:            ${oauth2-server}/oauth/authorize
             token-uri:                    ${oauth2-server}/oauth/token
-            user-info-uri:                ${oauth2-server}/user/me
             logout-uri:                   ${oauth2-server}/oauth/logout?referer=${oauth2-client}
+            jwk-set-uri:                  ${oauth2-server}/oauth/jwks
+            user-info-uri:                ${oauth2-server}/user/me
             user-name-attribute:          name
+          my-oauth2-client-credentials:
+            token-uri:                    ${oauth2-server}/oauth/token      
+          my-oauth2-password:
+            token-uri:                    ${oauth2-server}/oauth/token      
+
+
+
 
 logging:
   level:

@@ -14,14 +14,14 @@ import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	
 	@Value("${spring.security.oauth2.client.provider.my-oauth2.logout-uri}")
-	private String[] oauth2ServerLogoutUri;
+	private String oauth2ServerLogoutUri;
 	
     @Override
     public void configure(HttpSecurity http) throws Exception {
 
     	http
 		.authorizeRequests(a -> a
-			.antMatchers("/", "/error", "/webjars/**").permitAll()
+			.antMatchers("/", "/login", "/error", "/webjars/**").permitAll()
 			.anyRequest().authenticated()
 		)
 //		.exceptionHandling(e -> e
@@ -33,7 +33,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		.logout(l -> l
 				.invalidateHttpSession(true)
 	        	.clearAuthentication(true)
-	        	.logoutSuccessUrl(oauth2ServerLogoutUri[0])
+	        	.logoutSuccessUrl(oauth2ServerLogoutUri)
 	        	.deleteCookies("CLIENT_SESSION").permitAll()
 		)
 		.oauth2Login();

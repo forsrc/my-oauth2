@@ -38,7 +38,9 @@ import org.springframework.security.oauth2.provider.approval.InMemoryApprovalSto
 import org.springframework.security.oauth2.provider.approval.UserApprovalHandler;
 import org.springframework.security.oauth2.provider.client.BaseClientDetails;
 import org.springframework.security.oauth2.provider.request.DefaultOAuth2RequestFactory;
+import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
+import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
 import org.springframework.stereotype.Component;
 
 import com.nimbusds.jose.JWSAlgorithm;
@@ -79,17 +81,18 @@ public class Oauth2ServerConfig extends AuthorizationServerConfigurerAdapter {
 					;
 	}
 
-	@SuppressWarnings("deprecation")
 	@Override
 	public void configure(AuthorizationServerEndpointsConfigurer endpoints) {
 		endpoints.authenticationManager(authenticationManager)
 			//.userApprovalHandler(userApprovalHandler())
 			//.accessTokenConverter(jwtAccessTokenConverter())
 			//.allowedTokenEndpointRequestMethods(HttpMethod.GET, HttpMethod.POST)
+				.tokenStore(tokenStore())
+				.userApprovalHandler(userApprovalHandler())
+				.accessTokenConverter(accessTokenConverter());
 			;
 	}
 
-	@SuppressWarnings("deprecation")
 	@Override
 	public void configure(final ClientDetailsServiceConfigurer clients) throws Exception {
 		clients.inMemory()
@@ -111,7 +114,7 @@ public class Oauth2ServerConfig extends AuthorizationServerConfigurerAdapter {
 //        	.redirectUris("http://localhost:22000/login"); 
 	}
 	
-	//@Bean
+	@Bean
 	public UserApprovalHandler userApprovalHandler() {
 		ApprovalStoreUserApprovalHandler userApprovalHandler = new ApprovalStoreUserApprovalHandler();
 		userApprovalHandler.setApprovalStore(approvalStore());
@@ -120,15 +123,22 @@ public class Oauth2ServerConfig extends AuthorizationServerConfigurerAdapter {
 		return userApprovalHandler;
 	}
 	
-	//@Bean
+	@Bean
+	public TokenStore tokenStore() {
+		JwtTokenStore tokenStore = new JwtTokenStore(accessTokenConverter());
+		tokenStore.setApprovalStore(approvalStore());
+		return tokenStore;
+	}
+
+	@Bean
 	public ApprovalStore approvalStore() {
 		return new InMemoryApprovalStore();
 	}
 
 
-	//@Bean
+	@Bean
 	@ConfigurationProperties("jwt")
-	JwtAccessTokenConverter jwtAccessTokenConverter() {
+	JwtAccessTokenConverter accessTokenConverter() {
 		return new JwtAccessTokenConverter();
 	}
 

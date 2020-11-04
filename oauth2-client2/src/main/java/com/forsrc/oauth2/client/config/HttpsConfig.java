@@ -31,7 +31,7 @@ public class HttpsConfig {
     }
 
     @Bean
-    public RegistryBuilder registryBuilder()
+    public RegistryBuilder<ConnectionSocketFactory> registryBuilder()
             throws NoSuchAlgorithmException, KeyManagementException, KeyStoreException {
 
         TrustManager[] trustAllCerts = new TrustManager[1];

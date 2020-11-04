@@ -53,7 +53,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 //        ;
     	
     	http.requestMatchers()
-			.antMatchers("/login", "/logout", "/oauth/authorize", "/oauth/token_key", "/oauth/jwks", "/actuator/**", "/static/**", "/error**")
+			.antMatchers("/login", "/logout", "/oauth/logout", "/oauth/authorize", "/oauth/token_key", "/oauth/jwks", "/actuator/**", "/static/**", "/error**")
 			.and()
 			.authorizeRequests()
 			.anyRequest()
