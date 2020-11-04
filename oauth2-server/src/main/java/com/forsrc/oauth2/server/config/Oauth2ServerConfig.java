@@ -101,9 +101,9 @@ public class Oauth2ServerConfig extends AuthorizationServerConfigurerAdapter {
 				.authorizedGrantTypes(myClientDetails.getAuthorizedGrantTypes().stream().toArray(String[]::new))
 				.scopes(myClientDetails.getScope().stream().toArray(String[]::new))
 				.autoApprove(true)
-				.accessTokenValiditySeconds(60)
 				.redirectUris(myClientDetails.getRegisteredRedirectUri().stream().toArray(String[]::new))
 				;
+		
 //    	clients
 //    		.inMemory()
 //        	.withClient("forsrc")
