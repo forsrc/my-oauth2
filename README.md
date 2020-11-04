@@ -12,6 +12,8 @@ curl -k -X GET --header "Accept: application/json" --header "Authorization: Bear
 ```
 
 ```
-ACCESS_TOKEN=$(curl -k -X POST -u "forsrc:forsrc" -d "grant_type=client_credentials" "https://my-oauth2:20000/oauth2-server/oauth/token" -s | awk -F '"' '{print $4}')
+# ACCESS_TOKEN=$(curl -k -X POST -u "forsrc:forsrc" -d "grant_type=client_credentials" "https://my-oauth2:20000/oauth2-server/oauth/token" -s | awk -F '"' '{print $4}')
+
+ACCESS_TOKEN=$(curl -k -X POST -u "forsrc:forsrc" "https://my-oauth2:20000/oauth2-server/oauth/token?grant_type=client_credentials" -s | awk -F '"' '{print $4}')
 curl -k --request GET "https://my-oauth2:20000/oauth2-server/user/me?access_token=$ACCESS_TOKEN"
 ```
