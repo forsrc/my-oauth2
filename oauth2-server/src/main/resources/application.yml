@@ -65,7 +65,7 @@ spring:
 
 logging:
   level:
-    org.springframework.security: DEBUG
+    org.springframework.security: INFO
 
 # openssl pkcs12 -in my-oauth2.server.p12 -out my-oauth2.server.pem -password pass:forsrc -passin pass:forsrc -passout pass:forsrc
 # openssl rsa -in my-oauth2.server.pem -outform PEM -pubout -out my-oauth2.server.public.pem -passin pass:forsrc
