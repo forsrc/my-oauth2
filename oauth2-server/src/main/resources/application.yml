@@ -51,6 +51,9 @@ spring:
     username:            ${DB_USERNAME:sa}
     password:            ${DB_PASSWORD:sa}
     driver-class-name:   ${DB_DRIVER:org.h2.Driver}
+    data:
+    - classpath:schema.sql
+    - classpath:data.sql
   jpa:
     database-platform:                     ${DB_DIALECT:org.hibernate.dialect.H2Dialect}
     show-sql:                              true
@@ -62,7 +65,7 @@ spring:
 
 logging:
   level:
-    org.springframework.security: INFO
+    org.springframework.security: DEBUG
 
 # openssl pkcs12 -in my-oauth2.server.p12 -out my-oauth2.server.pem -password pass:forsrc -passin pass:forsrc -passout pass:forsrc
 # openssl rsa -in my-oauth2.server.pem -outform PEM -pubout -out my-oauth2.server.public.pem -passin pass:forsrc

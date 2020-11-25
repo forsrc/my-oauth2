@@ -1,30 +1,28 @@
 package com.forsrc.oauth2.server.config;
 
-import java.io.IOException;
-import java.math.BigInteger;
-import java.security.KeyFactory;
-import java.security.KeyPair;
-import java.security.NoSuchAlgorithmException;
-import java.security.PrivateKey;
-import java.security.interfaces.RSAPublicKey;
-import java.security.spec.InvalidKeySpecException;
-import java.security.spec.RSAPrivateKeySpec;
-import java.security.spec.X509EncodedKeySpec;
-import java.util.Base64;
-import java.util.Enumeration;
 
-import org.bouncycastle.asn1.ASN1Integer;
-import org.bouncycastle.asn1.ASN1Sequence;
+import java.util.concurrent.TimeUnit;
+
+import javax.sql.DataSource;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.Primary;
 import org.springframework.core.annotation.Order;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.oauth2.common.DefaultOAuth2AccessToken;
+import org.springframework.security.oauth2.common.OAuth2AccessToken;
+import org.springframework.security.oauth2.common.exceptions.InvalidGrantException;
+import org.springframework.security.oauth2.common.exceptions.InvalidTokenException;
 import org.springframework.security.oauth2.config.annotation.configurers.ClientDetailsServiceConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerEndpointsConfiguration;
@@ -32,21 +30,19 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.E
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerSecurityConfigurer;
 import org.springframework.security.oauth2.provider.ClientDetailsService;
+import org.springframework.security.oauth2.provider.OAuth2Authentication;
+import org.springframework.security.oauth2.provider.TokenRequest;
 import org.springframework.security.oauth2.provider.approval.ApprovalStore;
-import org.springframework.security.oauth2.provider.approval.ApprovalStoreUserApprovalHandler;
-import org.springframework.security.oauth2.provider.approval.InMemoryApprovalStore;
-import org.springframework.security.oauth2.provider.approval.UserApprovalHandler;
+import org.springframework.security.oauth2.provider.approval.TokenApprovalStore;
 import org.springframework.security.oauth2.provider.client.BaseClientDetails;
-import org.springframework.security.oauth2.provider.request.DefaultOAuth2RequestFactory;
+import org.springframework.security.oauth2.provider.client.JdbcClientDetailsService;
+import org.springframework.security.oauth2.provider.code.AuthorizationCodeServices;
+import org.springframework.security.oauth2.provider.code.JdbcAuthorizationCodeServices;
+import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
 import org.springframework.security.oauth2.provider.token.TokenStore;
-import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
-import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
+import org.springframework.security.oauth2.provider.token.store.JdbcTokenStore;
 import org.springframework.stereotype.Component;
-
-import com.nimbusds.jose.JWSAlgorithm;
-import com.nimbusds.jose.jwk.JWKSet;
-import com.nimbusds.jose.jwk.KeyUse;
-import com.nimbusds.jose.jwk.RSAKey;
+import org.springframework.transaction.annotation.Transactional;
 
 @Configuration
 @EnableAuthorizationServer
@@ -56,138 +52,143 @@ import com.nimbusds.jose.jwk.RSAKey;
 public class Oauth2ServerConfig extends AuthorizationServerConfigurerAdapter {
 
 	@Autowired
-	BCryptPasswordEncoder passwordEncoder;
-	
+	private BCryptPasswordEncoder passwordEncoder;
+
 	@Autowired
-	private ClientDetailsService clientDetailsService;
+	private DataSource dataSource;
 
 	@Autowired
 	private AuthenticationManager authenticationManager;
 
-	@ConfigurationProperties(prefix = "security.oauth2.client")
-	@Component
-	static class MyClientDetails extends BaseClientDetails {
 
-	}
-
-	@Autowired
-	MyClientDetails myClientDetails;
+	@Override
+    public void configure(AuthorizationServerSecurityConfigurer security) throws Exception {
+        // @formatter:off
+        security
+                .passwordEncoder(passwordEncoder)
+                .tokenKeyAccess("permitAll()")
+                .checkTokenAccess("isAuthenticated()")
+                .allowFormAuthenticationForClients();
+                ;
+        // @formatter:on
+    }
 
     @Override
-    public void configure(final AuthorizationServerSecurityConfigurer oauthServer) throws Exception {
-        oauthServer.tokenKeyAccess("permitAll()")
-					.checkTokenAccess("isAuthenticated()")
-					.allowFormAuthenticationForClients()
-					;
-	}
+    public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
+        // @formatter:off
+        endpoints.authorizationCodeServices(authorizationCodeServices())
+                 .authenticationManager(authenticationManager)
+                 .tokenStore(tokenStore())
+                 ;
+        // @formatter:off
+    }
 
-	@Override
-	public void configure(AuthorizationServerEndpointsConfigurer endpoints) {
-		endpoints.authenticationManager(authenticationManager)
-			//.userApprovalHandler(userApprovalHandler())
-			//.accessTokenConverter(jwtAccessTokenConverter())
-			//.allowedTokenEndpointRequestMethods(HttpMethod.GET, HttpMethod.POST)
-				.tokenStore(tokenStore())
-				.userApprovalHandler(userApprovalHandler())
-				.accessTokenConverter(accessTokenConverter());
-			;
-	}
+    @Override
+    public void configure(ClientDetailsServiceConfigurer clients)
+            throws Exception {
+        // @formatter:offs
+ 
+        clients.jdbc(dataSource)
+                .passwordEncoder(passwordEncoder)
+                ;
 
-	@Override
-	public void configure(final ClientDetailsServiceConfigurer clients) throws Exception {
-		clients.inMemory()
-				.withClient(myClientDetails.getClientId())
-				.secret(passwordEncoder.encode(myClientDetails.getClientSecret()))
-				.authorizedGrantTypes(myClientDetails.getAuthorizedGrantTypes().stream().toArray(String[]::new))
-				.scopes(myClientDetails.getScope().stream().toArray(String[]::new))
-				.autoApprove(true)
-				.redirectUris(myClientDetails.getRegisteredRedirectUri().stream().toArray(String[]::new))
-				;
-		
-//    	clients
-//    		.inMemory()
-//        	.withClient("forsrc")
-//        	.secret(passwordEncoder.encode("forsrc"))
-//        	.authorizedGrantTypes("authorization_code", "client_credentials", "refresh_token", "password", "implicit")
-//        	.scopes("read", "write", "trust", "openid", "ui")
-//        	.autoApprove(true) 
-//        	.redirectUris("http://localhost:22000/login"); 
-	}
-	
+        // @formatter:on
+
+    }
+
 	@Bean
-	public UserApprovalHandler userApprovalHandler() {
-		ApprovalStoreUserApprovalHandler userApprovalHandler = new ApprovalStoreUserApprovalHandler();
-		userApprovalHandler.setApprovalStore(approvalStore());
-		userApprovalHandler.setClientDetailsService(this.clientDetailsService);
-		userApprovalHandler.setRequestFactory(new DefaultOAuth2RequestFactory(this.clientDetailsService));
-		return userApprovalHandler;
-	}
-	
-	@Bean
-	public TokenStore tokenStore() {
-		JwtTokenStore tokenStore = new JwtTokenStore(accessTokenConverter());
-		tokenStore.setApprovalStore(approvalStore());
-		return tokenStore;
+	public JdbcTokenStore tokenStore() {
+		return new MyJdbcTokenStore(dataSource);
 	}
 
 	@Bean
-	public ApprovalStore approvalStore() {
-		return new InMemoryApprovalStore();
+	public ApprovalStore approvalStore() throws Exception {
+		TokenApprovalStore store = new TokenApprovalStore();
+		store.setTokenStore(tokenStore());
+		return store;
 	}
 
-
 	@Bean
-	@ConfigurationProperties("jwt")
-	JwtAccessTokenConverter accessTokenConverter() {
-		return new JwtAccessTokenConverter();
+	public ClientDetailsService clientDetails() {
+		return new JdbcClientDetailsService(dataSource);
 	}
 
-	@Value("${jwt.verifier-key}")
-	String verifierKey;
-	@Value("${jwt.signing-key}")
-	String signingKey;
+	@Bean
+	protected AuthorizationCodeServices authorizationCodeServices() {
+		return new JdbcAuthorizationCodeServices(dataSource);
+	}
 
 	@Bean
-	public KeyPair keyPair() throws InvalidKeySpecException, NoSuchAlgorithmException, IOException {
+	@Primary
+	public DefaultTokenServices tokenServices() {
+		DefaultTokenServices defaultTokenServices = new MyTokenServices();
+		defaultTokenServices.setTokenStore(tokenStore());
+		defaultTokenServices.setSupportRefreshToken(true);
+		return defaultTokenServices;
+	}
 
-		KeyFactory kf = KeyFactory.getInstance("RSA");
+	static class MyTokenServices extends DefaultTokenServices {
 
-		String signing = signingKey.replace("-----BEGIN RSA PRIVATE KEY-----\n", "")
-				.replace("-----END RSA PRIVATE KEY-----", "").replaceAll("\n", "");
-		String verifier = verifierKey.replace("-----BEGIN PUBLIC KEY-----\n", "")
-				.replace("-----END PUBLIC KEY-----", "").replaceAll("\n", "");
+		private TokenStore tokenStore;
 
-		byte[] encodedPrivateKey = Base64.getDecoder().decode(signing);
+		@Override
+		@Transactional
+		public synchronized OAuth2AccessToken createAccessToken(OAuth2Authentication authentication)
+				throws AuthenticationException {
+			try {
+				return super.createAccessToken(authentication);
+			} catch (Exception e) {
+				OAuth2AccessToken existingAccessToken = tokenStore.getAccessToken(authentication);
+				if (existingAccessToken != null) {
+					tokenStore.removeAccessToken(existingAccessToken);
+				}
+				try {
+					TimeUnit.SECONDS.sleep(1);
+				} catch (InterruptedException e1) {
+				}
+				return super.createAccessToken(authentication);
+			}
 
-		ASN1Sequence primitive = (ASN1Sequence) ASN1Sequence.fromByteArray(encodedPrivateKey);
-		Enumeration<?> e = primitive.getObjects();
-		BigInteger v = ((ASN1Integer) e.nextElement()).getValue();
-
-		int version = v.intValue();
-		if (version != 0 && version != 1) {
-			throw new IllegalArgumentException("wrong version for RSA private key");
 		}
-		BigInteger modulus = ((ASN1Integer) e.nextElement()).getValue();
-		BigInteger publicExponent = ((ASN1Integer) e.nextElement()).getValue();
-		BigInteger privateExponent = ((ASN1Integer) e.nextElement()).getValue();
-		BigInteger prime1 = ((ASN1Integer) e.nextElement()).getValue();
-		BigInteger prime2 = ((ASN1Integer) e.nextElement()).getValue();
-		BigInteger exponent1 = ((ASN1Integer) e.nextElement()).getValue();
-		BigInteger exponent2 = ((ASN1Integer) e.nextElement()).getValue();
-		BigInteger coefficient = ((ASN1Integer) e.nextElement()).getValue();
 
-		RSAPrivateKeySpec spec = new RSAPrivateKeySpec(modulus, privateExponent);
+		@Override
+		@Transactional(noRollbackFor = { InvalidTokenException.class, InvalidGrantException.class })
+		public synchronized OAuth2AccessToken refreshAccessToken(String refreshTokenValue, TokenRequest tokenRequest)
+				throws AuthenticationException {
+			return super.refreshAccessToken(refreshTokenValue, tokenRequest);
+		}
 
-		PrivateKey privateKey = kf.generatePrivate(spec);
-		X509EncodedKeySpec keySpecX509 = new X509EncodedKeySpec(Base64.getDecoder().decode(verifier));
-		RSAPublicKey publicKey = (RSAPublicKey) kf.generatePublic(keySpecX509);
-		return new KeyPair(publicKey, privateKey);
+		@Override
+		public void setTokenStore(TokenStore tokenStore) {
+			super.setTokenStore(tokenStore);
+			this.tokenStore = tokenStore;
+		}
 	}
 
-	@Bean
-	public JWKSet jwkSet() throws InvalidKeySpecException, NoSuchAlgorithmException, IOException {
-		RSAKey.Builder builder = new RSAKey.Builder((RSAPublicKey) keyPair().getPublic()).keyUse(KeyUse.SIGNATURE)
-				.algorithm(JWSAlgorithm.RS256).keyID("forsrc");
-		return new JWKSet(builder.build());
+	static class MyJdbcTokenStore extends JdbcTokenStore {
+		private static final Logger LOG = LoggerFactory.getLogger(MyJdbcTokenStore.class);
+
+		public MyJdbcTokenStore(DataSource dataSource) {
+			super(dataSource);
+		}
+
+		@Override
+		public OAuth2AccessToken readAccessToken(String tokenValue) {
+			OAuth2AccessToken accessToken = null;
+
+			try {
+				accessToken = new DefaultOAuth2AccessToken(tokenValue);
+			} catch (EmptyResultDataAccessException e) {
+				if (LOG.isInfoEnabled()) {
+					LOG.info("Failed to find access token for token " + tokenValue);
+				}
+			} catch (IllegalArgumentException e) {
+				LOG.warn("Failed to deserialize access token for " + tokenValue, e);
+				removeAccessToken(tokenValue);
+			}
+
+			return accessToken;
+		}
 	}
+
 }

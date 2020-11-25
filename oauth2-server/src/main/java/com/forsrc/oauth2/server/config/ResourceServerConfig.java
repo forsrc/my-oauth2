@@ -9,8 +9,8 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.ResourceServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configurers.ResourceServerSecurityConfigurer;
-
-import com.forsrc.oauth2.server.config.Oauth2ServerConfig.MyClientDetails;
+import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
+import org.springframework.security.oauth2.provider.token.TokenStore;
 
 @Configuration
 @EnableResourceServer
@@ -18,20 +18,18 @@ import com.forsrc.oauth2.server.config.Oauth2ServerConfig.MyClientDetails;
 @AutoConfigureAfter(SecurityConfig.class)
 public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
 
-    // @Autowired
-    // private TokenStore tokenStore;
 
-    // @Autowired
-    // private DefaultTokenServices tokenServices;
+	@Autowired
+    private TokenStore tokenStore;
 
     @Autowired
-	MyClientDetails myClientDetails;
+    private DefaultTokenServices tokenServices;
 
     @Override
     public void configure(ResourceServerSecurityConfigurer resources) {
-        resources.resourceId(myClientDetails.getClientId())
-                //  .tokenStore(tokenStore)
-                //  .tokenServices(tokenServices)
+        resources.resourceId("forsrc")
+        		.tokenStore(tokenStore)
+        		.tokenServices(tokenServices)
         ;
     }
 
@@ -40,8 +38,7 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
     public void configure(HttpSecurity http) throws Exception {
         http
                 .authorizeRequests()
-                .antMatchers("/login", "/logout", "/oauth/logout").permitAll()
-                .antMatchers("/**", "/api/**").authenticated()
+                .antMatchers("/api/**").authenticated()
                 .antMatchers(HttpMethod.GET, "/api/**").access("#oauth2.hasScope('read')")
                 .antMatchers(HttpMethod.OPTIONS, "/api/**").access("#oauth2.hasScope('read') or #oauth2.hasScope('write')")
                 .antMatchers(HttpMethod.POST, "/api/**").access("#oauth2.hasScope('write')")

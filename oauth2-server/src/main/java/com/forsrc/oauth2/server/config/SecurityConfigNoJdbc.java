@@ -1,8 +1,5 @@
 package com.forsrc.oauth2.server.config;
 
-import javax.sql.DataSource;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,11 +11,11 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-@Configuration
+//@Configuration
 //@EnableWebSecurity
-@Order(1)
-@EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true, jsr250Enabled = true)
-public class SecurityConfig extends WebSecurityConfigurerAdapter {
+//@Order(1)
+//@EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true, jsr250Enabled = true)
+public class SecurityConfigNoJdbc extends WebSecurityConfigurerAdapter {
 
 	@Value("${security.user.username}")
 	private String username;
@@ -26,9 +23,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	private String password;
 	@Value("${security.user.roles}")
 	private String[] roles;
-
-	@Autowired
-    private DataSource dataSource;
 
 	@Override
 	@Bean
@@ -59,11 +53,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 //        ;
     	
     	http.requestMatchers()
-			.antMatchers("/", "/login", "/logout", "/oauth/logout", "/oauth/authorize", "/oauth/token_key", "/oauth/jwks", "/actuator/**", "/static/**", "/error**")
+			.antMatchers("/login", "/logout", "/oauth/logout", "/oauth/authorize", "/oauth/token_key", "/oauth/jwks", "/actuator/**", "/static/**", "/error**")
 			.and()
 			.authorizeRequests()
-			.antMatchers("/oauth/token")
-			.permitAll()
 			.anyRequest()
 			.authenticated()
 			.and()
@@ -75,32 +67,21 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-//        auth.inMemoryAuthentication()
-//            .withUser(username)
-//            .password(passwordEncoder().encode(password))
-//            .roles(roles);
+        auth.inMemoryAuthentication()
+            .withUser(username)
+            .password(passwordEncoder().encode(password))
+            .roles(roles);
        
-        auth
-        .jdbcAuthentication()
-        .dataSource(dataSource)
-        .passwordEncoder(passwordEncoder())
-        .usersByUsernameQuery("SELECT username,password,enabled FROM users WHERE username = ?")
-        .authoritiesByUsernameQuery("SELECT username,authority FROM authorities WHERE username = ?")
-        ;
+//        auth.inMemoryAuthentication()
+//        	.withUser("forsrc")
+//        	.password(passwordEncoder().encode("forsrc"))
+//        	.roles("USER", "ADMIN");
     }
-
-    @Autowired
-    public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-        // /oauth/token
-        auth
-                .userDetailsService(userDetailsService())
-                .passwordEncoder(passwordEncoder());
-    }
-
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
+    
     
 
 }
