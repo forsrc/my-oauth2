@@ -55,7 +55,7 @@ spring:
       client:
         registration:
           my-oauth2:
-            client-id:                    forsrc
+            client-id:                    ui
             client-secret:                forsrc
             client-authentication-method: basic
             authorization-grant-type:     authorization_code
