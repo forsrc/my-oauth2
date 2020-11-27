@@ -1,5 +1,12 @@
 package com.forsrc.oauth2.server.config;
 
+import java.io.IOException;
+import java.util.LinkedHashMap;
+
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +19,19 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.oauth2.config.annotation.web.configurers.ResourceServerSecurityConfigurer;
+import org.springframework.security.web.AuthenticationEntryPoint;
+import org.springframework.security.web.DefaultRedirectStrategy;
+import org.springframework.security.web.RedirectStrategy;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.web.authentication.DelegatingAuthenticationEntryPoint;
+import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.util.matcher.RequestMatcher;
+import org.springframework.util.Assert;
 
 @Configuration
 //@EnableWebSecurity
@@ -62,13 +81,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 			.antMatchers("/login", "/logout", "/oauth/logout", "/oauth/authorize", "/oauth/token_key", "/actuator/**", "/static/**", "/error**")
 			.and()
 			.authorizeRequests()
-			.antMatchers("/", "/oauth/token", "/oauth/jwks")
+			.antMatchers("/", "/login", "/login?**", "/oauth/token", "/oauth/jwks")
 			.permitAll()
 			.anyRequest()
 			.authenticated()
 			.and()
 			.formLogin()
-			.permitAll();
+			//.successHandler(authenticationSuccessHandler())
+			.permitAll()
+			;
     	
 
     }
@@ -102,5 +123,54 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return new BCryptPasswordEncoder();
     }
     
+
+
+
+    @Bean
+    public AuthenticationEntryPoint authenticationEntryPoint() {
+        return new LoginUrlAuthenticationEntryPoint("/login") {
+        	@Override
+        	public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException ,ServletException {
+        		super.commence(request, response, authException);
+        	};
+        } ;
+    }
+    
+    static class MyLoginUrlAuthenticationEntryPoint extends LoginUrlAuthenticationEntryPoint {
+
+		public MyLoginUrlAuthenticationEntryPoint(String loginFormUrl) {
+			super(loginFormUrl);
+		}
+    	
+    }
+
+	@Bean
+	public AuthenticationSuccessHandler authenticationSuccessHandler() {
+		return new AuthenticationSuccessHandler() {
+			
+			private RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
+
+			@Override
+			public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
+					FilterChain chain, Authentication authentication) throws IOException, ServletException {
+				
+				onAuthenticationSuccess(request, response, authentication);
+				chain.doFilter(request, response);
+			}
+
+			@Override
+			public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
+					Authentication authentication) throws IOException, ServletException {
+				//System.out.println(requests));
+				//redirectStrategy.sendRedirect(request, response, "/");
+				String gatewayOauth2Server = request.getHeader("gateway_oauth2_server");
+				if (gatewayOauth2Server != null) {
+					System.out.println(gatewayOauth2Server);
+					redirectStrategy.sendRedirect(request, response, gatewayOauth2Server);
+				}
+				
+			}
+		};
+	}
 
 }

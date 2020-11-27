@@ -53,7 +53,7 @@ CREATE TABLE oauth_client_details (
   client_secret           varchar(256)  DEFAULT NULL,
   scope                   varchar(256)  DEFAULT NULL,
   authorized_grant_types  varchar(256)  DEFAULT NULL,
-  web_server_redirect_uri varchar(256)  DEFAULT NULL,
+  web_server_redirect_uri varchar(4096)  DEFAULT NULL,
   authorities             varchar(256)  DEFAULT NULL,
   access_token_validity   int(11)       DEFAULT NULL,
   refresh_token_validity  int(11)       DEFAULT NULL,
