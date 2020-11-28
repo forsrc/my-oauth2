@@ -20,21 +20,24 @@ server:
     #trust-store-password: forsrc
     #client-auth:          need 
 
-#oauth2-server:        https://my-oauth2:20000/oauth2-server
-oauth2-server:        https://my-oauth2:8080/oauth2-server/
-oauth2-rource-server: https://my-oauth2:21000/oauth2-resource-server
-oauth2-client:        https://my-oauth2:22000/oauth2-client
+oauth2-server:        http://my-oauth2:20000/oauth2-server
+#oauth2-server:        https://my-oauth2:8080/oauth2-server
+
+#oauth2-rource-server: https://my-oauth2:21000/oauth2-resource-server
+#oauth2-client:        https://my-oauth2:22000/oauth2-client
 
 security:
   oauth2:
     client:
-      client-id:      forsrc
+      client-id:      ui
       client-secret:  forsrc
+      scope:          ui, read, write
     resource:
-      token-info-uri: ${oauth2-server}/oauth/check_token
+      #token-info-uri: ${oauth2-server}/oauth/check_token
       user-info-uri:  ${oauth2-server}/user/me
-      jwt:
-        key-uri:      ${oauth2-server}/oauth/token_key
+      #preferTokenInfo: true
+#      jwt:
+#        key-uri:      ${oauth2-server}/oauth/token_key
 
 
 #security:
@@ -42,3 +45,8 @@ security:
 #    resource:
 #      jwk:
 #        key-set-uri:   ${oauth2-server}/oauth/jwks
+
+
+logging:
+  level:
+    org.springframework.security: debug

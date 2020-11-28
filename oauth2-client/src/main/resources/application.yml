@@ -13,7 +13,7 @@ server:
     key-store:            classpath:ssl/${server.ssl.name}.server.keystore
     key-store-password:   forsrc
     key-alias:            ${server.ssl.name}.server
-    enabled:              true
+    enabled:              false
     #trust-store-provider: SUN
     #trust-store-type:     JKS
     #trust-store:          classpath:ssl/${server.ssl.name}.server.keystore
@@ -23,9 +23,9 @@ server:
 #oauth-server:  https://my-oauth2:20000
 #rource-server: https://my-oauth2:21000
 
-oauth2-server:        https://my-oauth2:20000/oauth2-server
-oauth2-rource-server: https://my-oauth2:21000/oauth2-resource-server
-oauth2-client:        https://my-oauth2:22000/oauth2-client
+oauth2-server:        http://my-oauth2:20000/oauth2-server
+oauth2-rource-server: http://my-oauth2:21000/oauth2-resource-server
+oauth2-client:        http://my-oauth2:22000/oauth2-client
 
 security:
   basic:

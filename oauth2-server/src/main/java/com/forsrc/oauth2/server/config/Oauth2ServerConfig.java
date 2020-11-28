@@ -64,7 +64,7 @@ public class Oauth2ServerConfig extends AuthorizationServerConfigurerAdapter {
         security
                 .passwordEncoder(passwordEncoder)
                 .tokenKeyAccess("permitAll()")
-                .checkTokenAccess("isAuthenticated()")
+                .checkTokenAccess("permitAll()")
                 .allowFormAuthenticationForClients();
                 ;
         // @formatter:on
@@ -85,10 +85,11 @@ public class Oauth2ServerConfig extends AuthorizationServerConfigurerAdapter {
             throws Exception {
         // @formatter:offs
  
-        clients.jdbc(dataSource)
-                .passwordEncoder(passwordEncoder)
-                ;
+    	JdbcClientDetailsService clientDetailsService = new JdbcClientDetailsService(dataSource);
+        clientDetailsService.setPasswordEncoder(passwordEncoder);
+        clients.withClientDetails(clientDetailsService);
 
+        
         // @formatter:on
 
     }

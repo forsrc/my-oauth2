@@ -27,7 +27,7 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
 
     @Override
     public void configure(ResourceServerSecurityConfigurer resources) {
-        resources.resourceId("forsrc")
+        resources.resourceId("oauth_server")
         		.tokenStore(tokenStore)
         		.tokenServices(tokenServices)
         ;

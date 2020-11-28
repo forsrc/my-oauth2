@@ -21,15 +21,12 @@ server:
     #trust-store-password: forsrc
     #client-auth:          need
 
-#oauth-server:  https://my-oauth2:20000
-#rource-server: https://my-oauth2:21000
 
-#oauth2-server:        https://my-oauth2-server:20000/oauth2-server
-#oauth2-server:        http://my-oauth2:20000/oauth2-server
-oauth2-rource-server: http://my-oauth2:21000/oauth2-resource-server
-oauth2-client:        http://my-oauth2:22000/oauth2-client
 
-oauth2-server:        https://my-oauth2:8080/oauth2-server/
+oauth2-server:        https://my-oauth2:8080/oauth2-server
+oauth2-rource-server: https://my-oauth2:8080/oauth2-resource-server
+oauth2-client:        https://my-oauth2:8080/oauth2-client
+
 
 #security:
 #  oauth2:
