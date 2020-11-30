@@ -82,19 +82,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .antMatchers("/login", "/login?**", "/login/**", "/logout", "/oauth/logout", "/oauth/authorize", "/oauth/token_key", "/actuator/**", "/static/**", "/error**")
             .and()
             .authorizeRequests()
-            .antMatchers("/", "/login", "/login?error", "/login?logout", "/oauth/token", "/oauth/jwks")
+            .antMatchers("/", "/login", "/login?**", "/oauth/token", "/oauth/jwks")
             .permitAll()
             .anyRequest()
             .authenticated()
             .and()
             .formLogin()
-            .successHandler(authenticationSuccessHandler())
-            .failureHandler(authenticationFailureHandler(), "/login?error")
             .permitAll()
             .and()
             .logout()
-            //.logoutSuccessUrl("/login?logout")
-            //.logoutSuccessHandler(logoutSuccessHandler(), "/login?logout")
             .invalidateHttpSession(true)
             .clearAuthentication(true)
             .deleteCookies("AUTH_SERVER_SESSION")
@@ -132,146 +128,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
-    
 
-    @Bean
-    public AuthenticationSuccessHandler authenticationSuccessHandler() {
-        return new SimpleUrlAuthenticationSuccessHandler() {
-            
-
-
-            @Override
-            public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
-                    Authentication authentication) throws IOException, ServletException {
-
-
-                
-                DefaultSavedRequest defaultSavedRequest = (DefaultSavedRequest) request.getSession().getAttribute("SPRING_SECURITY_SAVED_REQUEST");
-
-                if (defaultSavedRequest != null && !response.isCommitted()) {
-                    getRedirectStrategy().sendRedirect(request, response, defaultSavedRequest.getRedirectUrl());
-                    return;
-                }
-                
-                String gatewayOauth2Server = request.getHeader("gateway_oauth2_server");
-                if (defaultSavedRequest == null && gatewayOauth2Server != null) {
-                    String loginUri = UriComponentsBuilder.fromUriString(gatewayOauth2Server).build().toString();
-                    super.getRedirectStrategy().sendRedirect(request, response, loginUri);
-                    return;
-                }
-
-                String targetUrl = determineTargetUrl(request, response, authentication);
-                if (!response.isCommitted()) {
-                    super.getRedirectStrategy().sendRedirect(request, response, targetUrl);
-                }
-                clearAuthenticationAttributes(request);
-
-                
-            }
-        };
-    }
-
-    
-    @Bean
-    public AuthenticationFailureHandler authenticationFailureHandler() {
-        return new SimpleUrlAuthenticationFailureHandler("/login?error")  {
-            private String defaultFailureUrl = "/login?error";
-            private boolean forwardToDestination = false;
-            private boolean allowSessionCreation = true;
-                
-            @Override
-            public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response,
-                    AuthenticationException exception) throws IOException, ServletException {
-                if (defaultFailureUrl == null) {
-                    logger.debug("No failure URL set, sending 401 Unauthorized error");
-    
-                    response.sendError(HttpStatus.UNAUTHORIZED.value(),
-                        HttpStatus.UNAUTHORIZED.getReasonPhrase());
-                }
-                else {
-                    saveException(request, exception);
-
-                    request.setAttribute(WebAttributes.AUTHENTICATION_EXCEPTION, exception);
-    
-                    request.getSession().setAttribute(WebAttributes.AUTHENTICATION_EXCEPTION,
-                                    exception);
-                    
-                    request.setAttribute("loginError", exception.getMessage());
-                    
-    
-
-                    if (forwardToDestination) {
-                        logger.debug("Forwarding to " + defaultFailureUrl);
-    
-                        request.getRequestDispatcher(defaultFailureUrl)
-                                .forward(request, response);
-                    }
-                    else {
-                        logger.debug("Redirecting to " + defaultFailureUrl);
-                        String gatewayOauth2Server = request.getHeader("gateway_oauth2_server");
-                        if (gatewayOauth2Server != null) {
-                            String loginUri = UriComponentsBuilder.fromUriString(gatewayOauth2Server).path("/login?error").build().toString();
-                            super.getRedirectStrategy().sendRedirect(request, response, loginUri);
-                            return;
-                        }
-    
-                        super.getRedirectStrategy().sendRedirect(request, response, defaultFailureUrl);
-                    }
-                }
-            }
-        };
-    }
-
-    @Bean
-    public LogoutSuccessHandler logoutSuccessHandler() {
-
-        return new SimpleUrlLogoutSuccessHandler() {
-
-            @Override
-            public void onLogoutSuccess(HttpServletRequest request, HttpServletResponse response,
-                    Authentication authentication) throws IOException, ServletException {
-                
-                String gatewayOauth2Server = request.getHeader("gateway_oauth2_server");
-                if (gatewayOauth2Server != null) {
-                    String loginUri = UriComponentsBuilder.fromUriString(gatewayOauth2Server).path("/login?logout").build().toString();
-                    super.getRedirectStrategy().sendRedirect(request, response, loginUri);
-                    return;
-                }
-                super.onLogoutSuccess(request, response, authentication);
-                
-            }
-            
-        };
-    }
-
-    private final static class ExactUrlRequestMatcher implements RequestMatcher {
-        private String processUrl;
-
-        private ExactUrlRequestMatcher(String processUrl) {
-            this.processUrl = processUrl;
-        }
-
-        public boolean matches(HttpServletRequest request) {
-            String uri = request.getRequestURI();
-            String query = request.getQueryString();
-
-            if (query != null) {
-                uri += "?" + query;
-            }
-
-            if ("".equals(request.getContextPath())) {
-                return uri.equals(processUrl);
-            }
-
-            return uri.equals(request.getContextPath() + processUrl);
-        }
-
-        @Override
-        public String toString() {
-            StringBuilder sb = new StringBuilder();
-            sb.append("ExactUrl [processUrl='").append(processUrl).append("']");
-            return sb.toString();
-        }
-    }
 
 }
