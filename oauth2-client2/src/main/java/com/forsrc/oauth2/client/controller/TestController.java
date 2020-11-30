@@ -16,4 +16,10 @@ public class TestController {
                 
                 
     }
+    
+    public static void main(String[] args) {
+		String s = "http://my-oauth2:22000/oauth2-client/test";
+		System.out.println(s.substring(s.indexOf("/oauth2-client") + "/oauth2-client".length()));
+		
+	}
 }

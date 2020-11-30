@@ -7,6 +7,11 @@ server:
         name: CLIENT_SESSION
         path: /oauth2-client
 
+  tomcat:
+    remoteip:
+      remote-ip-header: X-FORWARDED-FOR
+      protocol-header:  X-Forwarded-Proto
+      port-header:      X-Forwarded-Port
   ssl:
     name:                 my-oauth2
     key-store-provider:   SUN
@@ -58,7 +63,8 @@ spring:
             client-secret:                forsrc
             client-authentication-method: basic
             authorization-grant-type:     authorization_code
-            redirect-uri:                 '{baseUrl}/login/oauth2/code/{registrationId}'
+            #redirect-uri:                 '{baseUrl}/login/oauth2/code/{registrationId}'
+            redirect-uri:                 ${oauth2-client}/login/oauth2/code/my-oauth2
             scope:                        ui, read, write
 #          my-oauth2-client-credentials:
 #            client-id:                    forsrc
@@ -78,6 +84,7 @@ spring:
             jwk-set-uri:                  ${oauth2-server}/oauth/jwks
             user-info-uri:                ${oauth2-server}/user/me
             user-name-attribute:          name
+            
           my-oauth2-client-credentials:
             token-uri:                    ${oauth2-server}/oauth/token      
           my-oauth2-password:

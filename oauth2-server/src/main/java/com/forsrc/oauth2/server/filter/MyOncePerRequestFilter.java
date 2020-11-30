@@ -33,7 +33,7 @@ public class MyOncePerRequestFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
-    	LOGGER.info("ip: {} --> {}?{}", getIpInfo(request), request.getRequestURI(), request.getQueryString() == null ? "" : request.getQueryString());
+    	LOGGER.info("ip: {} {} --> {}?{}", getIpInfo(request), request.getMethod(), request.getRequestURI(), request.getQueryString() == null ? "" : request.getQueryString());
     	//LOGGER.info("{}", request.getReader().lines().collect(Collectors.joining(System.lineSeparator())));
         String token = request.getParameter("access_token");
         if (token != null) {
