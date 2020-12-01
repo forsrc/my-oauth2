@@ -1,4 +1,4 @@
-package com.forsrc.oauth2.client.controller;
+package com.forsrc.oauth2.gateway.controller;
 
 import java.security.Principal;
 
