@@ -1,0 +1,69 @@
+server:
+  port:  23000
+  servlet:
+    context-path: /oauth2-eureka-server
+    session:
+      cookie:
+        name: EUREKA_SESSION
+        path: /oauth2-eureka-server
+
+  ssl:
+    name:                 my-oauth2
+    key-store-provider:   SUN
+    key-store-type:       JKS
+    key-store:            classpath:ssl/${server.ssl.name}.server.keystore
+    key-store-password:   forsrc
+    key-alias:            ${server.ssl.name}.server
+    enabled:              false
+    #trust-store-provider: SUN
+    #trust-store-type:     JKS
+    #trust-store:          classpath:ssl/${server.ssl.name}.server.keystore
+    #trust-store-password: forsrc
+    #client-auth:          need
+
+spring:
+  freemarker.prefer-file-system-access: false
+  application:
+    name:       oauth2-eureka-server
+#  security:
+#    basic:
+#      enabled:  true
+#    user:
+#      name:     forsrc
+#      password: forsrc
+
+
+
+eureka:
+  instance:
+    prefer-ip-address: true
+    #instance-id:       ${spring.application.name}:${server.port}
+    appname:           ${spring.application.name}    hostname:          my-oauth2
+    leaseRenewalIntervalInSeconds: 10
+    home-page-url:                 http://my-oauth2:23000/oauth2-eureka-server/actuator
+    health-check-url:              ${eureka.instance.home-page-url}/health
+    status-page-url:               ${eureka.instance.home-page-url}/info
+#    metadata-map:
+#      user.name:                   forsrc
+#      user.password:               forsrc
+  client:
+    registryFetchIntervalSeconds:  5
+    registerWithEureka:            true
+    fetchRegistry:                 false
+    serviceUrl:
+      #defaultZone:                 ${EUREKA_SERVER:http://my-oauth2:23000/oauth2-eureka-server/eureka}
+      defaultZone:                 http://${eureka.instance.hostname}:${server.port}/oauth2-eureka-server/eureka
+    initialInstanceInfoReplicationIntervalSeconds: 20
+#    healthcheck:#      enabled:                    true
+  server:
+    enable-self-preservation:      false
+    eviction-interval-timer-in-ms: 5000
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: ALWAYS

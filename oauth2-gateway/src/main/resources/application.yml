@@ -1,11 +1,11 @@
 server:
   port:  8080
-#  servlet:
-#    context-path: /oauth2-gateway
-#    session:
-#      cookie:
-#        name: GATEWAY_SESSION
-#        path: /oauth2-gateway
+  servlet:
+    #context-path: /oauth2-gateway
+    session:
+      cookie:
+        name: GATEWAY_SESSION
+        path: /oauth2-gateway
 
   ssl:
     name:                 my-oauth2
@@ -25,10 +25,12 @@ server:
 oauth2-server:           http://my-oauth2:20000/oauth2-server
 oauth2-resource-server:  http://my-oauth2:21000/oauth2-resource-server
 oauth2-client:           http://my-oauth2:22000/oauth2-client
+oauth2-eureka-server:    http://my-oauth2:23000/oauth2-eureka-server
 
 gateway_oauth2_server:            https://my-oauth2:8080/oauth2-server
 gateway_oauth2_resource_server:   https://my-oauth2:8080/oauth2-resource-server
 gateway_oauth2_client:            https://my-oauth2:8080/oauth2-client
+gateway_oauth2_eureka_server:     https://my-oauth2:8080/oauth2-eureka-server
 
 spring:
   cloud:
@@ -36,21 +38,21 @@ spring:
 #      x-forwarded:#        for-enabled:   true
 #        proto-enabled: true
       routes:
-      - id:          oauth2_server
+      - id:          oauth2-server
         uri:         ${oauth2-server}
         predicates:
         -            Path=/oauth2-server/**
         filters:
         - AddRequestHeader=gateway_oauth2_server, ${gateway_oauth2_server}
         - RewritePath=/oauth2-server(?<segment>/?.*), /oauth2-server/$\{segment}
-      - id:          oauth2_resource_server
+      - id:          oauth2-resource-server
         uri:         ${oauth2-resource-server}
         predicates:
         -            Path=/oauth2-resource-server/**
         filters:
         - AddRequestHeader=gateway_oauth2_server, ${gateway_oauth2_server}
         - RewritePath=/oauth2-resource-server(?<segment>/?.*), /oauth2-resource-server/$\{segment}
-      - id:          oauth2_client
+      - id:          oauth2-client
         uri:         ${oauth2-client}
         predicates:
         -            Path=/oauth2-client/**
@@ -59,7 +61,14 @@ spring:
         - AddRequestHeader=gateway_oauth2_server, ${gateway_oauth2_server}
         - AddRequestHeader=gateway_oauth2_client, ${gateway_oauth2_client}
         - RewritePath=/oauth2-client(?<segment>/?.*), /oauth2-client/$\{segment}
-        
+      - id:          oauth2-eureka-server
+        uri:         ${oauth2-eureka-server}
+        predicates:
+        -            Path=/oauth2-eureka-server/**
+        filters:
+        - AddRequestHeader=gateway_oauth2_server, ${gateway_oauth2_server}
+        - AddRequestHeader=gateway_oauth2_eureka_server, ${gateway_oauth2_eureka_server}
+        - RewritePath=/oauth2-eureka-server(?<segment>/?.*), /oauth2-eureka-server/$\{segment}
 
 logging:
-  level:    org.springframework.cloud.gateway: trace
+  level:    org.springframework.cloud.gateway: info
