@@ -37,8 +37,8 @@ spring:
 eureka:
   instance:
     prefer-ip-address: true
-    #instance-id:       ${spring.application.name}:${server.port}
-    appname:           ${spring.application.name}    hostname:          my-oauth2
+    hostname:          my-oauth2
+    instance-id:       ${eureka.instance.hostname}:${spring.application.name}:${server.port}    appname:           ${spring.application.name}
     leaseRenewalIntervalInSeconds: 10
     home-page-url:                 http://my-oauth2:23000/oauth2-eureka-server/actuator
     health-check-url:              ${eureka.instance.home-page-url}/health
