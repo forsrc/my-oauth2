@@ -6,6 +6,11 @@ server:
       cookie:
         name: GATEWAY_SESSION
         path: /oauth2-gateway
+  forward-headers-strategy: framework
+  tomcat:
+    remoteip:
+      remote-ip-header:     x-forwarded-for
+      protocol-header:      x-forwarded-proto
 
   ssl:
     name:                 my-oauth2
@@ -48,22 +53,31 @@ spring:
 
   cloud:
     gateway:
-#      x-forwarded:#        for-enabled:   true
-#        proto-enabled: true
+      globalcors:
+        corsConfigurations:
+          '[/**]':
+            allowedHeaders: "*"
+            allowedOrigins: "*"
+            allowedMethods: GET,POST,DELETE,PUT,OPTION
+      forwarded:
+        enabled:       true
+      x-forwarded:
+        enabled:       true        for-enabled:   true
+        proto-enabled: true
       routes:
       - id:          oauth2-server
         uri:         lb://oauth2-server
         predicates:
         -            Path=/oauth2-server/**
         filters:
-        - AddRequestHeader=gateway_oauth2_server, ${gateway_oauth2_server}
-        - RewritePath=/oauth2-server(?<segment>/?.*), /oauth2-server/$\{segment}
+        - AddRequestHeader=gateway_oauth2_server, ${gateway_oauth2_server}/
+        - RewritePath=/oauth2-server/(?<segment>/?.*), /oauth2-server/$\{segment}
       - id:          oauth2-resource-server
         uri:         lb://oauth2-resource-server
         predicates:
         -            Path=/oauth2-resource-server/**
         filters:
-        - AddRequestHeader=gateway_oauth2_server, ${gateway_oauth2_server}
+        - AddRequestHeader=gateway_oauth2_server, ${gateway_oauth2_server}/
         - RewritePath=/oauth2-resource-server(?<segment>/?.*), /oauth2-resource-server/$\{segment}
       - id:          oauth2-client
         uri:         lb://oauth2-client
@@ -71,39 +85,38 @@ spring:
         -            Path=/oauth2-client/**
         filters:
         #- StripPrefix=0
-        - AddRequestHeader=gateway_oauth2_server, ${gateway_oauth2_server}
-        - AddRequestHeader=gateway_oauth2_client, ${gateway_oauth2_client}
-        - RewritePath=/oauth2-client(?<segment>/?.*), /oauth2-client/$\{segment}
+        - AddRequestHeader=gateway_oauth2_server, ${gateway_oauth2_server}/
+        - AddRequestHeader=gateway_oauth2_client, ${gateway_oauth2_client}/
+        - RewritePath=/oauth2-client/(?<segment>/?.*), /oauth2-client/$\{segment}
       - id:          oauth2-eureka-server
         uri:         lb://oauth2-eureka-server
         predicates:
         -            Path=/oauth2-eureka-server/**
         filters:
-        - AddRequestHeader=gateway_oauth2_server, ${gateway_oauth2_server}
-        - AddRequestHeader=gateway_oauth2_eureka_server, ${gateway_oauth2_eureka_server}
-        - RewritePath=/oauth2-eureka-server(?<segment>/?.*), /oauth2-eureka-server/$\{segment}
+        - AddRequestHeader=gateway_oauth2_server, ${gateway_oauth2_server}/
+        - AddRequestHeader=gateway_oauth2_eureka_server, ${gateway_oauth2_eureka_server}/
+        - RewritePath=/oauth2-eureka-server/(?<segment>/?.*), /oauth2-eureka-server/$\{segment}
       - id:          oauth2-admin-server
         uri:         lb://oauth2-admin-server
         predicates:
         -            Path=/oauth2-admin-server/**
         filters:
-        - AddRequestHeader=gateway_oauth2_server, ${gateway_oauth2_server}
-        - AddRequestHeader=gateway_oauth2_eureka_server, ${gateway_oauth2_eureka_server}
-        #- RewritePath=/oauth2-admin-server(?<segment>/?.*), /oauth2-admin-server/$\{segment}
+        - AddRequestHeader=gateway_oauth2_server, ${gateway_oauth2_server}/
+        - AddRequestHeader=gateway_oauth2_eureka_server, ${gateway_oauth2_eureka_server}/
         - RewritePath=/oauth2-admin-server/(?<segment>/?.*), /oauth2-admin-server/$\{segment}
 
 eureka:
   instance:
     non-secure-port-enabled:        false
     secure-port-enabled:            true
-    prefer-ip-address:              true
+    #prefer-ip-address:              true
     hostname:                       my-oauth2
     instance-id:                    ${eureka.instance.hostname}:${spring.application.name}:${server.port}
     appname:                        ${spring.application.name}
     leaseRenewalIntervalInSeconds:  10
     health-check-url:               https://${eureka.instance.hostname}:${server.port}/actuator/health
     home-page-url:                  https://${eureka.instance.hostname}:${server.port}
-    status-page-url:                https://${eureka.instance.hostname}:${server.port}/actuator/info
+    status-page-url:                ${eureka.instance.home-page-url}/actuator/info
     metadata-map:
       
       user.name:                    forsrc

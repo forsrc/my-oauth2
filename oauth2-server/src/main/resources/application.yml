@@ -6,6 +6,12 @@ server:
       cookie:
         name: AUTH_SERVER_SESSION
         path: /oauth2-server
+  forward-headers-strategy: framework
+  tomcat:
+    remoteip:
+      remote-ip-header:     x-forwarded-for
+      protocol-header:      x-forwarded-proto
+      
 
   ssl:
     name:                 my-oauth2
@@ -75,7 +81,7 @@ spring:
 
 eureka:
   instance:
-    prefer-ip-address:              true
+    #prefer-ip-address:              true
     hostname:                       my-oauth2
     instance-id:                    ${eureka.instance.hostname}:${spring.application.name}:${server.port}
     appname:                        ${spring.application.name}

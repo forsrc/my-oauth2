@@ -102,7 +102,7 @@ spring:
 
 eureka:
   instance:
-    prefer-ip-address:              true
+    #prefer-ip-address:              true
     hostname:                       my-oauth2
     instance-id:                    ${eureka.instance.hostname}:${spring.application.name}:${server.port}
     appname:                        ${spring.application.name}
