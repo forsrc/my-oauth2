@@ -31,8 +31,9 @@ spring:
 #    user:
 #      name:     forsrc
 #      password: forsrc
-
-
+  security:
+    basic:      enabled:  true    user:      name:     forsrc
+      password: forsrc
 
 eureka:
   instance:
@@ -43,20 +44,21 @@ eureka:
     home-page-url:                 http://my-oauth2:23000/oauth2-eureka-server/actuator
     health-check-url:              ${eureka.instance.home-page-url}/health
     status-page-url:               ${eureka.instance.home-page-url}/info
-#    metadata-map:
-#      user.name:                   forsrc
-#      user.password:               forsrc
+    metadata-map:
+      user.name:                   forsrc
+      user.password:               forsrc
   client:
     registryFetchIntervalSeconds:  5
     registerWithEureka:            true
     fetchRegistry:                 false
     serviceUrl:
       #defaultZone:                 ${EUREKA_SERVER:http://my-oauth2:23000/oauth2-eureka-server/eureka}
-      defaultZone:                 http://${eureka.instance.hostname}:${server.port}/oauth2-eureka-server/eureka
+      defaultZone:                 http://${spring.security.user.name}:${spring.security.user.password}@${eureka.instance.hostname}:${server.port}${server.servlet.context-path}/eureka
+      #defaultZone:                 http://forsrc:forsrc@my-oauth2:23000/oauth2-eureka-server/eureka
     initialInstanceInfoReplicationIntervalSeconds: 20
 #    healthcheck:#      enabled:                    true
   server:
-    enable-self-preservation:      false
+    enable-self-preservation:      true
     eviction-interval-timer-in-ms: 5000
 
 management:
