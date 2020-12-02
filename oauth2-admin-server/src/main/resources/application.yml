@@ -28,9 +28,9 @@ spring:
   boot:
     admin:
       client:
-        url:                http://${eureka.instance.hostname}:${server.port}${server.servlet.context-path}
-        username:           forsrc
-        password:           forsrc
+        url:                   http://${eureka.instance.hostname}:${server.port}${server.servlet.context-path}
+        username:              forsrc
+        password:              forsrc
         instance:          management-base-url: http://${eureka.instance.hostname}:${server.port}${server.servlet.context-path}
 #  security:
 #    basic:

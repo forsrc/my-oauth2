@@ -73,6 +73,7 @@ eureka:
 
 management:
   endpoints:
+  
     web:
       exposure:
         include:    "*"
