@@ -31,21 +31,29 @@ spring:
 #    user:
 #      name:     forsrc
 #      password: forsrc
+
+  boot:
+    admin:
+      client:
+        url:                http://my-oauth2:24000/oauth2-admin-server
+        username:           forsrc
+        password:           forsrc
+        instance:
+          management-base-url: http://${eureka.instance.hostname}:${server.port}${server.servlet.context-path}
   security:
     basic:      enabled:  true    user:      name:     forsrc
       password: forsrc
-
 eureka:
   instance:
     prefer-ip-address:              true
     hostname:                       my-oauth2
     instance-id:                    ${eureka.instance.hostname}:${spring.application.name}:${server.port}    appname:                        ${spring.application.name}
+    health-check-url-path:          /actuator/health
+    home-page-url:                  http://${eureka.instance.hostname}:${server.port}${server.servlet.context-path}
+    status-page-url:                ${eureka.instance.home-page-url}/actuator
     leaseRenewalIntervalInSeconds:  10
-    #home-page-url:                  http://forsrc:forsrc@my-oauth2:23000/oauth2-eureka-server/actuator
-    home-page-url:                  http://${spring.security.user.name}:${spring.security.user.password}@${eureka.instance.hostname}:${server.port}${server.servlet.context-path}/actuator
-    health-check-url:               ${eureka.instance.home-page-url}/health
-    status-page-url:                ${eureka.instance.home-page-url}/info
     metadata-map:
+      management.context-path:      ${server.servlet.context-path}/actuator
       user.name:                    forsrc
       user.password:                forsrc
   client:

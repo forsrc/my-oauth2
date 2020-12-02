@@ -1,10 +1,11 @@
 server:
-  port:  22000
+  port:  24000
   servlet:
-    context-path: /oauth2-client
+    context-path: /oauth2-admin-server
     session:
       cookie:
-        name: CLIENT_SESSION
+        name: EUREKA_SESSION
+        path: /oauth2-admin-server
 
   ssl:
     name:                 my-oauth2
@@ -20,43 +21,27 @@ server:
     #trust-store-password: forsrc
     #client-auth:          need
 
-#oauth-server:  https://my-oauth2:20000
-#rource-server: https://my-oauth2:21000
-
-oauth2-server:        http://my-oauth2:20000/oauth2-server
-oauth2-rource-server: http://my-oauth2:21000/oauth2-resource-server
-oauth2-client:        http://my-oauth2:22000/oauth2-client
-
-security:
-  basic:
-    enabled: false
-  oauth2:
-    client:
-      client-id:                    ui
-      client-secret:                forsrc
-      access-token-uri:             ${oauth2-server}/oauth/token
-      user-authorization-uri:       ${oauth2-server}/oauth/authorize
-      scope:                        ui, read, write
-    resource:
-      token-info-uri:               ${oauth2-server}/oauth/check_token
-      user-info-uri:                ${oauth2-server}/user/me
-#      jwt:
-#        key-uri:      ${oauth2-server}/oauth/token_key
-
-
 spring:
-  application:    name:      oauth2-client
-  thymeleaf:
-    prefix: classpath:/templates/
-    suffix: .html
+  freemarker.prefer-file-system-access: false
+  application:
+    name:       oauth2-admin-server
   boot:
     admin:
       client:
-        url:                http://my-oauth2:24000/oauth2-admin-server
+        url:                http://${eureka.instance.hostname}:${server.port}${server.servlet.context-path}
         username:           forsrc
         password:           forsrc
-        instance:
-          management-base-url: http://${eureka.instance.hostname}:${server.port}${server.servlet.context-path}
+        instance:          management-base-url: http://${eureka.instance.hostname}:${server.port}${server.servlet.context-path}
+#  security:
+#    basic:
+#      enabled:  true
+#    user:
+#      name:     forsrc
+#      password: forsrc
+  security:
+    basic:      enabled:  true    user:      name:     forsrc
+      password: forsrc
+
 
 eureka:
   instance:

@@ -47,16 +47,29 @@ security:
 #        key-set-uri:   ${oauth2-server}/oauth/jwks
 spring:  application:
     name:      oauth2-resource-server
-
+  boot:
+    admin:
+      client:
+        url:                   http://my-oauth2:24000/oauth2-admin-server
+        username:              forsrc
+        password:              forsrc
+        instance:
+          management-base-url: http://${eureka.instance.hostname}:${server.port}${server.servlet.context-path}
 eureka:
   instance:
-    prefer-ip-address: true
-    hostname:          my-oauth2
-    instance-id:       ${eureka.instance.hostname}:${spring.application.name}:${server.port}
-    appname:           ${spring.application.name}
+    prefer-ip-address:              true
+    hostname:                       my-oauth2
+    instance-id:                    ${eureka.instance.hostname}:${spring.application.name}:${server.port}
+    appname:                        ${spring.application.name}
+    leaseRenewalIntervalInSeconds:  10
+    health-check-url-path:          /actuator/health
+    metadata-map:
+      management.context-path:      ${server.servlet.context-path}/actuator
+      user.name:                    forsrc
+      user.password:                forsrc
   client:
     service-url:
-      defaultZone: http://forsrc:forsrc@my-oauth2:23000/oauth2-eureka-server/eureka
+      defaultZone:                  http://forsrc:forsrc@my-oauth2:23000/oauth2-eureka-server/eureka
 
 management:
   endpoints:
