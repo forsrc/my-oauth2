@@ -47,7 +47,7 @@ security:
 spring:
   main.allow-bean-definition-overriding: true
   application:
-    name: my-oauth2-server
+    name:      oauth2-server
   datasource:
     url:                 ${DB_URL:jdbc:h2:~/tmp/db/h2/my-oauth2-server.h2;AUTO_SERVER=TRUE;MODE=MYSQL;}
     username:            ${DB_USERNAME:sa}
@@ -66,11 +66,28 @@ spring:
     open-in-view: true
 
 
-#  devtools:#    restart:#      additional-exclude: spring-security-config-*.jar
+eureka:
+  instance:
+    prefer-ip-address: true
+    hostname:          my-oauth2
+    instance-id:       ${eureka.instance.hostname}:${spring.application.name}:${server.port}
+    appname:           ${spring.application.name}
+  client:
+    service-url:
+      defaultZone: http://forsrc:forsrc@my-oauth2:23000/oauth2-eureka-server/eureka
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include:    "*"
+  endpoint:
+    health:
+      show-details: ALWAYS
 
 logging:
   level:
-    org.springframework.security: debug
+    org.springframework.security: info
 
 
 # openssl pkcs12 -in my-oauth2.server.p12 -out my-oauth2.server.pem -password pass:forsrc -passin pass:forsrc -passout pass:forsrc

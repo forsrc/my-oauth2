@@ -45,9 +45,29 @@ security:
 
 
 spring:
+  application:    name:      oauth2-client
   thymeleaf:
     prefix: classpath:/templates/
     suffix: .html
+
+eureka:
+  instance:
+    prefer-ip-address: true
+    hostname:          my-oauth2
+    instance-id:       ${eureka.instance.hostname}:${spring.application.name}:${server.port}
+    appname:           ${spring.application.name}
+  client:
+    service-url:
+      defaultZone: http://forsrc:forsrc@my-oauth2:23000/oauth2-eureka-server/eureka
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include:    "*"
+  endpoint:
+    health:
+      show-details: ALWAYS
 
 logging:
   level:

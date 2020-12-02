@@ -50,6 +50,8 @@ oauth2-client:        https://my-oauth2:8080/oauth2-client
 
 
 spring:
+  application:
+    name:      oauth2-client
   main.allow-bean-definition-overriding: true
   thymeleaf:
     prefix: classpath:/templates/
@@ -90,7 +92,24 @@ spring:
           my-oauth2-password:
             token-uri:                    ${oauth2-server}/oauth/token      
 
+eureka:
+  instance:
+    prefer-ip-address: true
+    hostname:          my-oauth2
+    instance-id:       ${eureka.instance.hostname}:${spring.application.name}:${server.port}
+    appname:           ${spring.application.name}
+  client:
+    service-url:
+      defaultZone: http://forsrc:forsrc@my-oauth2:23000/oauth2-eureka-server/eureka
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include:    "*"
+  endpoint:
+    health:
+      show-details: ALWAYS
 
 
 logging:
