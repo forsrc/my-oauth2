@@ -6,12 +6,14 @@ server:
       cookie:
         name: AUTH_SERVER_SESSION
         path: /oauth2-server
-  forward-headers-strategy: framework
-  tomcat:
-    remoteip:
-      remote-ip-header:     x-forwarded-for
-      protocol-header:      x-forwarded-proto
-      
+#  forward-headers-strategy: framework
+#  tomcat:
+#    remoteip:
+#      remote-ip-header: X-Forwarded-for
+#      protocol-header:  X-Forwarded-Proto
+#      port-header:      X-Forwarded-Port
+#      host-header:      X-Forwarded-Host
+#      internal-proxies: ".*"
 
   ssl:
     name:                 my-oauth2

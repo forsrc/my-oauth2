@@ -53,6 +53,7 @@ spring:
 
   cloud:
     gateway:
+      discovery:        locator:          enabled:  true
       globalcors:
         corsConfigurations:
           '[/**]':
@@ -60,10 +61,16 @@ spring:
             allowedOrigins: "*"
             allowedMethods: GET,POST,DELETE,PUT,OPTION
       forwarded:
-        enabled:       true
+        enabled:        true
       x-forwarded:
-        enabled:       true        for-enabled:   true
-        proto-enabled: true
+        enabled:        true
+        prefix-enabled: true
+        for-enabled:    true        proto-enabled:  true
+        host-enabled:   true
+        host-append:    false        for-append:     false
+        proto-append:   false
+        prefix-append:  false
+        port-append:    false
       routes:
       - id:          oauth2-server
         uri:         lb://oauth2-server
@@ -84,7 +91,6 @@ spring:
         predicates:
         -            Path=/oauth2-client/**
         filters:
-        #- StripPrefix=0
         - AddRequestHeader=gateway_oauth2_server, ${gateway_oauth2_server}/
         - AddRequestHeader=gateway_oauth2_client, ${gateway_oauth2_client}/
         - RewritePath=/oauth2-client/(?<segment>/?.*), /oauth2-client/$\{segment}
@@ -118,7 +124,7 @@ eureka:
     home-page-url:                  https://${eureka.instance.hostname}:${server.port}
     status-page-url:                ${eureka.instance.home-page-url}/actuator/info
     metadata-map:
-      
+
       user.name:                    forsrc
       user.password:                forsrc
   client:

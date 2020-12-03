@@ -6,12 +6,15 @@ server:
       cookie:
         name: CLIENT_SESSION
         path: /oauth2-client
-
-  tomcat:
-    remoteip:
-      remote-ip-header: X-FORWARDED-FOR
-      protocol-header:  X-Forwarded-Proto
-      port-header:      X-Forwarded-Port
+#  forward-headers-strategy: framework
+#  tomcat:
+#    redirect-context-root:  false
+#    remoteip:
+#      remote-ip-header:     x-forwarded-for
+#      protocol-header:      x-forwarded-proto
+#      port-header:          x-forwarded-port
+#      host-header:          x-forwarded-host
+#      internal-proxies:     ".*"
   ssl:
     name:                 my-oauth2
     key-store-provider:   SUN
@@ -106,7 +109,7 @@ eureka:
     hostname:                       my-oauth2
     instance-id:                    ${eureka.instance.hostname}:${spring.application.name}:${server.port}
     appname:                        ${spring.application.name}
-    leaseRenewalIntervalInSeconds:  10
+    leaseRenewalIntervalInSeconds:  5
     health-check-url-path:          /actuator/health
     metadata-map:
       management.context-path:      ${server.servlet.context-path}/actuator
