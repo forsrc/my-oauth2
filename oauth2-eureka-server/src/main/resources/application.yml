@@ -51,7 +51,7 @@ eureka:
     health-check-url-path:          /actuator/health
     home-page-url:                  http://${eureka.instance.hostname}:${server.port}${server.servlet.context-path}
     status-page-url:                ${eureka.instance.home-page-url}/actuator
-    leaseRenewalIntervalInSeconds:  10
+    leaseRenewalIntervalInSeconds:  5
     metadata-map:
       management.context-path:      ${server.servlet.context-path}/actuator
       user.name:                    forsrc
@@ -64,15 +64,13 @@ eureka:
       #defaultZone:                  ${EUREKA_SERVER:http://my-oauth2:23000/oauth2-eureka-server/eureka}
       defaultZone:                  http://${spring.security.user.name}:${spring.security.user.password}@${eureka.instance.hostname}:${server.port}${server.servlet.context-path}/eureka
       #defaultZone:                  http://forsrc:forsrc@my-oauth2:23000/oauth2-eureka-server/eureka
-    initialInstanceInfoReplicationIntervalSeconds: 20
+    initialInstanceInfoReplicationIntervalSeconds: 5
 #    healthcheck:#      enabled:                      true
   server:
     enable-self-preservation:       true
     eviction-interval-timer-in-ms:  5000
 
 management:
-  security:
-    enabled:        true
   endpoints:
     web:
       exposure:

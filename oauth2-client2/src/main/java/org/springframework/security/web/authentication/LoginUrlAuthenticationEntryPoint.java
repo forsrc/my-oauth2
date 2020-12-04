@@ -40,7 +40,6 @@ import org.springframework.security.web.util.RedirectUrlBuilder;
 import org.springframework.security.web.util.UrlUtils;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
-import org.springframework.web.util.UriComponentsBuilder;
 
 /**
  * Used by the {@link ExceptionTranslationFilter} to commence a form login authentication
@@ -96,14 +95,7 @@ public class LoginUrlAuthenticationEntryPoint implements AuthenticationEntryPoin
 	public LoginUrlAuthenticationEntryPoint(String loginFormUrl) {
 		Assert.notNull(loginFormUrl, "loginFormUrl cannot be null");
 		this.loginFormUrl = loginFormUrl;
-//		PortMapperImpl portMapper = new PortMapperImpl();
-//    	portMapper.setPortMappings(Collections.singletonMap("8080", "8080"));
-//    	PortResolverImpl portResolver = new PortResolverImpl();
-//    	portResolver.setPortMapper(portMapper);
-//    	setPortMapper(portMapper);
-//    	setPortResolver(portResolver);
-    	
-    	((PortMapperImpl) portMapper).setPortMappings(Collections.singletonMap("8080", "8080"));
+		((PortMapperImpl) portMapper).setPortMappings(Collections.singletonMap("8080", "8080"));
     	((PortResolverImpl) portResolver).setPortMapper(portMapper);
 	}
 
@@ -183,12 +175,6 @@ public class LoginUrlAuthenticationEntryPoint implements AuthenticationEntryPoin
 	protected String buildRedirectUrlToLoginPage(HttpServletRequest request,
 			HttpServletResponse response, AuthenticationException authException) {
 
-//		String gatewayOauth2Server = request.getHeader("gateway_oauth2_server");
-//		if (gatewayOauth2Server != null) {
-//			String loginUri = UriComponentsBuilder.fromUriString(gatewayOauth2Server).path("/login").build().toString();
-//			return loginUri;
-//		}
-
 		String loginForm = determineUrlToUseForThisRequest(request, response,
 				authException);
 
@@ -221,7 +207,6 @@ public class LoginUrlAuthenticationEntryPoint implements AuthenticationEntryPoin
 			}
 		}
 
-		
 		return urlBuilder.getUrl();
 	}
 

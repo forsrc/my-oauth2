@@ -6,7 +6,7 @@ server:
       cookie:
         name: AUTH_SERVER_SESSION
         path: /oauth2-server
-#  forward-headers-strategy: framework
+  forward-headers-strategy: framework
 #  tomcat:
 #    remoteip:
 #      remote-ip-header: X-Forwarded-for
@@ -108,7 +108,9 @@ management:
 
 logging:
   level:
-    org.springframework.security: info
+    org.springframework.security: debug
+    
+debug: true
 
 
 # openssl pkcs12 -in my-oauth2.server.p12 -out my-oauth2.server.pem -password pass:forsrc -passin pass:forsrc -passout pass:forsrc

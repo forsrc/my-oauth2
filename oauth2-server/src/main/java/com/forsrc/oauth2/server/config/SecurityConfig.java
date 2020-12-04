@@ -1,10 +1,7 @@
 package com.forsrc.oauth2.server.config;
 
-import java.io.IOException;
+import java.util.Collections;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,25 +9,18 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.web.WebAttributes;
-import org.springframework.security.web.authentication.AuthenticationFailureHandler;
-import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
-import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
-import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
-import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
-import org.springframework.security.web.authentication.logout.SimpleUrlLogoutSuccessHandler;
-import org.springframework.security.web.savedrequest.DefaultSavedRequest;
-import org.springframework.security.web.util.matcher.RequestMatcher;
-import org.springframework.web.util.UriComponentsBuilder;
+import org.springframework.security.web.PortMapper;
+import org.springframework.security.web.PortMapperImpl;
+import org.springframework.security.web.PortResolver;
+import org.springframework.security.web.PortResolverImpl;
+import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
+import org.springframework.security.web.savedrequest.RequestCache;
 
 @Configuration
 //@EnableWebSecurity
@@ -75,10 +65,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 //            .deleteCookies("AUTH_SERVER_SESSION")
 //            .permitAll()
 //        ;
- 
         
 
-        http.requestMatchers()
+        http
+            .requestMatchers()
             .antMatchers("/login", "/login?**", "/login/**", "/logout", "/oauth/logout", "/oauth/authorize", "/oauth/token_key", "/actuator/**", "/static/**", "/error**")
             .and()
             .authorizeRequests()
@@ -95,9 +85,35 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .clearAuthentication(true)
             .deleteCookies("AUTH_SERVER_SESSION")
             .permitAll()
-            ;
-    }
+            .and()
+            .requestCache()
+            .requestCache(requestCache())
+    		;
+        }
+        
 
+        @Bean
+    	public  PortMapper portMapper() {
+        	PortMapperImpl portMapper = new PortMapperImpl();
+        	portMapper.setPortMappings(Collections.singletonMap("8080", "8080"));
+        	PortResolverImpl portResolver = new PortResolverImpl();
+        	portResolver.setPortMapper(portMapper);
+            return portMapper;
+        }
+        
+        @Bean
+     	public  PortResolver portResolver() {
+         	PortResolverImpl portResolver = new PortResolverImpl();
+         	portResolver.setPortMapper(portMapper());
+             return portResolver;
+         }
+
+        @Bean
+    	public  RequestCache requestCache() {
+            HttpSessionRequestCache requestCache = new HttpSessionRequestCache();
+            requestCache.setPortResolver(portResolver());
+            return requestCache;
+        }
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {

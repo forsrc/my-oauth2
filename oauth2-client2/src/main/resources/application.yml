@@ -6,7 +6,7 @@ server:
       cookie:
         name: CLIENT_SESSION
         path: /oauth2-client
-#  forward-headers-strategy: framework
+  forward-headers-strategy: framework
 #  tomcat:
 #    redirect-context-root:  false
 #    remoteip:
@@ -128,7 +128,8 @@ management:
     health:
       show-details: ALWAYS
 
-
 logging:
   level:
-    org.springframework.security: info
+    org.springframework.security: debug
+    
+debug: true

@@ -1,6 +1,8 @@
 package com.forsrc.oauth2.client.config;
 
 import java.io.IOException;
+import java.util.Collections;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -15,6 +17,10 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.web.PortMapper;
+import org.springframework.security.web.PortMapperImpl;
+import org.springframework.security.web.PortResolver;
+import org.springframework.security.web.PortResolverImpl;
 import org.springframework.security.web.RedirectStrategy;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
@@ -22,6 +28,8 @@ import org.springframework.security.web.authentication.SimpleUrlAuthenticationFa
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.savedrequest.DefaultSavedRequest;
+import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
+import org.springframework.security.web.savedrequest.RequestCache;
 import org.springframework.security.web.util.UrlUtils;
 import org.springframework.util.Assert;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -37,8 +45,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	
     @Override
     public void configure(HttpSecurity http) throws Exception {
+    	PortMapperImpl portMapper = new PortMapperImpl();
+    	portMapper.setPortMappings(Collections.singletonMap("8080", "8080"));
 
     	http
+    	.portMapper()
+    	.portMapper(portMapper)
+    	.and()
 		.authorizeRequests(a -> a
 			.antMatchers("/", "/login", "/error", "/webjars/**").permitAll()
 			.anyRequest().authenticated()
@@ -58,7 +71,34 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		.oauth2Login()
 		.successHandler(authenticationSuccessHandler())
 		.failureHandler(authenticationFailureHandler())
+		.and()
+        .requestCache()
+        .requestCache(requestCache())
 		;
+    }
+    
+
+    @Bean
+	public  PortMapper portMapper() {
+    	PortMapperImpl portMapper = new PortMapperImpl();
+    	portMapper.setPortMappings(Collections.singletonMap("8080", "8080"));
+    	PortResolverImpl portResolver = new PortResolverImpl();
+    	portResolver.setPortMapper(portMapper);
+        return portMapper;
+    }
+    
+    @Bean
+ 	public  PortResolver portResolver() {
+     	PortResolverImpl portResolver = new PortResolverImpl();
+     	portResolver.setPortMapper(portMapper());
+         return portResolver;
+     }
+
+    @Bean
+	public  RequestCache requestCache() {
+        HttpSessionRequestCache requestCache = new HttpSessionRequestCache();
+        requestCache.setPortResolver(portResolver());
+        return requestCache;
     }
 
     @Bean
