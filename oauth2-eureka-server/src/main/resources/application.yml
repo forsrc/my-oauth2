@@ -84,3 +84,6 @@ management:
   endpoint:
     health:
       show-details: ALWAYS
+hystrix:
+  dashboard:
+    proxy-stream-allow-list: "*"

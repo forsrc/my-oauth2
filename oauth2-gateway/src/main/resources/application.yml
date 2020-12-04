@@ -87,6 +87,10 @@ spring:
             - AddRequestHeader=gateway_enable, true
             - AddRequestHeader=gateway_oauth2_server, ${gateway_oauth2_server}/
             - RewritePath=/oauth2-server/(?<segment>/?.*), /oauth2-server/$\{segment}
+            - name: Hystrix
+              args:
+                name: oauth2-server
+                fallbackUri: forward:/fallback
         - id: oauth2-resource-server
           uri: lb://oauth2-resource-server
           predicates:
@@ -95,6 +99,10 @@ spring:
             - AddRequestHeader=gateway_enable, true
             - AddRequestHeader=gateway_oauth2_server, ${gateway_oauth2_server}/
             - RewritePath=/oauth2-resource-server(?<segment>/?.*), /oauth2-resource-server/$\{segment}
+            - name: Hystrix
+              args:
+                name: oauth2-resource-server
+                fallbackUri: forward:/fallback
         - id: oauth2-client
           uri: lb://oauth2-client
           predicates:
@@ -104,6 +112,10 @@ spring:
             - AddRequestHeader=gateway_oauth2_server, ${gateway_oauth2_server}/
             - AddRequestHeader=gateway_oauth2_client, ${gateway_oauth2_client}/
             - RewritePath=/oauth2-client/(?<segment>/?.*), /oauth2-client/$\{segment}
+            - name: Hystrix
+              args:
+                name: oauth2-client
+                fallbackUri: forward:/fallback
         - id: oauth2-eureka-server
           uri: lb://oauth2-eureka-server
           predicates:
@@ -113,6 +125,10 @@ spring:
             - AddRequestHeader=gateway_oauth2_server, ${gateway_oauth2_server}/
             - AddRequestHeader=gateway_oauth2_eureka_server, ${gateway_oauth2_eureka_server}/
             - RewritePath=/oauth2-eureka-server/(?<segment>/?.*), /oauth2-eureka-server/$\{segment}
+            - name: Hystrix
+              args:
+                name: oauth2-eureka-server
+                fallbackUri: forward:/fallback
         - id: oauth2-admin-server
           uri: lb://oauth2-admin-server
           predicates:
@@ -122,6 +138,10 @@ spring:
             - AddRequestHeader=gateway_oauth2_server, ${gateway_oauth2_server}/
             - AddRequestHeader=gateway_oauth2_eureka_server, ${gateway_oauth2_eureka_server}/
             - RewritePath=/oauth2-admin-server/(?<segment>/?.*), /oauth2-admin-server/$\{segment}
+            - name: Hystrix
+              args:
+                name: oauth2-admin-server
+                fallbackUri: forward:/fallback
 
 eureka:
   instance:
@@ -136,7 +156,6 @@ eureka:
     home-page-url: https://${eureka.instance.hostname}:${server.port}
     status-page-url: ${eureka.instance.home-page-url}/actuator/info
     metadata-map:
-
       user.name: forsrc
       user.password: forsrc
   client:
@@ -149,9 +168,15 @@ management:
       exposure:
         include: "*"
   endpoint:
+    hystrix:
+  stream:
+    enabled: true
     health:
       show-details: ALWAYS
 
 logging:
   level:
     org.springframework.cloud.gateway: info
+hystrix:
+  dashboard:
+    proxy-stream-allow-list: "*"
