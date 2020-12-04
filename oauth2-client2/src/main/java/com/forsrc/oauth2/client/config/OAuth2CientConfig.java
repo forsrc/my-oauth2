@@ -32,19 +32,19 @@ import reactor.netty.http.client.HttpClient;
 @Configuration
 public class OAuth2CientConfig {
 
-	@Bean
-	public OAuth2AuthorizedClientManager authorizedClientManager(
-			ClientRegistrationRepository clientRegistrationRepository, OAuth2AuthorizedClientService clientService) {
+    @Bean
+    public OAuth2AuthorizedClientManager authorizedClientManager(
+            ClientRegistrationRepository clientRegistrationRepository, OAuth2AuthorizedClientService clientService) {
 
-		OAuth2AuthorizedClientProvider authorizedClientProvider = OAuth2AuthorizedClientProviderBuilder.builder()
-				.clientCredentials().build();
+        OAuth2AuthorizedClientProvider authorizedClientProvider = OAuth2AuthorizedClientProviderBuilder.builder()
+                .clientCredentials().build();
 
-		AuthorizedClientServiceOAuth2AuthorizedClientManager authorizedClientManager = new AuthorizedClientServiceOAuth2AuthorizedClientManager(
-				clientRegistrationRepository, clientService);
-		authorizedClientManager.setAuthorizedClientProvider(authorizedClientProvider);
+        AuthorizedClientServiceOAuth2AuthorizedClientManager authorizedClientManager = new AuthorizedClientServiceOAuth2AuthorizedClientManager(
+                clientRegistrationRepository, clientService);
+        authorizedClientManager.setAuthorizedClientProvider(authorizedClientProvider);
 
-		return authorizedClientManager;
-	}
+        return authorizedClientManager;
+    }
 
 //	@Bean
 //	public OAuth2AuthorizedClientManager authorizedClientManager(
@@ -83,26 +83,26 @@ public class OAuth2CientConfig {
 //				});
 //	}
 
-	@Bean
-	public WebClient webClient(OAuth2AuthorizedClientManager authorizedClientManager) throws SSLException {
+    @Bean
+    public WebClient webClient(OAuth2AuthorizedClientManager authorizedClientManager) throws SSLException {
 
-		ServletOAuth2AuthorizedClientExchangeFilterFunction oauth2 = new ServletOAuth2AuthorizedClientExchangeFilterFunction(
-				authorizedClientManager);
+        ServletOAuth2AuthorizedClientExchangeFilterFunction oauth2 = new ServletOAuth2AuthorizedClientExchangeFilterFunction(
+                authorizedClientManager);
 
-		oauth2.setDefaultClientRegistrationId("my-oauth2");
-		oauth2.setDefaultOAuth2AuthorizedClient(true);
+        oauth2.setDefaultClientRegistrationId("my-oauth2");
+        oauth2.setDefaultOAuth2AuthorizedClient(true);
 
 
-		SslContext sslContext = SslContextBuilder.forClient().trustManager(InsecureTrustManagerFactory.INSTANCE)
-				.build();
-		HttpClient httpClient = HttpClient.create().secure(sslContextSpec -> sslContextSpec.sslContext(sslContext));
-		ReactorClientHttpConnector connector = new ReactorClientHttpConnector(httpClient);
+        SslContext sslContext = SslContextBuilder.forClient().trustManager(InsecureTrustManagerFactory.INSTANCE)
+                .build();
+        HttpClient httpClient = HttpClient.create().secure(sslContextSpec -> sslContextSpec.sslContext(sslContext));
+        ReactorClientHttpConnector connector = new ReactorClientHttpConnector(httpClient);
 
-		return WebClient.builder()
-				.clientConnector(connector)
-				.filter(oauth2)
-				.apply(oauth2.oauth2Configuration())
-				.build();
-	}
+        return WebClient.builder()
+                .clientConnector(connector)
+                .filter(oauth2)
+                .apply(oauth2.oauth2Configuration())
+                .build();
+    }
 
 }

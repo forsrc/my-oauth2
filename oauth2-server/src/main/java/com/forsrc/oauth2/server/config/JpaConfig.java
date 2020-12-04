@@ -57,14 +57,14 @@ public class JpaConfig {
     @Bean(name = "entityManagerFactory")
     public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
 
-        LocalContainerEntityManagerFactoryBean entityManagerFactory =  builder
+        LocalContainerEntityManagerFactoryBean entityManagerFactory = builder
                 .dataSource(dataSource)
                 .packages("com.forsrc.oauth2.server.model")
                 .persistenceUnit("persistenceUnit-my-oauth2-server")
                 .properties(jpaProperties.getProperties())
                 .build();
         entityManagerFactory.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
-        return  entityManagerFactory;
+        return entityManagerFactory;
     }
 
 

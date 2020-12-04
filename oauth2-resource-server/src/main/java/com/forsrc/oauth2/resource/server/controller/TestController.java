@@ -11,7 +11,7 @@ public class TestController {
 
     @GetMapping("/test")
     public String test(Principal principal) {
-    	System.out.println("test -> " + principal);
+        System.out.println("test -> " + principal);
         return "test -> " + principal;
     }
 }

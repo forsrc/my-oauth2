@@ -1,1 +1,2 @@
-SELECT * FROM oauth_client_details;
+SELECT *
+FROM oauth_client_details;

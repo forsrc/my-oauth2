@@ -41,7 +41,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     @Bean
     public AuthenticationManager authenticationManagerBean() throws Exception {
-       return super.authenticationManagerBean();
+        return super.authenticationManagerBean();
     }
 
     @Override
@@ -65,55 +65,55 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 //            .deleteCookies("AUTH_SERVER_SESSION")
 //            .permitAll()
 //        ;
-        
+
 
         http
-            .requestMatchers()
-            .antMatchers("/login", "/login?**", "/login/**", "/logout", "/oauth/logout", "/oauth/authorize", "/oauth/token_key", "/actuator/**", "/static/**", "/error**")
-            .and()
-            .authorizeRequests()
-            .antMatchers("/", "/login", "/login?**", "/oauth/token", "/oauth/jwks", "/actuator/**")
-            .permitAll()
-            .anyRequest()
-            .authenticated()
-            .and()
-            .formLogin()
-            .permitAll()
-            .and()
-            .logout()
-            .invalidateHttpSession(true)
-            .clearAuthentication(true)
-            .deleteCookies("AUTH_SERVER_SESSION")
-            .permitAll()
-            .and()
-            .requestCache()
-            .requestCache(requestCache())
-    		;
-        }
-        
+                .requestMatchers()
+                .antMatchers("/login", "/login?**", "/login/**", "/logout", "/oauth/logout", "/oauth/authorize", "/oauth/token_key", "/actuator/**", "/static/**", "/error**")
+                .and()
+                .authorizeRequests()
+                .antMatchers("/", "/login", "/login?**", "/oauth/token", "/oauth/jwks", "/actuator/**")
+                .permitAll()
+                .anyRequest()
+                .authenticated()
+                .and()
+                .formLogin()
+                .permitAll()
+                .and()
+                .logout()
+                .invalidateHttpSession(true)
+                .clearAuthentication(true)
+                .deleteCookies("AUTH_SERVER_SESSION")
+                .permitAll()
+                .and()
+                .requestCache()
+                .requestCache(requestCache())
+        ;
+    }
 
-        @Bean
-    	public  PortMapper portMapper() {
-        	PortMapperImpl portMapper = new PortMapperImpl();
-        	portMapper.setPortMappings(Collections.singletonMap("8080", "8080"));
-        	PortResolverImpl portResolver = new PortResolverImpl();
-        	portResolver.setPortMapper(portMapper);
-            return portMapper;
-        }
-        
-        @Bean
-     	public  PortResolver portResolver() {
-         	PortResolverImpl portResolver = new PortResolverImpl();
-         	portResolver.setPortMapper(portMapper());
-             return portResolver;
-         }
 
-        @Bean
-    	public  RequestCache requestCache() {
-            HttpSessionRequestCache requestCache = new HttpSessionRequestCache();
-            requestCache.setPortResolver(portResolver());
-            return requestCache;
-        }
+    @Bean
+    public PortMapper portMapper() {
+        PortMapperImpl portMapper = new PortMapperImpl();
+        portMapper.setPortMappings(Collections.singletonMap("8080", "8080"));
+        PortResolverImpl portResolver = new PortResolverImpl();
+        portResolver.setPortMapper(portMapper);
+        return portMapper;
+    }
+
+    @Bean
+    public PortResolver portResolver() {
+        PortResolverImpl portResolver = new PortResolverImpl();
+        portResolver.setPortMapper(portMapper());
+        return portResolver;
+    }
+
+    @Bean
+    public RequestCache requestCache() {
+        HttpSessionRequestCache requestCache = new HttpSessionRequestCache();
+        requestCache.setPortResolver(portResolver());
+        return requestCache;
+    }
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
@@ -121,13 +121,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 //            .withUser(username)
 //            .password(passwordEncoder().encode(password))
 //            .roles(roles);
-       
+
         auth
-        .jdbcAuthentication()
-        .dataSource(dataSource)
-        .passwordEncoder(passwordEncoder())
-        .usersByUsernameQuery("SELECT username,password,enabled FROM users WHERE username = ?")
-        .authoritiesByUsernameQuery("SELECT username,authority FROM authorities WHERE username = ?")
+                .jdbcAuthentication()
+                .dataSource(dataSource)
+                .passwordEncoder(passwordEncoder())
+                .usersByUsernameQuery("SELECT username,password,enabled FROM users WHERE username = ?")
+                .authoritiesByUsernameQuery("SELECT username,authority FROM authorities WHERE username = ?")
         ;
     }
 

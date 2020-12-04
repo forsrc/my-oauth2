@@ -1,5 +1,5 @@
 server:
-  port:  20000
+  port: 20000
   servlet:
     context-path: /oauth2-server
     session:
@@ -7,101 +7,102 @@ server:
         name: AUTH_SERVER_SESSION
         path: /oauth2-server
   forward-headers-strategy: framework
-#  tomcat:
-#    remoteip:
-#      remote-ip-header: X-Forwarded-for
-#      protocol-header:  X-Forwarded-Proto
-#      port-header:      X-Forwarded-Port
-#      host-header:      X-Forwarded-Host
-#      internal-proxies: ".*"
+  #  tomcat:
+  #    remoteip:
+  #      remote-ip-header: X-Forwarded-for
+  #      protocol-header:  X-Forwarded-Proto
+  #      port-header:      X-Forwarded-Port
+  #      host-header:      X-Forwarded-Host
+  #      internal-proxies: ".*"
 
   ssl:
-    name:                 my-oauth2
-    key-store-provider:   SUN
-    key-store-type:       JKS
-    key-store:            classpath:ssl/${server.ssl.name}.server.keystore
-    key-store-password:   forsrc
-    key-alias:            ${server.ssl.name}.server
-    enabled:              false
+    name: my-oauth2
+    key-store-provider: SUN
+    key-store-type: JKS
+    key-store: classpath:ssl/${server.ssl.name}.server.keystore
+    key-store-password: forsrc
+    key-alias: ${server.ssl.name}.server
+    enabled: false
     #trust-store-provider: SUN
     #trust-store-type:     JKS
     #trust-store:          classpath:ssl/${server.ssl.name}.server.keystore
     #trust-store-password: forsrc
     #client-auth:          need
 
-oauth2-server:        http://my-oauth2:20000/oauth2-server
+oauth2-server: http://my-oauth2:20000/oauth2-server
 oauth2-rource-server: http://my-oauth2:21000/oauth2-resource-server
-oauth2-client:        http://my-oauth2:22000/oauth2-client
+oauth2-client: http://my-oauth2:22000/oauth2-client
 
 security:
   user:
     username: forsrc
     password: forsrc
-    roles:    USER, ADMIN
+    roles: USER, ADMIN
   oauth2:
     client:
-      client-id:               forsrc
-      client-secret:           forsrc
-      scope:                   ui, read, write
-      auto-approve-scopes:     .*
-      authorized-grant-types:  authorization_code, client_credentials, refresh_token, password, implicit
+      client-id: forsrc
+      client-secret: forsrc
+      scope: ui, read, write
+      auto-approve-scopes: .*
+      authorized-grant-types: authorization_code, client_credentials, refresh_token, password, implicit
       registered-redirect-uri:
-      -                        ${oauth2-client}/login
-      -                        ${oauth2-client}/login/oauth2/code/my-oauth2
+        - ${oauth2-client}/login
+        - ${oauth2-client}/login/oauth2/code/my-oauth2
     authorization:
-      check-token-access:      permitAll()
-#    resource:#      filter-order:            3
+      check-token-access: permitAll()
+#    resource:
+#      filter-order:            3
 
 spring:
   main.allow-bean-definition-overriding: true
   application:
-    name:      oauth2-server
+    name: oauth2-server
   datasource:
-    url:                 ${DB_URL:jdbc:h2:~/tmp/db/h2/my-oauth2-server.h2;AUTO_SERVER=TRUE;MODE=MYSQL;}
-    username:            ${DB_USERNAME:sa}
-    password:            ${DB_PASSWORD:sa}
-    driver-class-name:   ${DB_DRIVER:org.h2.Driver}
+    url: ${DB_URL:jdbc:h2:~/tmp/db/h2/my-oauth2-server.h2;AUTO_SERVER=TRUE;MODE=MYSQL;}
+    username: ${DB_USERNAME:sa}
+    password: ${DB_PASSWORD:sa}
+    driver-class-name: ${DB_DRIVER:org.h2.Driver}
     data:
-    - classpath:schema.sql
-    - classpath:data.sql
+      - classpath:schema.sql
+      - classpath:data.sql
   jpa:
-    database-platform:                     ${DB_DIALECT:org.hibernate.dialect.H2Dialect}
-    show-sql:                              true
+    database-platform: ${DB_DIALECT:org.hibernate.dialect.H2Dialect}
+    show-sql: true
     properties:
       hibernate.enable_lazy_load_no_trans: true
-      hibernate.show-sql:                  true
-      hibernate.hbm2ddl.auto:              update
-    open-in-view:                          true
+      hibernate.show-sql: true
+      hibernate.hbm2ddl.auto: update
+    open-in-view: true
   boot:
     admin:
       client:
-        url:                   http://my-oauth2:24000/oauth2-admin-server
-        username:              forsrc
-        password:              forsrc
+        url: http://my-oauth2:24000/oauth2-admin-server
+        username: forsrc
+        password: forsrc
         instance:
           management-base-url: http://${eureka.instance.hostname}:${server.port}${server.servlet.context-path}
 
 eureka:
   instance:
     #prefer-ip-address:              true
-    hostname:                       my-oauth2
-    instance-id:                    ${eureka.instance.hostname}:${spring.application.name}:${server.port}
-    appname:                        ${spring.application.name}
-    leaseRenewalIntervalInSeconds:  10
-    health-check-url-path:          /actuator/health
+    hostname: my-oauth2
+    instance-id: ${eureka.instance.hostname}:${spring.application.name}:${server.port}
+    appname: ${spring.application.name}
+    leaseRenewalIntervalInSeconds: 10
+    health-check-url-path: /actuator/health
     metadata-map:
-      management.context-path:      ${server.servlet.context-path}/actuator
-      user.name:                    forsrc
-      user.password:                forsrc
+      management.context-path: ${server.servlet.context-path}/actuator
+      user.name: forsrc
+      user.password: forsrc
   client:
     service-url:
-      defaultZone:                  http://forsrc:forsrc@my-oauth2:23000/oauth2-eureka-server/eureka
+      defaultZone: http://forsrc:forsrc@my-oauth2:23000/oauth2-eureka-server/eureka
 
 management:
   endpoints:
     web:
       exposure:
-        include:    "*"
+        include: "*"
   endpoint:
     health:
       show-details: ALWAYS
@@ -109,7 +110,7 @@ management:
 logging:
   level:
     org.springframework.security: info
-    
+
 #debug: true
 
 

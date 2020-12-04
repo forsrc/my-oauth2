@@ -33,17 +33,17 @@ import org.springframework.web.util.UriComponentsBuilder;
  * @since 3.0
  */
 public class SimpleUrlLogoutSuccessHandler extends
-		AbstractAuthenticationTargetUrlRequestHandler implements LogoutSuccessHandler {
+        AbstractAuthenticationTargetUrlRequestHandler implements LogoutSuccessHandler {
 
-	public void onLogoutSuccess(HttpServletRequest request, HttpServletResponse response,
-			Authentication authentication) throws IOException, ServletException {
-		String gatewayOauth2Server = request.getHeader("gateway_oauth2_server");
+    public void onLogoutSuccess(HttpServletRequest request, HttpServletResponse response,
+                                Authentication authentication) throws IOException, ServletException {
+        String gatewayOauth2Server = request.getHeader("gateway_oauth2_server");
         if (gatewayOauth2Server != null) {
             String loginUri = UriComponentsBuilder.fromUriString(gatewayOauth2Server).path("/login?logout").build().toString();
             super.getRedirectStrategy().sendRedirect(request, response, loginUri);
             return;
         }
-		super.handle(request, response, authentication);
-	}
+        super.handle(request, response, authentication);
+    }
 
 }

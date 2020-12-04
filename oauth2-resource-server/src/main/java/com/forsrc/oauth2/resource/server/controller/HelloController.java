@@ -11,13 +11,13 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(path = "/api/hello")
 public class HelloController {
 
-	@GetMapping()
-	public String hello(Principal principal) {
-		return "hello: " + principal.getName();
-	}
+    @GetMapping()
+    public String hello(Principal principal) {
+        return "hello: " + principal.getName();
+    }
 
-	@GetMapping("/{name}")
-	public String hello(@PathVariable("name") String name, Principal principal) {
-		return principal.getName() + ": hello " + name;
-	}
+    @GetMapping("/{name}")
+    public String hello(@PathVariable("name") String name, Principal principal) {
+        return principal.getName() + ": hello " + name;
+    }
 }

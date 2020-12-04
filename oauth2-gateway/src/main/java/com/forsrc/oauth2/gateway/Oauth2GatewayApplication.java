@@ -11,8 +11,8 @@ import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
 public class Oauth2GatewayApplication {
 
 
-	public static void main(String[] args) {
-		SpringApplication.run(Oauth2GatewayApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(Oauth2GatewayApplication.class, args);
+    }
 
 }

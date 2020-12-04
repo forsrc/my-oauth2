@@ -19,9 +19,9 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Entity
 @Table(name = "users", indexes = {
-        @Index(name = "index_users_username", columnList = "username") }, uniqueConstraints = {
-                @UniqueConstraint(columnNames = { "username" }) })
-@JsonIgnoreProperties(value = { "hibernateLazyInitializer", "handler", "fieldHandler" })
+        @Index(name = "index_users_username", columnList = "username")}, uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"username"})})
+@JsonIgnoreProperties(value = {"hibernateLazyInitializer", "handler", "fieldHandler"})
 public class User implements java.io.Serializable {
 
     private static final long serialVersionUID = 7053075402341362549L;
@@ -41,22 +41,23 @@ public class User implements java.io.Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
     private Date createOn;
-    @PrePersist
-    protected void onCreateOn() {
-        this.createOn = new Date();
-    }
     @Column(name = "update_on", insertable = false, updatable = true, nullable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     @Temporal(TemporalType.TIMESTAMP)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
     private Date updateOn;
+    @Column(name = "version", insertable = false, updatable = true, nullable = false, columnDefinition = "INT DEFAULT 0")
+    @Version
+    private int version;
+
+    @PrePersist
+    protected void onCreateOn() {
+        this.createOn = new Date();
+    }
+
     @PreUpdate
     protected void onUpdateOn() {
         this.updateOn = new Date();
     }
-
-    @Column(name = "version", insertable = false, updatable = true, nullable = false, columnDefinition = "INT DEFAULT 0")
-    @Version
-    private int version;
 
     public String getUsername() {
         return username;

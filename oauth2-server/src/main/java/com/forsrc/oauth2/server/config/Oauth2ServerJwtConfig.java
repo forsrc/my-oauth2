@@ -57,55 +57,44 @@ import com.nimbusds.jose.jwk.RSAKey;
 @AutoConfigureAfter(SecurityConfig.class)
 public class Oauth2ServerJwtConfig extends AuthorizationServerConfigurerAdapter {
 
-	@Autowired
-	BCryptPasswordEncoder passwordEncoder;
-	
-	@Autowired
-	private ClientDetailsService clientDetailsService;
-
-
-	@Autowired
-	private AuthenticationManager authenticationManager;
-
-	@ConfigurationProperties(prefix = "security.oauth2.client")
-	@Component
-	static class MyClientDetails extends BaseClientDetails {
-
-	}
-
-	@Autowired
-	MyClientDetails myClientDetails;
+    @Autowired
+    BCryptPasswordEncoder passwordEncoder;
+    @Autowired
+    MyClientDetails myClientDetails;
+    @Autowired
+    private ClientDetailsService clientDetailsService;
+    @Autowired
+    private AuthenticationManager authenticationManager;
 
     @Override
     public void configure(final AuthorizationServerSecurityConfigurer oauthServer) throws Exception {
         oauthServer.tokenKeyAccess("permitAll()")
-					.checkTokenAccess("isAuthenticated()")
-					.allowFormAuthenticationForClients()
-					;
-	}
+                .checkTokenAccess("isAuthenticated()")
+                .allowFormAuthenticationForClients()
+        ;
+    }
 
-	@Override
-	public void configure(AuthorizationServerEndpointsConfigurer endpoints) {
-
-		
-		endpoints.authenticationManager(authenticationManager)
-			//.userApprovalHandler(userApprovalHandler())
-			//.accessTokenConverter(jwtAccessTokenConverter())
-			//.allowedTokenEndpointRequestMethods(HttpMethod.GET, HttpMethod.POST)
-				.tokenStore(tokenStore())
-				.reuseRefreshTokens(false)
-				.userApprovalHandler(userApprovalHandler())
-				.accessTokenConverter(accessTokenConverter())
-				.tokenServices(tokenServices())
-			;
-
-	}
+    @Override
+    public void configure(AuthorizationServerEndpointsConfigurer endpoints) {
 
 
-	@Bean
-	@Primary
+        endpoints.authenticationManager(authenticationManager)
+                //.userApprovalHandler(userApprovalHandler())
+                //.accessTokenConverter(jwtAccessTokenConverter())
+                //.allowedTokenEndpointRequestMethods(HttpMethod.GET, HttpMethod.POST)
+                .tokenStore(tokenStore())
+                .reuseRefreshTokens(false)
+                .userApprovalHandler(userApprovalHandler())
+                .accessTokenConverter(accessTokenConverter())
+                .tokenServices(tokenServices())
+        ;
+
+    }
+
+    @Bean
+    @Primary
     public DefaultTokenServices tokenServices() {
-		DefaultTokenServices defaultTokenServices = new DefaultTokenServices();
+        DefaultTokenServices defaultTokenServices = new DefaultTokenServices();
         defaultTokenServices.setTokenStore(tokenStore());
         defaultTokenServices.setSupportRefreshToken(true);
         defaultTokenServices.setTokenEnhancer(accessTokenConverter());
@@ -114,54 +103,59 @@ public class Oauth2ServerJwtConfig extends AuthorizationServerConfigurerAdapter 
         return defaultTokenServices;
     }
 
-	@Override
-	public void configure(final ClientDetailsServiceConfigurer clients) throws Exception {
-		clients.inMemory()
-				.withClient(myClientDetails.getClientId())
-				.secret(passwordEncoder.encode(myClientDetails.getClientSecret()))
-				.authorizedGrantTypes(myClientDetails.getAuthorizedGrantTypes().stream().toArray(String[]::new))
-				.scopes(myClientDetails.getScope().stream().toArray(String[]::new))
-				.autoApprove(true)
-				.redirectUris(myClientDetails.getRegisteredRedirectUri().stream().toArray(String[]::new))
-				;
-		
+    @Override
+    public void configure(final ClientDetailsServiceConfigurer clients) throws Exception {
+        clients.inMemory()
+                .withClient(myClientDetails.getClientId())
+                .secret(passwordEncoder.encode(myClientDetails.getClientSecret()))
+                .authorizedGrantTypes(myClientDetails.getAuthorizedGrantTypes().stream().toArray(String[]::new))
+                .scopes(myClientDetails.getScope().stream().toArray(String[]::new))
+                .autoApprove(true)
+                .redirectUris(myClientDetails.getRegisteredRedirectUri().stream().toArray(String[]::new))
+        ;
+
 //    	clients
 //    		.inMemory()
 //        	.withClient("forsrc")
 //        	.secret(passwordEncoder.encode("forsrc"))
 //        	.authorizedGrantTypes("authorization_code", "client_credentials", "refresh_token", "password", "implicit")
 //        	.scopes("read", "write", "trust", "openid", "ui")
-//        	.autoApprove(true) 
-//        	.redirectUris("http://localhost:22000/login"); 
-	}
-	
-	@Bean
-	public UserApprovalHandler userApprovalHandler() {
-		ApprovalStoreUserApprovalHandler userApprovalHandler = new ApprovalStoreUserApprovalHandler();
-		userApprovalHandler.setApprovalStore(approvalStore());
-		userApprovalHandler.setClientDetailsService(this.clientDetailsService);
-		userApprovalHandler.setRequestFactory(new DefaultOAuth2RequestFactory(this.clientDetailsService));
-		return userApprovalHandler;
-	}
-	
-	@Bean
-	public TokenStore tokenStore() {
-		JwtTokenStore tokenStore = new JwtTokenStore(accessTokenConverter());
-		tokenStore.setApprovalStore(approvalStore());
-		return tokenStore;
-	}
+//        	.autoApprove(true)
+//        	.redirectUris("http://localhost:22000/login");
+    }
 
-	@Bean
-	public ApprovalStore approvalStore() {
-		return new InMemoryApprovalStore();
-	}
+    @Bean
+    public UserApprovalHandler userApprovalHandler() {
+        ApprovalStoreUserApprovalHandler userApprovalHandler = new ApprovalStoreUserApprovalHandler();
+        userApprovalHandler.setApprovalStore(approvalStore());
+        userApprovalHandler.setClientDetailsService(this.clientDetailsService);
+        userApprovalHandler.setRequestFactory(new DefaultOAuth2RequestFactory(this.clientDetailsService));
+        return userApprovalHandler;
+    }
 
+    @Bean
+    public TokenStore tokenStore() {
+        JwtTokenStore tokenStore = new JwtTokenStore(accessTokenConverter());
+        tokenStore.setApprovalStore(approvalStore());
+        return tokenStore;
+    }
 
-	@Bean
-	@ConfigurationProperties("jwt")
-	JwtAccessTokenConverter accessTokenConverter() {
-		return new JwtAccessTokenConverter();
-	}
+    @Bean
+    public ApprovalStore approvalStore() {
+        return new InMemoryApprovalStore();
+    }
+
+    @Bean
+    @ConfigurationProperties("jwt")
+    JwtAccessTokenConverter accessTokenConverter() {
+        return new JwtAccessTokenConverter();
+    }
+
+    @ConfigurationProperties(prefix = "security.oauth2.client")
+    @Component
+    static class MyClientDetails extends BaseClientDetails {
+
+    }
 
 
 }

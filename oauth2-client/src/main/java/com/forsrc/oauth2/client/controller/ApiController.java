@@ -23,6 +23,6 @@ public class ApiController {
         return restTemplate.getForEntity(UriComponentsBuilder.fromHttpUrl(rourceServer).pathSegment("test").build().toUri(),
                 String.class)
                 .getBody();
-                
+
     }
 }

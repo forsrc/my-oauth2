@@ -16,9 +16,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 /**
- * 
  * CorsFilter
- *
  */
 @Component
 @Order(Ordered.HIGHEST_PRECEDENCE)

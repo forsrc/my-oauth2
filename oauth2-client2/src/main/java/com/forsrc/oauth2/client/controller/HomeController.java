@@ -10,15 +10,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 public class HomeController {
 
-	@RequestMapping("/")
+    @RequestMapping("/")
     String home(Model model, HttpSession httpSession, HttpServletRequest request) {
-		
-		Integer hits = (Integer) httpSession.getAttribute("hits");
+
+        Integer hits = (Integer) httpSession.getAttribute("hits");
         if (hits == null) {
             hits = 0;
         }
         httpSession.setAttribute("hits", ++hits);
-		
+
         return "index";
     }
 

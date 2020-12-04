@@ -17,18 +17,18 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 //@EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true, jsr250Enabled = true)
 public class SecurityConfigNoJdbc extends WebSecurityConfigurerAdapter {
 
-	@Value("${security.user.username}")
-	private String username;
-	@Value("${security.user.password}")
-	private String password;
-	@Value("${security.user.roles}")
-	private String[] roles;
+    @Value("${security.user.username}")
+    private String username;
+    @Value("${security.user.password}")
+    private String password;
+    @Value("${security.user.roles}")
+    private String[] roles;
 
-	@Override
-	@Bean
-	public AuthenticationManager authenticationManagerBean() throws Exception {
-	   return super.authenticationManagerBean();
-	}
+    @Override
+    @Bean
+    public AuthenticationManager authenticationManagerBean() throws Exception {
+        return super.authenticationManagerBean();
+    }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -51,37 +51,37 @@ public class SecurityConfigNoJdbc extends WebSecurityConfigurerAdapter {
 //    		.deleteCookies("AUTH_SERVER_SESSION")
 //    		.permitAll()
 //        ;
-    	
-    	http.requestMatchers()
-			.antMatchers("/login", "/logout", "/oauth/logout", "/oauth/authorize", "/oauth/token_key", "/oauth/jwks", "/actuator/**", "/static/**", "/error**")
-			.and()
-			.authorizeRequests()
-			.anyRequest()
-			.authenticated()
-			.and()
-			.formLogin()
-			.permitAll();
-    	
+
+        http.requestMatchers()
+                .antMatchers("/login", "/logout", "/oauth/logout", "/oauth/authorize", "/oauth/token_key", "/oauth/jwks", "/actuator/**", "/static/**", "/error**")
+                .and()
+                .authorizeRequests()
+                .anyRequest()
+                .authenticated()
+                .and()
+                .formLogin()
+                .permitAll();
+
 
     }
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.inMemoryAuthentication()
-            .withUser(username)
-            .password(passwordEncoder().encode(password))
-            .roles(roles);
-       
+                .withUser(username)
+                .password(passwordEncoder().encode(password))
+                .roles(roles);
+
 //        auth.inMemoryAuthentication()
 //        	.withUser("forsrc")
 //        	.password(passwordEncoder().encode("forsrc"))
 //        	.roles("USER", "ADMIN");
     }
+
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
-    
-    
+
 
 }

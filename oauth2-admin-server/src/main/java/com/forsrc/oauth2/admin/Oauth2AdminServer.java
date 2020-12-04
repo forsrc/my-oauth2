@@ -14,8 +14,8 @@ import de.codecentric.boot.admin.server.config.EnableAdminServer;
 public class Oauth2AdminServer {
 
 
-	public static void main(String[] args) {
-		SpringApplication.run(Oauth2AdminServer.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(Oauth2AdminServer.class, args);
+    }
 
 }

@@ -9,7 +9,7 @@ import org.thymeleaf.spring5.view.reactive.ThymeleafReactiveViewResolver;
 
 @Configuration
 public class WebFluxConfig implements WebFluxConfigurer {
- 
+
 
     @Autowired
     private ThymeleafReactiveViewResolver thymeleafReactiveViewResolver;

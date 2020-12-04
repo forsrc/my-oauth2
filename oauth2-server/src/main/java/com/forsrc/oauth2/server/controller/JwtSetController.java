@@ -13,7 +13,7 @@ public class JwtSetController {
 
     @Autowired
     private JWKSet jwkSet;
- 
+
     @GetMapping("/oauth/jwks")
     public Map<String, Object> keys() {
         return this.jwkSet.toJSONObject();

@@ -17,8 +17,8 @@ import org.springframework.cloud.netflix.hystrix.dashboard.EnableHystrixDashboar
 public class Oauth2EurekaServer {
 
 
-	public static void main(String[] args) {
-		SpringApplication.run(Oauth2EurekaServer.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(Oauth2EurekaServer.class, args);
+    }
 
 }

@@ -37,15 +37,15 @@ public class HttpsConfig {
     static {
         //System.setProperty("sun.security.ssl.allowUnsafeRenegotiation", "true");
     }
-    
+
     @Bean
     public ClientHttpConnector customHttpClient() throws SSLException {
         SslContext sslContext = SslContextBuilder.forClient()
-              .trustManager(InsecureTrustManagerFactory.INSTANCE)
-              .build();
+                .trustManager(InsecureTrustManagerFactory.INSTANCE)
+                .build();
         //Your sslContext customizations go here
         HttpClient httpClient = HttpClient.create().secure(
-            ssl -> ssl.sslContext(sslContext)
+                ssl -> ssl.sslContext(sslContext)
         );
         return new ReactorClientHttpConnector(httpClient);
     }

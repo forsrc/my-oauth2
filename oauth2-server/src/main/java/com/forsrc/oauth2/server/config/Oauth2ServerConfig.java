@@ -48,17 +48,17 @@ import org.springframework.transaction.annotation.Transactional;
 @AutoConfigureAfter(SecurityConfig.class)
 public class Oauth2ServerConfig extends AuthorizationServerConfigurerAdapter {
 
-	@Autowired
-	private BCryptPasswordEncoder passwordEncoder;
+    @Autowired
+    private BCryptPasswordEncoder passwordEncoder;
 
-	@Autowired
-	private DataSource dataSource;
+    @Autowired
+    private DataSource dataSource;
 
-	@Autowired
-	private AuthenticationManager authenticationManager;
+    @Autowired
+    private AuthenticationManager authenticationManager;
 
 
-	@Override
+    @Override
     public void configure(AuthorizationServerSecurityConfigurer security) throws Exception {
         // @formatter:off
         security
@@ -66,7 +66,7 @@ public class Oauth2ServerConfig extends AuthorizationServerConfigurerAdapter {
                 .tokenKeyAccess("permitAll()")
                 .checkTokenAccess("permitAll()")
                 .allowFormAuthenticationForClients();
-                ;
+        ;
         // @formatter:on
     }
 
@@ -74,9 +74,9 @@ public class Oauth2ServerConfig extends AuthorizationServerConfigurerAdapter {
     public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
         // @formatter:off
         endpoints.authorizationCodeServices(authorizationCodeServices())
-                 .authenticationManager(authenticationManager)
-                 .tokenStore(tokenStore())
-                 ;
+                .authenticationManager(authenticationManager)
+                .tokenStore(tokenStore())
+        ;
         // @formatter:off
     }
 
@@ -84,112 +84,111 @@ public class Oauth2ServerConfig extends AuthorizationServerConfigurerAdapter {
     public void configure(ClientDetailsServiceConfigurer clients)
             throws Exception {
         // @formatter:offs
- 
-    	JdbcClientDetailsService clientDetailsService = new JdbcClientDetailsService(dataSource);
+
+        JdbcClientDetailsService clientDetailsService = new JdbcClientDetailsService(dataSource);
         clientDetailsService.setPasswordEncoder(passwordEncoder);
         clients.withClientDetails(clientDetailsService);
 
-        
+
         // @formatter:on
 
     }
 
-	@Bean
-	public JdbcTokenStore tokenStore() {
-		return new MyJdbcTokenStore(dataSource);
-	}
+    @Bean
+    public JdbcTokenStore tokenStore() {
+        return new MyJdbcTokenStore(dataSource);
+    }
 
-	@Bean
-	public ApprovalStore approvalStore() throws Exception {
-		TokenApprovalStore store = new TokenApprovalStore();
-		store.setTokenStore(tokenStore());
-		return store;
-	}
+    @Bean
+    public ApprovalStore approvalStore() throws Exception {
+        TokenApprovalStore store = new TokenApprovalStore();
+        store.setTokenStore(tokenStore());
+        return store;
+    }
 
-	@Bean
-	public ClientDetailsService clientDetails() {
-		return new JdbcClientDetailsService(dataSource);
-	}
+    @Bean
+    public ClientDetailsService clientDetails() {
+        return new JdbcClientDetailsService(dataSource);
+    }
 
-	@Bean
-	protected AuthorizationCodeServices authorizationCodeServices() {
-		return new JdbcAuthorizationCodeServices(dataSource);
-	}
+    @Bean
+    protected AuthorizationCodeServices authorizationCodeServices() {
+        return new JdbcAuthorizationCodeServices(dataSource);
+    }
 
-	@Bean
-	@Primary
-	public DefaultTokenServices tokenServices() {
-		DefaultTokenServices defaultTokenServices = new MyTokenServices();
-		defaultTokenServices.setTokenStore(tokenStore());
-		defaultTokenServices.setSupportRefreshToken(true);
-		return defaultTokenServices;
-	}
+    @Bean
+    @Primary
+    public DefaultTokenServices tokenServices() {
+        DefaultTokenServices defaultTokenServices = new MyTokenServices();
+        defaultTokenServices.setTokenStore(tokenStore());
+        defaultTokenServices.setSupportRefreshToken(true);
+        return defaultTokenServices;
+    }
 
 
-	static class MyTokenServices extends DefaultTokenServices {
+    static class MyTokenServices extends DefaultTokenServices {
 
-		private TokenStore tokenStore;
+        private TokenStore tokenStore;
 
-		@Override
-		@Transactional
-		public synchronized OAuth2AccessToken createAccessToken(OAuth2Authentication authentication)
-				throws AuthenticationException {
-			try {
-				return super.createAccessToken(authentication);
-			} catch (Exception e) {
-				OAuth2AccessToken existingAccessToken = tokenStore.getAccessToken(authentication);
-				if (existingAccessToken != null) {
-					tokenStore.removeAccessToken(existingAccessToken);
-				}
-				try {
-					TimeUnit.SECONDS.sleep(1);
-				} catch (InterruptedException e1) {
-				}
-				return super.createAccessToken(authentication);
-			}
+        @Override
+        @Transactional
+        public synchronized OAuth2AccessToken createAccessToken(OAuth2Authentication authentication)
+                throws AuthenticationException {
+            try {
+                return super.createAccessToken(authentication);
+            } catch (Exception e) {
+                OAuth2AccessToken existingAccessToken = tokenStore.getAccessToken(authentication);
+                if (existingAccessToken != null) {
+                    tokenStore.removeAccessToken(existingAccessToken);
+                }
+                try {
+                    TimeUnit.SECONDS.sleep(1);
+                } catch (InterruptedException e1) {
+                }
+                return super.createAccessToken(authentication);
+            }
 
-		}
+        }
 
-		@Override
-		@Transactional(noRollbackFor = { InvalidTokenException.class, InvalidGrantException.class })
-		public synchronized OAuth2AccessToken refreshAccessToken(String refreshTokenValue, TokenRequest tokenRequest)
-				throws AuthenticationException {
-			return super.refreshAccessToken(refreshTokenValue, tokenRequest);
-		}
+        @Override
+        @Transactional(noRollbackFor = {InvalidTokenException.class, InvalidGrantException.class})
+        public synchronized OAuth2AccessToken refreshAccessToken(String refreshTokenValue, TokenRequest tokenRequest)
+                throws AuthenticationException {
+            return super.refreshAccessToken(refreshTokenValue, tokenRequest);
+        }
 
-		@Override
-		public void setTokenStore(TokenStore tokenStore) {
-			super.setTokenStore(tokenStore);
-			this.tokenStore = tokenStore;
-		}
-	}
+        @Override
+        public void setTokenStore(TokenStore tokenStore) {
+            super.setTokenStore(tokenStore);
+            this.tokenStore = tokenStore;
+        }
+    }
 
-	static class MyJdbcTokenStore extends JdbcTokenStore {
-		private static final Logger LOG = LoggerFactory.getLogger(MyJdbcTokenStore.class);
+    static class MyJdbcTokenStore extends JdbcTokenStore {
+        private static final Logger LOG = LoggerFactory.getLogger(MyJdbcTokenStore.class);
 
-		public MyJdbcTokenStore(DataSource dataSource) {
-			super(dataSource);
-		}
+        public MyJdbcTokenStore(DataSource dataSource) {
+            super(dataSource);
+        }
 
-		@Override
-		public OAuth2AccessToken readAccessToken(String tokenValue) {
-			OAuth2AccessToken accessToken = null;
+        @Override
+        public OAuth2AccessToken readAccessToken(String tokenValue) {
+            OAuth2AccessToken accessToken = null;
 
-			try {
-				accessToken = new DefaultOAuth2AccessToken(tokenValue);
-			} catch (EmptyResultDataAccessException e) {
-				if (LOG.isInfoEnabled()) {
-					LOG.info("Failed to find access token for token " + tokenValue);
-				}
-			} catch (IllegalArgumentException e) {
-				LOG.warn("Failed to deserialize access token for " + tokenValue, e);
-				removeAccessToken(tokenValue);
-			}
+            try {
+                accessToken = new DefaultOAuth2AccessToken(tokenValue);
+            } catch (EmptyResultDataAccessException e) {
+                if (LOG.isInfoEnabled()) {
+                    LOG.info("Failed to find access token for token " + tokenValue);
+                }
+            } catch (IllegalArgumentException e) {
+                LOG.warn("Failed to deserialize access token for " + tokenValue, e);
+                removeAccessToken(tokenValue);
+            }
 
-			return accessToken;
-		}
-	}
-
+            return accessToken;
+        }
+    }
 
 
 }

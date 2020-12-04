@@ -38,38 +38,39 @@ import org.springframework.web.util.UriComponentsBuilder;
  * @since 3.0
  */
 public class SimpleUrlAuthenticationSuccessHandler extends
-		AbstractAuthenticationTargetUrlRequestHandler implements
-		AuthenticationSuccessHandler {
+        AbstractAuthenticationTargetUrlRequestHandler implements
+        AuthenticationSuccessHandler {
 
-	public SimpleUrlAuthenticationSuccessHandler() {
-	}
+    public SimpleUrlAuthenticationSuccessHandler() {
+    }
 
-	/**
-	 * Constructor which sets the <tt>defaultTargetUrl</tt> property of the base class.
-	 * @param defaultTargetUrl the URL to which the user should be redirected on
-	 * successful authentication.
-	 */
-	public SimpleUrlAuthenticationSuccessHandler(String defaultTargetUrl) {
-		setDefaultTargetUrl(defaultTargetUrl);
-	}
+    /**
+     * Constructor which sets the <tt>defaultTargetUrl</tt> property of the base class.
+     *
+     * @param defaultTargetUrl the URL to which the user should be redirected on
+     *                         successful authentication.
+     */
+    public SimpleUrlAuthenticationSuccessHandler(String defaultTargetUrl) {
+        setDefaultTargetUrl(defaultTargetUrl);
+    }
 
-	/**
-	 * Calls the parent class {@code handle()} method to forward or redirect to the target
-	 * URL, and then calls {@code clearAuthenticationAttributes()} to remove any leftover
-	 * session data.
-	 */
-	public void onAuthenticationSuccess(HttpServletRequest request,
-			HttpServletResponse response, Authentication authentication)
-			throws IOException, ServletException {
+    /**
+     * Calls the parent class {@code handle()} method to forward or redirect to the target
+     * URL, and then calls {@code clearAuthenticationAttributes()} to remove any leftover
+     * session data.
+     */
+    public void onAuthenticationSuccess(HttpServletRequest request,
+                                        HttpServletResponse response, Authentication authentication)
+            throws IOException, ServletException {
 
-		DefaultSavedRequest defaultSavedRequest = (DefaultSavedRequest) request.getSession().getAttribute("SPRING_SECURITY_SAVED_REQUEST");
+        DefaultSavedRequest defaultSavedRequest = (DefaultSavedRequest) request.getSession().getAttribute("SPRING_SECURITY_SAVED_REQUEST");
 
         if (defaultSavedRequest != null && !response.isCommitted()) {
             getRedirectStrategy().sendRedirect(request, response, defaultSavedRequest.getRedirectUrl());
             clearAuthenticationAttributes(request);
             return;
         }
-        
+
         String gatewayOauth2Server = request.getHeader("gateway_oauth2_server");
         if (defaultSavedRequest == null && gatewayOauth2Server != null) {
             String loginUri = UriComponentsBuilder.fromUriString(gatewayOauth2Server).build().toString();
@@ -80,19 +81,19 @@ public class SimpleUrlAuthenticationSuccessHandler extends
 
         handle(request, response, authentication);
         clearAuthenticationAttributes(request);
-	}
+    }
 
-	/**
-	 * Removes temporary authentication-related data which may have been stored in the
-	 * session during the authentication process.
-	 */
-	protected final void clearAuthenticationAttributes(HttpServletRequest request) {
-		HttpSession session = request.getSession(false);
+    /**
+     * Removes temporary authentication-related data which may have been stored in the
+     * session during the authentication process.
+     */
+    protected final void clearAuthenticationAttributes(HttpServletRequest request) {
+        HttpSession session = request.getSession(false);
 
-		if (session == null) {
-			return;
-		}
+        if (session == null) {
+            return;
+        }
 
-		session.removeAttribute(WebAttributes.AUTHENTICATION_EXCEPTION);
-	}
+        session.removeAttribute(WebAttributes.AUTHENTICATION_EXCEPTION);
+    }
 }

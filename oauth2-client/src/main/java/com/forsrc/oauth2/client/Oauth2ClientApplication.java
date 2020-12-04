@@ -13,14 +13,14 @@ import org.springframework.web.context.request.RequestContextListener;
 @SpringBootApplication
 public class Oauth2ClientApplication {
 
-	@Bean
+    public static void main(String[] args) {
+        SpringApplication.run(Oauth2ClientApplication.class, args);
+    }
+
+    @Bean
     @Order(-1000)
     public RequestContextListener requestContextListener() {
         return new RequestContextListener();
     }
-
-	public static void main(String[] args) {
-		SpringApplication.run(Oauth2ClientApplication.class, args);
-	}
 
 }

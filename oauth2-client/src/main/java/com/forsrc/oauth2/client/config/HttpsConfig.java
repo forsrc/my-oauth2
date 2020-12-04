@@ -75,6 +75,6 @@ public class HttpsConfig {
         public void checkClientTrusted(X509Certificate[] certs, String authType) {
         }
     }
-    
+
 
 }

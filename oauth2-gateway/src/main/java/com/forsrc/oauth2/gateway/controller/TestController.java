@@ -12,8 +12,7 @@ public class TestController {
     @GetMapping(path = "/test")
     public String test(Principal principal) {
         return "test " + principal;
-        
-                
-                
+
+
     }
 }

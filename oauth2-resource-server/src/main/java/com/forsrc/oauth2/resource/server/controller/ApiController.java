@@ -13,13 +13,13 @@ public class ApiController {
 
     @GetMapping("/test")
     public String test(Principal principal) {
-    	System.out.println("test -> " + principal);
+        System.out.println("test -> " + principal);
         return "test -> " + principal.getName();
     }
-    
+
     @GetMapping("/me")
     public Principal me(Principal principal) {
-    	System.out.println("test -> " + principal);
+        System.out.println("test -> " + principal);
         return principal;
     }
 }

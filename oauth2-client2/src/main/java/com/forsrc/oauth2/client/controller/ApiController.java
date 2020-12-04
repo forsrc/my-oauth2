@@ -19,33 +19,33 @@ import reactor.core.publisher.Mono;
 @RestController
 public class ApiController {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(ApiController.class);
-	@Autowired
-	private WebClient webClient;
+    private static final Logger LOGGER = LoggerFactory.getLogger(ApiController.class);
+    @Autowired
+    private WebClient webClient;
 
 
-	@Value("${oauth2-rource-server}")
-	private String rourceServer;
+    @Value("${oauth2-rource-server}")
+    private String rourceServer;
 
-	@GetMapping(path = "/api/test")
-	public Mono<String> test() {
+    @GetMapping(path = "/api/test")
+    public Mono<String> test() {
 
-		return webClient.get()
-				.uri(UriComponentsBuilder.fromHttpUrl(rourceServer).pathSegment("api/test").build().toUri()).retrieve()
-				.bodyToMono(String.class);
+        return webClient.get()
+                .uri(UriComponentsBuilder.fromHttpUrl(rourceServer).pathSegment("api/test").build().toUri()).retrieve()
+                .bodyToMono(String.class);
 
-	}
-	
-	@GetMapping(path = "/api/me")
-	public Mono<Map> me(@RegisteredOAuth2AuthorizedClient("my-oauth2") OAuth2AuthorizedClient authorizedClient) {
+    }
 
-		
-		return webClient.get()
-				.uri(UriComponentsBuilder.fromHttpUrl(rourceServer).pathSegment("api/me").build().toUri())
-				.header("Authorization", authorizedClient.getAccessToken().getTokenType().getValue() + " " + authorizedClient.getAccessToken().getTokenValue())
-				.retrieve()
-				.bodyToMono(Map.class);
+    @GetMapping(path = "/api/me")
+    public Mono<Map> me(@RegisteredOAuth2AuthorizedClient("my-oauth2") OAuth2AuthorizedClient authorizedClient) {
 
-	}
+
+        return webClient.get()
+                .uri(UriComponentsBuilder.fromHttpUrl(rourceServer).pathSegment("api/me").build().toUri())
+                .header("Authorization", authorizedClient.getAccessToken().getTokenType().getValue() + " " + authorizedClient.getAccessToken().getTokenValue())
+                .retrieve()
+                .bodyToMono(Map.class);
+
+    }
 
 }

@@ -1,5 +1,5 @@
 server:
-  port:  22000
+  port: 22000
   servlet:
     context-path: /oauth2-client
     session:
@@ -7,22 +7,22 @@ server:
         name: CLIENT_SESSION
         path: /oauth2-client
   forward-headers-strategy: framework
-#  tomcat:
-#    redirect-context-root:  false
-#    remoteip:
-#      remote-ip-header:     x-forwarded-for
-#      protocol-header:      x-forwarded-proto
-#      port-header:          x-forwarded-port
-#      host-header:          x-forwarded-host
-#      internal-proxies:     ".*"
+  #  tomcat:
+  #    redirect-context-root:  false
+  #    remoteip:
+  #      remote-ip-header:     x-forwarded-for
+  #      protocol-header:      x-forwarded-proto
+  #      port-header:          x-forwarded-port
+  #      host-header:          x-forwarded-host
+  #      internal-proxies:     ".*"
   ssl:
-    name:                 my-oauth2
-    key-store-provider:   SUN
-    key-store-type:       JKS
-    key-store:            classpath:ssl/${server.ssl.name}.server.keystore
-    key-store-password:   forsrc
-    key-alias:            ${server.ssl.name}.server
-    enabled:              false
+    name: my-oauth2
+    key-store-provider: SUN
+    key-store-type: JKS
+    key-store: classpath:ssl/${server.ssl.name}.server.keystore
+    key-store-password: forsrc
+    key-alias: ${server.ssl.name}.server
+    enabled: false
     #trust-store-provider: SUN
     #trust-store-type:     JKS
     #trust-store:          classpath:ssl/${server.ssl.name}.server.keystore
@@ -31,9 +31,9 @@ server:
 
 
 
-oauth2-server:        https://my-oauth2:8080/oauth2-server
+oauth2-server: https://my-oauth2:8080/oauth2-server
 oauth2-rource-server: https://my-oauth2:8080/oauth2-resource-server
-oauth2-client:        https://my-oauth2:8080/oauth2-client
+oauth2-client: https://my-oauth2:8080/oauth2-client
 
 
 #security:
@@ -54,7 +54,7 @@ oauth2-client:        https://my-oauth2:8080/oauth2-client
 
 spring:
   application:
-    name:      oauth2-client
+    name: oauth2-client
   main.allow-bean-definition-overriding: true
   thymeleaf:
     prefix: classpath:/templates/
@@ -62,9 +62,9 @@ spring:
   boot:
     admin:
       client:
-        url:                http://my-oauth2:24000/oauth2-admin-server
-        username:           forsrc
-        password:           forsrc
+        url: http://my-oauth2:24000/oauth2-admin-server
+        username: forsrc
+        password: forsrc
         instance:
           management-base-url: http://${eureka.instance.hostname}:${server.port}${server.servlet.context-path}
   security:
@@ -72,58 +72,58 @@ spring:
       client:
         registration:
           my-oauth2:
-            client-id:                    ui
-            client-secret:                forsrc
+            client-id: ui
+            client-secret: forsrc
             client-authentication-method: basic
-            authorization-grant-type:     authorization_code
+            authorization-grant-type: authorization_code
             #redirect-uri:                 '{baseUrl}/login/oauth2/code/{registrationId}'
-            redirect-uri:                 ${oauth2-client}/login/oauth2/code/my-oauth2
-            scope:                        ui, read, write
-#          my-oauth2-client-credentials:
-#            client-id:                    forsrc
-#            client-secret:                forsrc
-#            authorization-grant-type:     client_credentials
-#            scope:                        ui
-#          my-oauth2-password:
-#            client-id:                    forsrc
-#            client-secret:                forsrc
-#            authorization-grant-type:     password
-#            scope:                        ui
+            redirect-uri: ${oauth2-client}/login/oauth2/code/my-oauth2
+            scope: ui, read, write
+        #          my-oauth2-client-credentials:
+        #            client-id:                    forsrc
+        #            client-secret:                forsrc
+        #            authorization-grant-type:     client_credentials
+        #            scope:                        ui
+        #          my-oauth2-password:
+        #            client-id:                    forsrc
+        #            client-secret:                forsrc
+        #            authorization-grant-type:     password
+        #            scope:                        ui
         provider:
           my-oauth2:
-            authorization-uri:            ${oauth2-server}/oauth/authorize
-            token-uri:                    ${oauth2-server}/oauth/token
-            logout-uri:                   ${oauth2-server}/oauth/logout?referer=${oauth2-client}/&gateway_referer=gateway_oauth2_client
-            jwk-set-uri:                  ${oauth2-server}/oauth/jwks
-            user-info-uri:                ${oauth2-server}/user/me
-            user-name-attribute:          name
-            
+            authorization-uri: ${oauth2-server}/oauth/authorize
+            token-uri: ${oauth2-server}/oauth/token
+            logout-uri: ${oauth2-server}/oauth/logout?referer=${oauth2-client}/&gateway_referer=gateway_oauth2_client
+            jwk-set-uri: ${oauth2-server}/oauth/jwks
+            user-info-uri: ${oauth2-server}/user/me
+            user-name-attribute: name
+
           my-oauth2-client-credentials:
-            token-uri:                    ${oauth2-server}/oauth/token      
+            token-uri: ${oauth2-server}/oauth/token
           my-oauth2-password:
-            token-uri:                    ${oauth2-server}/oauth/token      
+            token-uri: ${oauth2-server}/oauth/token
 
 eureka:
   instance:
     #prefer-ip-address:              true
-    hostname:                       my-oauth2
-    instance-id:                    ${eureka.instance.hostname}:${spring.application.name}:${server.port}
-    appname:                        ${spring.application.name}
-    leaseRenewalIntervalInSeconds:  5
-    health-check-url-path:          /actuator/health
+    hostname: my-oauth2
+    instance-id: ${eureka.instance.hostname}:${spring.application.name}:${server.port}
+    appname: ${spring.application.name}
+    leaseRenewalIntervalInSeconds: 5
+    health-check-url-path: /actuator/health
     metadata-map:
-      management.context-path:      ${server.servlet.context-path}/actuator
-      user.name:                    forsrc
-      user.password:                forsrc
+      management.context-path: ${server.servlet.context-path}/actuator
+      user.name: forsrc
+      user.password: forsrc
   client:
     service-url:
-      defaultZone:                  http://forsrc:forsrc@my-oauth2:23000/oauth2-eureka-server/eureka
+      defaultZone: http://forsrc:forsrc@my-oauth2:23000/oauth2-eureka-server/eureka
 
 management:
   endpoints:
     web:
       exposure:
-        include:    "*"
+        include: "*"
   endpoint:
     health:
       show-details: ALWAYS
@@ -131,5 +131,5 @@ management:
 logging:
   level:
     org.springframework.security: info
-    
+
 #debug: true

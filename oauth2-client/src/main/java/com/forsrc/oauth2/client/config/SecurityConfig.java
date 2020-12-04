@@ -15,24 +15,24 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     public void configure(HttpSecurity http) throws Exception {
-    	http.antMatcher("/**")
-        	.authorizeRequests()
-        	.antMatchers("/", "/login**", "/error", "/actuator/**")
-        	.permitAll()
-        	.anyRequest()
-        	.authenticated()
-        	.and()
-        	.logout()
-        	.invalidateHttpSession(true)
-        	.clearAuthentication(true)
-        	.logoutSuccessUrl("/login?logout")
-        	.deleteCookies("CLIENT_SESSION")
-        	.permitAll()
-        	.and()
-        	.csrf()
-        	.disable()
-        	.httpBasic();
-            ;
+        http.antMatcher("/**")
+                .authorizeRequests()
+                .antMatchers("/", "/login**", "/error", "/actuator/**")
+                .permitAll()
+                .anyRequest()
+                .authenticated()
+                .and()
+                .logout()
+                .invalidateHttpSession(true)
+                .clearAuthentication(true)
+                .logoutSuccessUrl("/login?logout")
+                .deleteCookies("CLIENT_SESSION")
+                .permitAll()
+                .and()
+                .csrf()
+                .disable()
+                .httpBasic();
+        ;
     }
 
 

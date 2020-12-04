@@ -27,52 +27,52 @@ import com.nimbusds.jose.jwk.RSAKey;
 @Configuration
 public class JwkSetConfig {
 
-	@Value("${jwt.verifier-key}")
-	String verifierKey;
-	@Value("${jwt.signing-key}")
-	String signingKey;
+    @Value("${jwt.verifier-key}")
+    String verifierKey;
+    @Value("${jwt.signing-key}")
+    String signingKey;
 
-	@Bean
-	public KeyPair keyPair() throws InvalidKeySpecException, NoSuchAlgorithmException, IOException {
+    @Bean
+    public KeyPair keyPair() throws InvalidKeySpecException, NoSuchAlgorithmException, IOException {
 
-		KeyFactory kf = KeyFactory.getInstance("RSA");
+        KeyFactory kf = KeyFactory.getInstance("RSA");
 
-		String signing = signingKey.replace("-----BEGIN RSA PRIVATE KEY-----\n", "")
-				.replace("-----END RSA PRIVATE KEY-----", "").replaceAll("\n", "");
-		String verifier = verifierKey.replace("-----BEGIN PUBLIC KEY-----\n", "")
-				.replace("-----END PUBLIC KEY-----", "").replaceAll("\n", "");
+        String signing = signingKey.replace("-----BEGIN RSA PRIVATE KEY-----\n", "")
+                .replace("-----END RSA PRIVATE KEY-----", "").replaceAll("\n", "");
+        String verifier = verifierKey.replace("-----BEGIN PUBLIC KEY-----\n", "")
+                .replace("-----END PUBLIC KEY-----", "").replaceAll("\n", "");
 
-		byte[] encodedPrivateKey = Base64.getDecoder().decode(signing);
+        byte[] encodedPrivateKey = Base64.getDecoder().decode(signing);
 
-		ASN1Sequence primitive = (ASN1Sequence) ASN1Sequence.fromByteArray(encodedPrivateKey);
-		Enumeration<?> e = primitive.getObjects();
-		BigInteger v = ((ASN1Integer) e.nextElement()).getValue();
+        ASN1Sequence primitive = (ASN1Sequence) ASN1Sequence.fromByteArray(encodedPrivateKey);
+        Enumeration<?> e = primitive.getObjects();
+        BigInteger v = ((ASN1Integer) e.nextElement()).getValue();
 
-		int version = v.intValue();
-		if (version != 0 && version != 1) {
-			throw new IllegalArgumentException("wrong version for RSA private key");
-		}
-		BigInteger modulus = ((ASN1Integer) e.nextElement()).getValue();
-		BigInteger publicExponent = ((ASN1Integer) e.nextElement()).getValue();
-		BigInteger privateExponent = ((ASN1Integer) e.nextElement()).getValue();
-		BigInteger prime1 = ((ASN1Integer) e.nextElement()).getValue();
-		BigInteger prime2 = ((ASN1Integer) e.nextElement()).getValue();
-		BigInteger exponent1 = ((ASN1Integer) e.nextElement()).getValue();
-		BigInteger exponent2 = ((ASN1Integer) e.nextElement()).getValue();
-		BigInteger coefficient = ((ASN1Integer) e.nextElement()).getValue();
+        int version = v.intValue();
+        if (version != 0 && version != 1) {
+            throw new IllegalArgumentException("wrong version for RSA private key");
+        }
+        BigInteger modulus = ((ASN1Integer) e.nextElement()).getValue();
+        BigInteger publicExponent = ((ASN1Integer) e.nextElement()).getValue();
+        BigInteger privateExponent = ((ASN1Integer) e.nextElement()).getValue();
+        BigInteger prime1 = ((ASN1Integer) e.nextElement()).getValue();
+        BigInteger prime2 = ((ASN1Integer) e.nextElement()).getValue();
+        BigInteger exponent1 = ((ASN1Integer) e.nextElement()).getValue();
+        BigInteger exponent2 = ((ASN1Integer) e.nextElement()).getValue();
+        BigInteger coefficient = ((ASN1Integer) e.nextElement()).getValue();
 
-		RSAPrivateKeySpec spec = new RSAPrivateKeySpec(modulus, privateExponent);
+        RSAPrivateKeySpec spec = new RSAPrivateKeySpec(modulus, privateExponent);
 
-		PrivateKey privateKey = kf.generatePrivate(spec);
-		X509EncodedKeySpec keySpecX509 = new X509EncodedKeySpec(Base64.getDecoder().decode(verifier));
-		RSAPublicKey publicKey = (RSAPublicKey) kf.generatePublic(keySpecX509);
-		return new KeyPair(publicKey, privateKey);
-	}
+        PrivateKey privateKey = kf.generatePrivate(spec);
+        X509EncodedKeySpec keySpecX509 = new X509EncodedKeySpec(Base64.getDecoder().decode(verifier));
+        RSAPublicKey publicKey = (RSAPublicKey) kf.generatePublic(keySpecX509);
+        return new KeyPair(publicKey, privateKey);
+    }
 
-	@Bean
-	public JWKSet jwkSet() throws InvalidKeySpecException, NoSuchAlgorithmException, IOException {
-		RSAKey.Builder builder = new RSAKey.Builder((RSAPublicKey) keyPair().getPublic()).keyUse(KeyUse.SIGNATURE)
-				.algorithm(JWSAlgorithm.RS256).keyID("forsrc");
-		return new JWKSet(builder.build());
-	}
+    @Bean
+    public JWKSet jwkSet() throws InvalidKeySpecException, NoSuchAlgorithmException, IOException {
+        RSAKey.Builder builder = new RSAKey.Builder((RSAPublicKey) keyPair().getPublic()).keyUse(KeyUse.SIGNATURE)
+                .algorithm(JWSAlgorithm.RS256).keyID("forsrc");
+        return new JWKSet(builder.build());
+    }
 }

@@ -19,7 +19,7 @@ import org.springframework.security.oauth2.provider.token.TokenStore;
 public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
 
 
-	@Autowired
+    @Autowired
     private TokenStore tokenStore;
 
     @Autowired
@@ -28,8 +28,8 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
     @Override
     public void configure(ResourceServerSecurityConfigurer resources) {
         resources.resourceId("oauth_server")
-        		.tokenStore(tokenStore)
-        		.tokenServices(tokenServices)
+                .tokenStore(tokenStore)
+                .tokenServices(tokenServices)
         ;
     }
 
