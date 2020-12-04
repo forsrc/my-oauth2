@@ -93,7 +93,7 @@ spring:
           my-oauth2:
             authorization-uri:            ${oauth2-server}/oauth/authorize
             token-uri:                    ${oauth2-server}/oauth/token
-            logout-uri:                   ${oauth2-server}/oauth/logout?referer=${oauth2-client}
+            logout-uri:                   ${oauth2-server}/oauth/logout?referer=${oauth2-client}/&gateway_referer=gateway_oauth2_client
             jwk-set-uri:                  ${oauth2-server}/oauth/jwks
             user-info-uri:                ${oauth2-server}/user/me
             user-name-attribute:          name
@@ -130,6 +130,6 @@ management:
 
 logging:
   level:
-    org.springframework.security: debug
+    org.springframework.security: info
     
-debug: true
+#debug: true

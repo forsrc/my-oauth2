@@ -108,9 +108,9 @@ management:
 
 logging:
   level:
-    org.springframework.security: debug
+    org.springframework.security: info
     
-debug: true
+#debug: true
 
 
 # openssl pkcs12 -in my-oauth2.server.p12 -out my-oauth2.server.pem -password pass:forsrc -passin pass:forsrc -passout pass:forsrc

@@ -77,6 +77,7 @@ spring:
         predicates:
         -            Path=/oauth2-server/**
         filters:
+        - AddRequestHeader=gateway_enable, true
         - AddRequestHeader=gateway_oauth2_server, ${gateway_oauth2_server}/
         - RewritePath=/oauth2-server/(?<segment>/?.*), /oauth2-server/$\{segment}
       - id:          oauth2-resource-server
@@ -84,6 +85,7 @@ spring:
         predicates:
         -            Path=/oauth2-resource-server/**
         filters:
+        - AddRequestHeader=gateway_enable, true
         - AddRequestHeader=gateway_oauth2_server, ${gateway_oauth2_server}/
         - RewritePath=/oauth2-resource-server(?<segment>/?.*), /oauth2-resource-server/$\{segment}
       - id:          oauth2-client
@@ -91,6 +93,7 @@ spring:
         predicates:
         -            Path=/oauth2-client/**
         filters:
+        - AddRequestHeader=gateway_enable, true
         - AddRequestHeader=gateway_oauth2_server, ${gateway_oauth2_server}/
         - AddRequestHeader=gateway_oauth2_client, ${gateway_oauth2_client}/
         - RewritePath=/oauth2-client/(?<segment>/?.*), /oauth2-client/$\{segment}
@@ -99,6 +102,7 @@ spring:
         predicates:
         -            Path=/oauth2-eureka-server/**
         filters:
+        - AddRequestHeader=gateway_enable, true
         - AddRequestHeader=gateway_oauth2_server, ${gateway_oauth2_server}/
         - AddRequestHeader=gateway_oauth2_eureka_server, ${gateway_oauth2_eureka_server}/
         - RewritePath=/oauth2-eureka-server/(?<segment>/?.*), /oauth2-eureka-server/$\{segment}
@@ -107,6 +111,7 @@ spring:
         predicates:
         -            Path=/oauth2-admin-server/**
         filters:
+        - AddRequestHeader=gateway_enable, true
         - AddRequestHeader=gateway_oauth2_server, ${gateway_oauth2_server}/
         - AddRequestHeader=gateway_oauth2_eureka_server, ${gateway_oauth2_eureka_server}/
         - RewritePath=/oauth2-admin-server/(?<segment>/?.*), /oauth2-admin-server/$\{segment}
