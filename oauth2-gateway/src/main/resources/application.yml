@@ -54,6 +54,23 @@ spring:
           service-base-url: https://my-oauth2:8080
           management-base-url: https://my-oauth2:8080
 
+  datasource:
+    url: ${DB_URL:jdbc:h2:~/tmp/db/h2/my-oauth2-gateway.h2;AUTO_SERVER=TRUE;MODE=MYSQL;}
+    username: ${DB_USERNAME:sa}
+    password: ${DB_PASSWORD:sa}
+    driver-class-name: ${DB_DRIVER:org.h2.Driver}
+  #    data:
+  #      - classpath:schema.sql
+  #      - classpath:data.sql
+  jpa:
+    database-platform: ${DB_DIALECT:org.hibernate.dialect.H2Dialect}
+    show-sql: true
+    properties:
+      hibernate.enable_lazy_load_no_trans: true
+      hibernate.show-sql: true
+      hibernate.hbm2ddl.auto: update
+    open-in-view: true
+
   cloud:
     gateway:
       discovery:

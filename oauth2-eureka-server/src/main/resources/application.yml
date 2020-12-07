@@ -20,7 +20,7 @@ server:
     #trust-store:          classpath:ssl/${server.ssl.name}.server.keystore
     #trust-store-password: forsrc
     #client-auth:          need
-
+  forward-headers-strategy: framework
 spring:
   freemarker.prefer-file-system-access: false
   application:
