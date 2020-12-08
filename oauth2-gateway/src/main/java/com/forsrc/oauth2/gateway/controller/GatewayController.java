@@ -69,24 +69,20 @@ public class GatewayController {
 
 
     @PostMapping
-    public Mono<Void> save(@RequestBody Mono<RouteDefinition> route) {
-        return route.flatMap(r -> {
-            GatewayDefine gatewayDefine = new GatewayDefine();
-            gatewayDefine.setId(r.getId());
-            gatewayDefine.setUri(r.getUri().toString());
-            try {
-                gatewayDefine.setPredicates(objectMapper.writeValueAsString(r.getPredicates()));
-                gatewayDefine.setFilters(objectMapper.writeValueAsString(r.getFilters()));
-            } catch (JsonProcessingException e) {
-                e.printStackTrace();
-            }
-            gatewayDefineService.save(gatewayDefine);
-            return Mono.empty();
-        });
+    public Mono<GatewayDefine> save(@RequestBody RouteDefinition route) throws JsonProcessingException {
+
+        GatewayDefine gatewayDefine = new GatewayDefine();
+        gatewayDefine.setId(route.getId());
+        gatewayDefine.setUri(route.getUri().toString());
+        gatewayDefine.setPredicates(objectMapper.writeValueAsString(route.getPredicates()));
+        gatewayDefine.setFilters(objectMapper.writeValueAsString(route.getFilters()));
+        gatewayDefine = gatewayDefineService.save(gatewayDefine);
+        return Mono.just(gatewayDefine);
+
     }
 
     @PutMapping
-    public Mono<Void> update(@RequestBody RouteDefinition route) throws JsonProcessingException {
+    public Mono<GatewayDefine> update(@RequestBody RouteDefinition route) throws JsonProcessingException {
 
         GatewayDefine gatewayDefine = new GatewayDefine();
         gatewayDefine.setId(route.getId());
@@ -95,8 +91,8 @@ public class GatewayController {
         gatewayDefine.setVersion(gd.getVersion());
         gatewayDefine.setPredicates(objectMapper.writeValueAsString(route.getPredicates()));
         gatewayDefine.setFilters(objectMapper.writeValueAsString(route.getFilters()));
-        gatewayDefineService.save(gatewayDefine);
-        return Mono.empty();
+        gatewayDefineService.update(gatewayDefine);
+        return Mono.just(gatewayDefine);
 
     }
 
