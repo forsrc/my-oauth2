@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.TypeFactory;
+import org.hibernate.annotations.GenericGenerator;
 import org.springframework.cloud.gateway.filter.FilterDefinition;
 import org.springframework.cloud.gateway.handler.predicate.PredicateDefinition;
 
@@ -19,20 +20,21 @@ import java.util.List;
 @JsonIgnoreProperties(value = {"hibernateLazyInitializer", "handler", "fieldHandler"})
 public class GatewayDefine implements Serializable {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    //@GeneratedValue(strategy=GenerationType.AUTO, generator="system-uuid")
+    //@GenericGenerator(name="system-uuid", strategy = "uuid")
     private String id;
 
-    @Column(name = "uri", length = 500, nullable = false, columnDefinition = "VARCHAR(1) DEFAULT ''")
+    @Column(name = "uri", length = 500, nullable = false, columnDefinition = "VARCHAR(500) DEFAULT ''")
     private String uri;
 
-    @Column(name = "predicates", length = 2000, nullable = false, columnDefinition = "VARCHAR(1) DEFAULT ''")
+    @Column(name = "predicates", length = 2000, nullable = false, columnDefinition = "VARCHAR(2000) DEFAULT ''")
     private String predicates;
 
-    @Column(name = "filters", length = 2000, nullable = false, columnDefinition = "VARCHAR(1) DEFAULT ''")
+    @Column(name = "filters", length = 2000, nullable = false, columnDefinition = "VARCHAR(2000) DEFAULT ''")
     private String filters;
 
     @Column(name = "enabled", length = 1, nullable = false, columnDefinition = "INT DEFAULT 1")
-    private Integer enabled;
+    private Integer enabled = 1;
 
     @Column(name = "create_at", insertable = false, updatable = false, nullable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     @Temporal(TemporalType.TIMESTAMP)

@@ -10,6 +10,7 @@ import org.springframework.cloud.gateway.handler.predicate.PredicateDefinition;
 import org.springframework.cloud.gateway.route.RouteDefinition;
 import org.springframework.cloud.gateway.route.RouteDefinitionWriter;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.ApplicationEventPublisherAware;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
@@ -20,15 +21,13 @@ import java.util.Collections;
 import java.util.List;
 
 @Service
-public class GatewayDefineServiceImpl implements GatewayDefineService {
+public class GatewayDefineServiceImpl implements GatewayDefineService, ApplicationEventPublisherAware {
     @Autowired
     GatewayDefineDao gatewayDefineDao;
 
 
     @Autowired
     private RouteDefinitionWriter routeDefinitionWriter;
-
-    @Autowired
     private ApplicationEventPublisher publisher;
 
     public GatewayDefineServiceImpl() {
@@ -78,17 +77,12 @@ public class GatewayDefineServiceImpl implements GatewayDefineService {
 
 
     @Override
-    public String loadRouteDefinitions() {
-        try {
-            List<GatewayDefine> list = findAll();
-            for (GatewayDefine gatewayDefine : list) {
-                loadRouteDefinition(gatewayDefine);
-            }
-            return "success";
-        } catch (Exception e) {
-            e.printStackTrace();
-            return "failure: " + e.getMessage();
+    public List<GatewayDefine> loadRouteDefinitions() {
+        List<GatewayDefine> list = findAll();
+        for (GatewayDefine gatewayDefine : list) {
+            loadRouteDefinition(gatewayDefine);
         }
+        return list;
     }
 
     @Override
@@ -117,5 +111,10 @@ public class GatewayDefineServiceImpl implements GatewayDefineService {
     @Override
     public void refreshRoute() {
         publisher.publishEvent(new RefreshRoutesEvent(this));
+    }
+
+    @Override
+    public void setApplicationEventPublisher(ApplicationEventPublisher applicationEventPublisher) {
+        this.publisher = applicationEventPublisher;
     }
 }

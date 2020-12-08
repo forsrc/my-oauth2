@@ -29,3 +29,41 @@ REFRESH_TOKEN=$(echo $TOKEN | awk -F '"' '{print $12}')
 curl -k -X POST -d "grant_type=refresh_token&refresh_token=${REFRESH_TOKEN}&client_id=forsrc&client_secret=forsrc" "https://my-oauth2:8080/oauth2-server/oauth/token"
 
 ```
+
+```
+
+
+curl -k -H "Accept: application/json" -H "Content-type: application/json" -X POST -d '
+{
+   "id":"gateway-test",
+   "uri":"lb://oauth2-gateway",
+   "order":0,
+   "predicates":[
+      {
+         "name":"Path",
+         "args":{
+            "_genkey_0":"/oauth2-gateway/**"
+         }
+      }
+   ],
+   "filters":[
+      {
+         "name":"RewritePath",
+         "args":{
+            "_genkey_0":"/oauth2-gateway/(?<segment>/?.*)",
+            "_genkey_1":"/$\\{segment}"
+         }
+      },
+      {
+         "name":"Hystrix",
+         "args":{
+            "name":"oauth2-gateway",
+            "fallbackUri":"forward:/fallback"
+         }
+      }
+   ]
+}
+' https://my-oauth2:8080/gateway
+
+curl -k -H "Accept: application/json" -H "Content-type: application/json" -X DELETE https://my-oauth2:8080/gateway/gateway-test
+```

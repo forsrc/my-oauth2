@@ -35,7 +35,7 @@ public class GatewayController {
     }
 
     @GetMapping("init/")
-    public Mono<String> loadRouteDefinitions() {
+    public Mono<List<GatewayDefine>> loadRouteDefinitions() {
 
         return Mono.just(gatewayDefineService.loadRouteDefinitions());
     }
@@ -69,7 +69,7 @@ public class GatewayController {
 
 
     @PostMapping
-    public Mono<Void> save(Mono<RouteDefinition> route) {
+    public Mono<Void> save(@RequestBody Mono<RouteDefinition> route) {
         return route.flatMap(r -> {
             try {
                 GatewayDefine gatewayDefine = new GatewayDefine();
@@ -89,17 +89,16 @@ public class GatewayController {
     }
 
     @DeleteMapping("/{id}")
-    public Mono<Void> delete(@PathVariable("id") Mono<String> routeId) {
-        return routeId.flatMap(id -> {
-            try {
-                gatewayDefineService.deleteById(id);
-                return Mono.empty();
+    public Mono<Void> delete(@PathVariable("id") String id) {
 
-            } catch (Exception e) {
-                e.printStackTrace();
-                return Mono.defer(() -> Mono.error(new NotFoundException("RouteDefinition delete error: " + routeId)));
-            }
-        });
+        try {
+            gatewayDefineService.deleteById(id);
+            return Mono.empty();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Mono.defer(() -> Mono.error(new NotFoundException("RouteDefinition delete error: " + id)));
+        }
+
     }
 
 }

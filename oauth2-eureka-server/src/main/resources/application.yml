@@ -1,11 +1,20 @@
+my:
+  hostname: ${HOST_NAME:my-oauth2}
+  application-name: oauth2-eureka-server
+  context-path: /${my.application-name}
+  session-name: EUREKA_SESSION
+  spring-boot-admin-server-url: http://my-oauth2:24000/oauth2-admin-server
+  username: ${MY_USERNAME:forsrc}
+  password: ${MY_PASSWORD:forsrc}
+
 server:
   port: 23000
   servlet:
-    context-path: /oauth2-eureka-server
+    context-path: ${my.context-path}
     session:
       cookie:
-        name: EUREKA_SESSION
-        path: /oauth2-eureka-server
+        name: ${my.session-name}
+        path: ${my.context-path}
 
   ssl:
     name: my-oauth2
@@ -24,7 +33,7 @@ server:
 spring:
   freemarker.prefer-file-system-access: false
   application:
-    name: oauth2-eureka-server
+    name: ${my.application-name}
   #  security:
   #    basic:
   #      enabled:  true
@@ -35,9 +44,9 @@ spring:
   boot:
     admin:
       client:
-        url: http://my-oauth2:24000/oauth2-admin-server
-        username: forsrc
-        password: forsrc
+        url: ${my.spring-boot-admin-server-url}
+        username: ${my.username}
+        password: ${my.password}
         instance:
           management-base-url: http://${eureka.instance.hostname}:${server.port}${server.servlet.context-path}
 
@@ -45,12 +54,13 @@ spring:
     basic:
       enabled: true
     user:
-      name: forsrc
-      password: forsrc
+      name: ${my.username}
+      password: ${my.password}
+
 eureka:
   instance:
     #prefer-ip-address:              true
-    hostname: my-oauth2
+    hostname: ${my.hostname}
     instance-id: ${eureka.instance.hostname}:${spring.application.name}:${server.port}
     appname: ${spring.application.name}
     health-check-url-path: /actuator/health
@@ -59,16 +69,14 @@ eureka:
     leaseRenewalIntervalInSeconds: 5
     metadata-map:
       management.context-path: ${server.servlet.context-path}/actuator
-      user.name: forsrc
-      user.password: forsrc
+      user.name: ${my.username}
+      user.password: ${my.password}
   client:
     registryFetchIntervalSeconds: 5
     registerWithEureka: true
     fetchRegistry: false
     serviceUrl:
-      #defaultZone:                  ${EUREKA_SERVER:http://my-oauth2:23000/oauth2-eureka-server/eureka}
       defaultZone: http://${spring.security.user.name}:${spring.security.user.password}@${eureka.instance.hostname}:${server.port}${server.servlet.context-path}/eureka
-      #defaultZone:                  http://forsrc:forsrc@my-oauth2:23000/oauth2-eureka-server/eureka
     initialInstanceInfoReplicationIntervalSeconds: 5
   #    healthcheck:
   #      enabled:                      true

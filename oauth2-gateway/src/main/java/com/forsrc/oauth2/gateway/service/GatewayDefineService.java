@@ -14,7 +14,7 @@ public interface GatewayDefineService {
 
     List<RouteDefinition> getRouteDefinitions();
 
-    String loadRouteDefinitions();
+    List<GatewayDefine>  loadRouteDefinitions();
 
     void loadRouteDefinition(GatewayDefine gatewayDefine);
 
