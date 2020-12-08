@@ -114,6 +114,16 @@ public class GatewayDefineServiceImpl implements GatewayDefineService, Applicati
     }
 
     @Override
+    public void update(GatewayDefine gatewayDefine) {
+        gatewayDefineDao.save(gatewayDefine);
+    }
+
+    @Override
+    public GatewayDefine findById(String id) {
+        return gatewayDefineDao.findById(id).get();
+    }
+
+    @Override
     public void setApplicationEventPublisher(ApplicationEventPublisher applicationEventPublisher) {
         this.publisher = applicationEventPublisher;
     }

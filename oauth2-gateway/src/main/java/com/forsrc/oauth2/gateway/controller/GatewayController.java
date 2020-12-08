@@ -1,5 +1,6 @@
 package com.forsrc.oauth2.gateway.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.forsrc.oauth2.gateway.model.GatewayDefine;
 import com.forsrc.oauth2.gateway.service.GatewayDefineService;
@@ -7,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.gateway.filter.FilterDefinition;
 import org.springframework.cloud.gateway.handler.predicate.PredicateDefinition;
 import org.springframework.cloud.gateway.route.RouteDefinition;
-import org.springframework.cloud.gateway.support.NotFoundException;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -71,34 +71,39 @@ public class GatewayController {
     @PostMapping
     public Mono<Void> save(@RequestBody Mono<RouteDefinition> route) {
         return route.flatMap(r -> {
+            GatewayDefine gatewayDefine = new GatewayDefine();
+            gatewayDefine.setId(r.getId());
+            gatewayDefine.setUri(r.getUri().toString());
             try {
-                GatewayDefine gatewayDefine = new GatewayDefine();
-                gatewayDefine.setId(r.getId());
-                gatewayDefine.setUri(r.getUri().toString());
                 gatewayDefine.setPredicates(objectMapper.writeValueAsString(r.getPredicates()));
                 gatewayDefine.setFilters(objectMapper.writeValueAsString(r.getFilters()));
-                gatewayDefineService.save(gatewayDefine);
-                return Mono.empty();
-
-            } catch (Exception e) {
+            } catch (JsonProcessingException e) {
                 e.printStackTrace();
-                return Mono.defer(() -> Mono.error(new NotFoundException("RouteDefinition save error: " + r.getId())));
             }
-
+            gatewayDefineService.save(gatewayDefine);
+            return Mono.empty();
         });
+    }
+
+    @PutMapping
+    public Mono<Void> update(@RequestBody RouteDefinition route) throws JsonProcessingException {
+
+        GatewayDefine gatewayDefine = new GatewayDefine();
+        gatewayDefine.setId(route.getId());
+        gatewayDefine.setUri(route.getUri().toString());
+        GatewayDefine gd = gatewayDefineService.findById(route.getId());
+        gatewayDefine.setVersion(gd.getVersion());
+        gatewayDefine.setPredicates(objectMapper.writeValueAsString(route.getPredicates()));
+        gatewayDefine.setFilters(objectMapper.writeValueAsString(route.getFilters()));
+        gatewayDefineService.save(gatewayDefine);
+        return Mono.empty();
+
     }
 
     @DeleteMapping("/{id}")
     public Mono<Void> delete(@PathVariable("id") String id) {
-
-        try {
-            gatewayDefineService.deleteById(id);
-            return Mono.empty();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return Mono.defer(() -> Mono.error(new NotFoundException("RouteDefinition delete error: " + id)));
-        }
-
+        gatewayDefineService.deleteById(id);
+        return Mono.empty();
     }
 
 }

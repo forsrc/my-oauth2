@@ -25,4 +25,8 @@ public interface GatewayDefineService {
     boolean existsById(String id);
 
     void refreshRoute();
+
+    void update(GatewayDefine gatewayDefine);
+
+    GatewayDefine findById(String id);
 }

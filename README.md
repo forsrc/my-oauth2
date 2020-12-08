@@ -55,6 +55,13 @@ curl -k -H "Accept: application/json" -H "Content-type: application/json" -X POS
          }
       },
       {
+         "name":"AddRequestHeader",
+         "args":{
+            "_genkey_0":"gateway_enable",
+            "_genkey_1":"true"
+         }
+      },
+      {
          "name":"Hystrix",
          "args":{
             "name":"oauth2-gateway",
