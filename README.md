@@ -72,5 +72,7 @@ curl -k -H "Accept: application/json" -H "Content-type: application/json" -X POS
 }
 ' https://my-oauth2:8080/gateway
 
+curl -k -H "Accept: application/json" -H "Content-type: application/json" -X GET    https://my-oauth2:8080/gateway/load/gateway-test
+
 curl -k -H "Accept: application/json" -H "Content-type: application/json" -X DELETE https://my-oauth2:8080/gateway/gateway-test
 ```

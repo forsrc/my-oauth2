@@ -29,4 +29,6 @@ public interface GatewayDefineService {
     void update(GatewayDefine gatewayDefine);
 
     GatewayDefine findById(String id);
+
+    GatewayDefine loadRouteDefinition(String id);
 }

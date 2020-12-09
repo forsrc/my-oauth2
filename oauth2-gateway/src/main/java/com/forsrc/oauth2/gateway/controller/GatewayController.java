@@ -34,10 +34,16 @@ public class GatewayController {
         return Mono.empty();
     }
 
-    @GetMapping("init/")
+    @GetMapping("load/")
     public Mono<List<GatewayDefine>> loadRouteDefinitions() {
 
         return Mono.just(gatewayDefineService.loadRouteDefinitions());
+    }
+
+    @GetMapping("load/{id}")
+    public Mono<GatewayDefine> loadRouteDefinition(@PathVariable("id") String id) {
+
+        return Mono.just(gatewayDefineService.loadRouteDefinition(id));
     }
 
     @GetMapping()

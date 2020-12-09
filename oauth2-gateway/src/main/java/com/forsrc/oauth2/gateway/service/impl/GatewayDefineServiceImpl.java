@@ -124,6 +124,13 @@ public class GatewayDefineServiceImpl implements GatewayDefineService, Applicati
     }
 
     @Override
+    public GatewayDefine loadRouteDefinition(String id) {
+        GatewayDefine gatewayDefine = findById(id);
+        loadRouteDefinition(gatewayDefine);
+        return gatewayDefine;
+    }
+
+    @Override
     public void setApplicationEventPublisher(ApplicationEventPublisher applicationEventPublisher) {
         this.publisher = applicationEventPublisher;
     }
