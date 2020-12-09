@@ -223,8 +223,8 @@ management:
 logging:
   level:
     org.springframework.cloud.gateway: info
-    org.hibernate.SQL: DEBUG
-    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+    org.hibernate.SQL: debug
+    org.hibernate.type.descriptor.sql.BasicBinder: trace
 hystrix:
   dashboard:
     proxy-stream-allow-list: "*"

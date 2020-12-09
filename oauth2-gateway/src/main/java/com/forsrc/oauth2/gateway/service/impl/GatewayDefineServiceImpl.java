@@ -131,6 +131,12 @@ public class GatewayDefineServiceImpl implements GatewayDefineService, Applicati
     }
 
     @Override
+    public void disableRouteDefinition(String id) {
+        routeDefinitionWriter.delete(Mono.just(id)).subscribe();
+        this.publisher.publishEvent(new RefreshRoutesEvent(this));
+    }
+
+    @Override
     public void setApplicationEventPublisher(ApplicationEventPublisher applicationEventPublisher) {
         this.publisher = applicationEventPublisher;
     }

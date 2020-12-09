@@ -46,6 +46,12 @@ public class GatewayController {
         return Mono.just(gatewayDefineService.loadRouteDefinition(id));
     }
 
+    @GetMapping("disable/{id}")
+    public Mono<String> disableRouteDefinition(@PathVariable("id") String id) {
+        gatewayDefineService.disableRouteDefinition(id);
+        return Mono.just("disabled: " + id);
+    }
+
     @GetMapping()
     public Flux<RouteDefinition> getRouteDefinitions() {
         try {

@@ -16,31 +16,26 @@
 
 package org.springframework.security.web.authentication;
 
-import java.io.IOException;
-import java.util.Collections;
-
-import javax.servlet.RequestDispatcher;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.config.YamlPropertiesFactoryBean;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.web.AuthenticationEntryPoint;
-import org.springframework.security.web.DefaultRedirectStrategy;
-import org.springframework.security.web.PortMapper;
-import org.springframework.security.web.PortMapperImpl;
-import org.springframework.security.web.PortResolver;
-import org.springframework.security.web.PortResolverImpl;
-import org.springframework.security.web.RedirectStrategy;
+import org.springframework.security.web.*;
 import org.springframework.security.web.access.ExceptionTranslationFilter;
 import org.springframework.security.web.util.RedirectUrlBuilder;
 import org.springframework.security.web.util.UrlUtils;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
-import org.springframework.web.util.UriComponentsBuilder;
+
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.Collections;
+import java.util.Properties;
 
 /**
  * Used by the {@link ExceptionTranslationFilter} to commence a form login authentication
@@ -81,6 +76,7 @@ public class LoginUrlAuthenticationEntryPoint implements AuthenticationEntryPoin
     private boolean forceHttps = false;
     private boolean useForward = false;
 
+
     /**
      * @param loginFormUrl URL where the login page can be found. Should either be
      *                     relative to the web-app context path (include a leading {@code /}) or an absolute
@@ -89,21 +85,27 @@ public class LoginUrlAuthenticationEntryPoint implements AuthenticationEntryPoin
     public LoginUrlAuthenticationEntryPoint(String loginFormUrl) {
         Assert.notNull(loginFormUrl, "loginFormUrl cannot be null");
         this.loginFormUrl = loginFormUrl;
-//		PortMapperImpl portMapper = new PortMapperImpl();
-//    	portMapper.setPortMappings(Collections.singletonMap("8080", "8080"));
-//    	PortResolverImpl portResolver = new PortResolverImpl();
-//    	portResolver.setPortMapper(portMapper);
-//    	setPortMapper(portMapper);
-//    	setPortResolver(portResolver);
-
-        ((PortMapperImpl) portMapper).setPortMappings(Collections.singletonMap("8080", "8080"));
-        ((PortResolverImpl) portResolver).setPortMapper(portMapper);
+        YamlPropertiesFactoryBean yaml = new YamlPropertiesFactoryBean();
+        yaml.setResources(new ClassPathResource("application.yml"));
+        Properties properties = yaml.getObject();
+        String gatewayPort = properties.getProperty("my.gateway-port");
+        String gatewayPortToPort = properties.getProperty("my.gateway-port-to-port");
+        if (gatewayPort != null && gatewayPortToPort != null) {
+            logger.info("gateway port to port " + gatewayPort + ":" + gatewayPortToPort);
+            ((PortMapperImpl) portMapper).setPortMappings(Collections.singletonMap(gatewayPort, gatewayPortToPort));
+            ((PortResolverImpl) portResolver).setPortMapper(portMapper);
+        }
+        properties.clear();
+        properties = null;
+        yaml = null;
     }
+
 
     // ~ Methods
     // ========================================================================================================
 
     public void afterPropertiesSet() {
+
         Assert.isTrue(
                 StringUtils.hasText(loginFormUrl)
                         && UrlUtils.isValidRedirectUrl(loginFormUrl),
@@ -188,6 +190,7 @@ public class LoginUrlAuthenticationEntryPoint implements AuthenticationEntryPoin
             return loginForm;
         }
 
+
         int serverPort = portResolver.getServerPort(request);
         String scheme = request.getScheme();
 
@@ -222,7 +225,6 @@ public class LoginUrlAuthenticationEntryPoint implements AuthenticationEntryPoin
      */
     protected String buildHttpsRedirectUrlForRequest(HttpServletRequest request)
             throws IOException, ServletException {
-
         int serverPort = portResolver.getServerPort(request);
         Integer httpsPort = portMapper.lookupHttpsPort(serverPort);
 

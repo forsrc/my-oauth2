@@ -4,6 +4,8 @@ import java.util.Collections;
 
 import javax.sql.DataSource;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -27,6 +29,8 @@ import org.springframework.security.web.savedrequest.RequestCache;
 @Order(1)
 @EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true, jsr250Enabled = true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(SecurityConfig.class);
 
     @Value("${security.user.username}")
     private String username;
@@ -91,13 +95,18 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         ;
     }
 
+    @Value("${my.gateway-port:#{null}}")
+    private String gatewayPort;
+    @Value("${my.gateway-port-to-port:#{null}}")
+    private String gatewayPortToPort;
 
     @Bean
     public PortMapper portMapper() {
         PortMapperImpl portMapper = new PortMapperImpl();
-        portMapper.setPortMappings(Collections.singletonMap("8080", "8080"));
-        PortResolverImpl portResolver = new PortResolverImpl();
-        portResolver.setPortMapper(portMapper);
+        if (gatewayPort != null && gatewayPortToPort != null) {
+            LOGGER.info("gateway port to port {}:{}", gatewayPort, gatewayPortToPort);
+            portMapper.setPortMappings(Collections.singletonMap(gatewayPort, gatewayPortToPort));
+        }
         return portMapper;
     }
 

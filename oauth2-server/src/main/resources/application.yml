@@ -1,11 +1,26 @@
-server:
+my:
+  hostname: ${MY_HOST_NAME:my-oauth2}
+  application-name: oauth2-server
+  context-path: /${my.application-name}
+  session-name: AUTH_SERVER_SESSION
   port: 20000
+  gateway-port: 8080
+  gateway-port-to-port: 8080
+  oauth2-server: http://my-oauth2:20000/oauth2-server
+  oauth2-rource-server: http://my-oauth2:21000/oauth2-resource-server
+  oauth2-client: http://my-oauth2:22000/oauth2-client
+  admin-server: http://my-oauth2:24000/oauth2-admin-server
+  eureka-server: http://forsrc:forsrc@my-oauth2:23000/oauth2-eureka-server/eureka
+
+
+server:
+  port: ${my.port}
   servlet:
-    context-path: /oauth2-server
+    context-path: ${my.context-path}
     session:
       cookie:
-        name: AUTH_SERVER_SESSION
-        path: /oauth2-server
+        name: ${my.session-name}
+        path: ${my.context-path}
   forward-headers-strategy: framework
   #  tomcat:
   #    remoteip:
@@ -29,9 +44,7 @@ server:
     #trust-store-password: forsrc
     #client-auth:          need
 
-oauth2-server: http://my-oauth2:20000/oauth2-server
-oauth2-rource-server: http://my-oauth2:21000/oauth2-resource-server
-oauth2-client: http://my-oauth2:22000/oauth2-client
+
 
 security:
   user:
@@ -46,8 +59,8 @@ security:
       auto-approve-scopes: .*
       authorized-grant-types: authorization_code, client_credentials, refresh_token, password, implicit
       registered-redirect-uri:
-        - ${oauth2-client}/login
-        - ${oauth2-client}/login/oauth2/code/my-oauth2
+        - ${my.oauth2-client}/login
+        - ${my.oauth2-client}/login/oauth2/code/my-oauth2
     authorization:
       check-token-access: permitAll()
 #    resource:
@@ -76,7 +89,7 @@ spring:
   boot:
     admin:
       client:
-        url: http://my-oauth2:24000/oauth2-admin-server
+        url: ${my.admin-server}
         username: forsrc
         password: forsrc
         instance:
@@ -110,7 +123,9 @@ management:
 logging:
   level:
     org.springframework.security: info
-
+    org.springframework.cloud.gateway: info
+    org.hibernate.SQL: debug
+    org.hibernate.type.descriptor.sql.BasicBinder: trace
 #debug: true
 
 

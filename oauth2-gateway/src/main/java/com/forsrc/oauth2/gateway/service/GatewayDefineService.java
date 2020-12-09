@@ -31,4 +31,6 @@ public interface GatewayDefineService {
     GatewayDefine findById(String id);
 
     GatewayDefine loadRouteDefinition(String id);
+
+    void disableRouteDefinition(String id);
 }

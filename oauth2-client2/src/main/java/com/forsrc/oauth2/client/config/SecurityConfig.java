@@ -2,12 +2,13 @@ package com.forsrc.oauth2.client.config;
 
 import java.io.IOException;
 import java.util.Collections;
-import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -42,6 +43,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Value("${spring.security.oauth2.client.provider.my-oauth2.logout-uri}")
     private String oauth2ServerLogoutUri;
+    private static final Logger LOGGER = LoggerFactory.getLogger(SecurityConfig.class);
 
     @Override
     public void configure(HttpSecurity http) throws Exception {
@@ -77,13 +79,18 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         ;
     }
 
+    @Value("${my.gateway-port:#{null}}")
+    private String gatewayPort;
+    @Value("${my.gateway-port-to-port:#{null}}")
+    private String gatewayPortToPort;
 
     @Bean
     public PortMapper portMapper() {
         PortMapperImpl portMapper = new PortMapperImpl();
-        portMapper.setPortMappings(Collections.singletonMap("8080", "8080"));
-        PortResolverImpl portResolver = new PortResolverImpl();
-        portResolver.setPortMapper(portMapper);
+        if (gatewayPort != null && gatewayPortToPort != null) {
+            LOGGER.info("gateway port to port {}:{}", gatewayPort, gatewayPortToPort);
+            portMapper.setPortMappings(Collections.singletonMap(gatewayPort, gatewayPortToPort));
+        }
         return portMapper;
     }
 

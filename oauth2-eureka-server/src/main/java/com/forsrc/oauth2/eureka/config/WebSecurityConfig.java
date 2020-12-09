@@ -1,5 +1,8 @@
 package com.forsrc.oauth2.eureka.config;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -15,6 +18,7 @@ import java.util.Collections;
 
 @EnableWebSecurity
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
+    private static final Logger LOGGER = LoggerFactory.getLogger(WebSecurityConfig.class);
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
@@ -32,15 +36,20 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
 
+    @Value("${my.gateway-port:#{null}}")
+    private String gatewayPort;
+    @Value("${my.gateway-port-to-port:#{null}}")
+    private String gatewayPortToPort;
+
     @Bean
     public PortMapper portMapper() {
         PortMapperImpl portMapper = new PortMapperImpl();
-        portMapper.setPortMappings(Collections.singletonMap("8080", "8080"));
-        PortResolverImpl portResolver = new PortResolverImpl();
-        portResolver.setPortMapper(portMapper);
+        if (gatewayPort != null && gatewayPortToPort != null) {
+            LOGGER.info("gateway port to port {}:{}", gatewayPort, gatewayPortToPort);
+            portMapper.setPortMappings(Collections.singletonMap(gatewayPort, gatewayPortToPort));
+        }
         return portMapper;
     }
-
     @Bean
     public PortResolver portResolver() {
         PortResolverImpl portResolver = new PortResolverImpl();
