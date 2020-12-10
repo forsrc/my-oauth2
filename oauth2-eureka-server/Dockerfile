@@ -16,7 +16,7 @@ WORKDIR /app
 
 COPY --from=builder /app/target/*.jar /app/
 
-RUN echo "java \$JAVA_OPTS -jar /app/app.jar" > /start.sh
+RUN echo "exec java \$JAVA_OPTS -jar /app/app.jar" > /start.sh
 
 RUN chmod +x /start.sh
 
