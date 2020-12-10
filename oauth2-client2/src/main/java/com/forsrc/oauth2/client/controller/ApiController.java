@@ -24,7 +24,7 @@ public class ApiController {
     private WebClient webClient;
 
 
-    @Value("${oauth2-rource-server}")
+    @Value("${my.oauth2-rource-server}")
     private String rourceServer;
 
     @GetMapping(path = "/api/test")

@@ -4,17 +4,22 @@ my:
   context-path: /${my.application-name}
   session-name: CLIENT_SESSION
   port: ${MY_PORT:22000}
-  gateway-port: 8080
-  gateway-port-to-port: 8080
-
+#  gateway-port: 8080
+#  gateway-port-to-port: 8080
+  gateway-base-url: ${MY_GATEWAY:https://my-oauth2}
+  oauth2-server: ${my.gateway-base-url}/oauth2-server
+  oauth2-rource-server: ${my.gateway-base-url}/oauth2-resource-server
+  oauth2-client: ${my.gateway-base-url}/oauth2-client
+  eureka-server: ${MY_EUREKA_SERVER:http://forsrc:forsrc@my-oauth2:23000/oauth2-eureka-server/eureka}
+  admin-server: ${MY_ADMIN_SERVER:http://my-oauth2:24000/oauth2-admin-server}
 server:
   port: ${my.port}
   servlet:
-    context-path: /oauth2-client
+    context-path: ${my.context-path}
     session:
       cookie:
         name: CLIENT_SESSION
-        path: /oauth2-client
+        path: ${my.context-path}
   forward-headers-strategy: framework
   #  tomcat:
   #    redirect-context-root:  false
@@ -40,9 +45,7 @@ server:
 
 
 
-oauth2-server: https://my-oauth2:8080/oauth2-server
-oauth2-rource-server: https://my-oauth2:8080/oauth2-resource-server
-oauth2-client: https://my-oauth2:8080/oauth2-client
+
 
 
 #security:
@@ -63,7 +66,7 @@ oauth2-client: https://my-oauth2:8080/oauth2-client
 
 spring:
   application:
-    name: oauth2-client
+    name: ${my.application-name}
   main.allow-bean-definition-overriding: true
   thymeleaf:
     prefix: classpath:/templates/
@@ -71,7 +74,7 @@ spring:
   boot:
     admin:
       client:
-        url: http://my-oauth2:24000/oauth2-admin-server
+        url: ${my.admin-server}
         username: forsrc
         password: forsrc
         instance:
@@ -86,7 +89,7 @@ spring:
             client-authentication-method: basic
             authorization-grant-type: authorization_code
             #redirect-uri:                 '{baseUrl}/login/oauth2/code/{registrationId}'
-            redirect-uri: ${oauth2-client}/login/oauth2/code/my-oauth2
+            redirect-uri: ${my.oauth2-client}/login/oauth2/code/my-oauth2
             scope: ui, read, write
         #          my-oauth2-client-credentials:
         #            client-id:                    forsrc
@@ -100,17 +103,17 @@ spring:
         #            scope:                        ui
         provider:
           my-oauth2:
-            authorization-uri: ${oauth2-server}/oauth/authorize
-            token-uri: ${oauth2-server}/oauth/token
-            logout-uri: ${oauth2-server}/oauth/logout?referer=${oauth2-client}/&gateway_referer=gateway_oauth2_client
-            jwk-set-uri: ${oauth2-server}/oauth/jwks
-            user-info-uri: ${oauth2-server}/user/me
+            authorization-uri: ${my.oauth2-server}/oauth/authorize
+            token-uri: ${my.oauth2-server}/oauth/token
+            logout-uri: ${my.oauth2-server}/oauth/logout?referer=${my.oauth2-client}/&gateway_referer=gateway_oauth2_client
+            jwk-set-uri: ${my.oauth2-server}/oauth/jwks
+            user-info-uri: ${my.oauth2-server}/user/me
             user-name-attribute: name
 
           my-oauth2-client-credentials:
-            token-uri: ${oauth2-server}/oauth/token
+            token-uri: ${my.oauth2-server}/oauth/token
           my-oauth2-password:
-            token-uri: ${oauth2-server}/oauth/token
+            token-uri: ${my.oauth2-server}/oauth/token
 
 eureka:
   instance:
@@ -126,7 +129,7 @@ eureka:
       user.password: forsrc
   client:
     service-url:
-      defaultZone: http://forsrc:forsrc@my-oauth2:23000/oauth2-eureka-server/eureka
+      defaultZone: ${my.eureka-server}
 
 management:
   endpoints:

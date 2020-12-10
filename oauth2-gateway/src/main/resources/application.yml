@@ -5,13 +5,12 @@ my:
   session-name: GATEWAY_SESSION
   username: ${MY_USERNAME:forsrc}
   password: ${MY_PASSWORD:forsrc}
-  port: ${MY_PORT:8080}
-  port-to-port: 8080:8080
-  base-url:      https://my-oauth2:8080
+  port: ${MY_PORT:443}
+  base-url:      https://my-oauth2
   oauth2-server: http://my-oauth2:20000/oauth2-server
   oauth2-resource-server: http://my-oauth2:21000/oauth2-resource-server
   oauth2-client: http://my-oauth2:22000/oauth2-client
-  gateway-base-url: ${MY_GATEWAY:https://my-oauth2:8080}
+  gateway-base-url: ${MY_GATEWAY:https://my-oauth2}
   gateway-oauth2-server: ${my.gateway-base-url}/oauth2-server/
   gateway-oauth2-resource_server: ${my.gateway-base-url}/oauth2-resource-server/
   gateway-oauth2-client: ${my.gateway-base-url}/oauth2-client/
@@ -64,8 +63,8 @@ spring:
         username: ${my.username}
         password: ${my.password}
         instance:
-          service-base-url: https://my-oauth2:8080
-          management-base-url: https://my-oauth2:8080
+          service-base-url: ${my.base-url}
+          management-base-url: ${my.base-url}
 
   datasource:
     url: ${DB_URL:jdbc:h2:~/tmp/db/h2/my-oauth2-gateway.h2;AUTO_SERVER=TRUE;MODE=MYSQL;}
