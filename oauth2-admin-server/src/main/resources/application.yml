@@ -1,11 +1,20 @@
-server:
+my:
+  hostname: ${MY_HOST_NAME:my-oauth2}
+  application-name: oauth2-admin-server
+  context-path: /${my.application-name}
+  session-name: ADMIN_SESSION
   port: 24000
+  eureka-server: ${MY_EUREKA_SERVER:http://forsrc:forsrc@my-oauth2:23000/oauth2-eureka-server/eureka}
+  admin-server: ${MY_ADMIN_SERVER:http://my-oauth2:24000/oauth2-admin-server}
+
+server:
+  port: ${my.port}
   servlet:
-    context-path: /oauth2-admin-server
+    context-path: ${my.context-path}
     session:
       cookie:
-        name: EUREKA_SESSION
-        path: /oauth2-admin-server
+        name: ${my.session-name}
+        path: ${my.context-path}
 
   ssl:
     name: my-oauth2
@@ -51,7 +60,7 @@ spring:
 eureka:
   instance:
     #prefer-ip-address:              true
-    hostname: my-oauth2
+    hostname: ${my.hostname}
     instance-id: ${eureka.instance.hostname}:${spring.application.name}:${server.port}
     appname: ${spring.application.name}
     leaseRenewalIntervalInSeconds: 10
@@ -62,7 +71,7 @@ eureka:
       user.password: forsrc
   client:
     service-url:
-      defaultZone: http://forsrc:forsrc@my-oauth2:23000/oauth2-eureka-server/eureka
+      defaultZone: ${my.eureka-server}
 
 management:
   endpoints:

@@ -4,9 +4,9 @@ my:
   context-path: /${my.application-name}
   session-name: RESOURCE_SERVER_SESSION
   port: 21000
-  oauth2-server: http://my-oauth2:20000/oauth2-server
-  admin-server: http://my-oauth2:24000/oauth2-admin-server
-  eureka-server: http://forsrc:forsrc@my-oauth2:23000/oauth2-eureka-server/eureka
+  oauth2-server: ${MY_OAUTH2_SERVER:http://my-oauth2:20000/oauth2-server}
+  eureka-server: ${MY_EUREKA_SERVER:http://forsrc:forsrc@my-oauth2:23000/oauth2-eureka-server/eureka}
+  admin-server: ${MY_ADMIN_SERVER:http://my-oauth2:24000/oauth2-admin-server}
 
 server:
   port: ${my.port}

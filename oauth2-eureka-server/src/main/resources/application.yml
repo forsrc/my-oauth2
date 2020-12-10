@@ -1,16 +1,18 @@
 my:
-  hostname: ${HOST_NAME:my-oauth2}
+  hostname: ${MY_HOST_NAME:my-oauth2}
   application-name: oauth2-eureka-server
   context-path: /${my.application-name}
   session-name: EUREKA_SESSION
-  spring-boot-admin-server-url: http://my-oauth2:24000/oauth2-admin-server
   username: ${MY_USERNAME:forsrc}
   password: ${MY_PASSWORD:forsrc}
-  gateway-port: 8080
-  gateway-port-to-port: 8080
+  port: 23000
+#  gateway-port: 8080
+#  gateway-port-to-port: 8080
+  eureka-server: ${MY_EUREKA_SERVER:http://forsrc:forsrc@my-oauth2:23000/oauth2-eureka-server/eureka}
+  admin-server: ${MY_ADMIN_SERVER:http://my-oauth2:24000/oauth2-admin-server}
 
 server:
-  port: 23000
+  port: ${my.port}
   servlet:
     context-path: ${my.context-path}
     session:
@@ -46,7 +48,7 @@ spring:
   boot:
     admin:
       client:
-        url: ${my.spring-boot-admin-server-url}
+        url: ${my.admin-server}
         username: ${my.username}
         password: ${my.password}
         instance:
