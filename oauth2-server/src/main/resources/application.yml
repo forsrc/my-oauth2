@@ -1,16 +1,15 @@
 my:
-  hostname: ${MY_HOST_NAME:my-oauth2}
+  hostname: ${MY_HOST_NAME:oauth2-server}
   application-name: oauth2-server
   context-path: /${my.application-name}
   session-name: AUTH_SERVER_SESSION
   port: 20000
-  gateway-port: 8080
-  gateway-port-to-port: 8080
-  oauth2-server: http://my-oauth2:20000/oauth2-server
-  oauth2-rource-server: http://my-oauth2:21000/oauth2-resource-server
-  oauth2-client: http://my-oauth2:22000/oauth2-client
-  eureka-server: ${MY_EUREKA_SERVER:http://forsrc:forsrc@my-oauth2:23000/oauth2-eureka-server/eureka}
-  admin-server: ${MY_ADMIN_SERVER:http://my-oauth2:24000/oauth2-admin-server}
+#  gateway-port: 8080
+#  gateway-port-to-port: 8080
+
+  oauth2-client: ${MY_OAUTH2_CLIENT:oauth2-client:22000}
+  eureka-server: ${MY_EUREKA_SERVER:oauth2-eureka-server:23000}
+  admin-server: ${MY_ADMIN_SERVER:oauth2-admin-server:24000}
 
 
 server:
@@ -59,8 +58,8 @@ security:
       auto-approve-scopes: .*
       authorized-grant-types: authorization_code, client_credentials, refresh_token, password, implicit
       registered-redirect-uri:
-        - ${my.oauth2-client}/login
-        - ${my.oauth2-client}/login/oauth2/code/my-oauth2
+        - ${my.oauth2-client}/oauth2-client/login
+        - ${my.oauth2-client}/oauth2-client/login/oauth2/code/my-oauth2
     authorization:
       check-token-access: permitAll()
 #    resource:
@@ -69,17 +68,17 @@ security:
 spring:
   main.allow-bean-definition-overriding: true
   application:
-    name: oauth2-server
+    name: ${my.application-name}
   datasource:
-    url: ${DB_URL:jdbc:h2:~/tmp/db/h2/my-oauth2-server.h2;AUTO_SERVER=TRUE;MODE=MYSQL;}
-    username: ${DB_USERNAME:sa}
-    password: ${DB_PASSWORD:sa}
-    driver-class-name: ${DB_DRIVER:org.h2.Driver}
+    url: ${MY_DB_URL:jdbc:h2:~/tmp/db/h2/my-oauth2-server.h2;AUTO_SERVER=TRUE;MODE=MYSQL;}
+    username: ${MY_DB_USERNAME:sa}
+    password: ${MY_DB_PASSWORD:sa}
+    driver-class-name: ${MY_DB_DRIVER:org.h2.Driver}
     data:
       - classpath:schema.sql
       - classpath:data.sql
   jpa:
-    database-platform: ${DB_DIALECT:org.hibernate.dialect.H2Dialect}
+    database-platform: ${MY_DB_DIALECT:org.hibernate.dialect.H2Dialect}
     show-sql: true
     properties:
       hibernate.enable_lazy_load_no_trans: true
@@ -89,7 +88,7 @@ spring:
   boot:
     admin:
       client:
-        url: ${my.admin-server}
+        url: http://${my.admin-server}/oauth2-admin-server
         username: forsrc
         password: forsrc
         instance:
@@ -98,7 +97,7 @@ spring:
 eureka:
   instance:
     #prefer-ip-address:              true
-    hostname: my-oauth2
+    hostname: ${my.hostname}
     instance-id: ${eureka.instance.hostname}:${spring.application.name}:${server.port}
     appname: ${spring.application.name}
     leaseRenewalIntervalInSeconds: 10
@@ -109,7 +108,7 @@ eureka:
       user.password: forsrc
   client:
     service-url:
-      defaultZone: http://forsrc:forsrc@my-oauth2:23000/oauth2-eureka-server/eureka
+      defaultZone: http://forsrc:forsrc@${my.eureka-server}/oauth2-eureka-server/eureka
 
 management:
   endpoints:

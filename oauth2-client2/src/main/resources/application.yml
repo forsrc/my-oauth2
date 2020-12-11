@@ -1,24 +1,24 @@
 my:
-  hostname: ${MY_HOST_NAME:my-oauth2}
+  hostname: ${MY_HOST_NAME:oauth2-client}
   application-name: oauth2-client
   context-path: /${my.application-name}
   session-name: CLIENT_SESSION
   port: ${MY_PORT:22000}
-#  gateway-port: 8080
-#  gateway-port-to-port: 8080
-  gateway-base-url: ${MY_GATEWAY:https://my-oauth2}
+  #  gateway-port: 8080
+  #  gateway-port-to-port: 8080
+  gateway-base-url: ${MY_GATEWAY:https://oauth2-gateway}
   oauth2-server: ${my.gateway-base-url}/oauth2-server
   oauth2-rource-server: ${my.gateway-base-url}/oauth2-resource-server
   oauth2-client: ${my.gateway-base-url}/oauth2-client
-  eureka-server: ${MY_EUREKA_SERVER:http://forsrc:forsrc@my-oauth2:23000/oauth2-eureka-server/eureka}
-  admin-server: ${MY_ADMIN_SERVER:http://my-oauth2:24000/oauth2-admin-server}
+  eureka-server: ${MY_EUREKA_SERVER:my-oauth2:23000}
+  admin-server: ${MY_ADMIN_SERVER:my-oauth2:24000}
 server:
   port: ${my.port}
   servlet:
     context-path: ${my.context-path}
     session:
       cookie:
-        name: CLIENT_SESSION
+        name: ${my.session-name}
         path: ${my.context-path}
   forward-headers-strategy: framework
   #  tomcat:
@@ -74,7 +74,7 @@ spring:
   boot:
     admin:
       client:
-        url: ${my.admin-server}
+        url: ${my.admin-server}/oauth2-admin-server
         username: forsrc
         password: forsrc
         instance:
@@ -107,7 +107,7 @@ spring:
             token-uri: ${my.oauth2-server}/oauth/token
             logout-uri: ${my.oauth2-server}/oauth/logout?referer=${my.oauth2-client}/&gateway_referer=gateway_oauth2_client
             jwk-set-uri: ${my.oauth2-server}/oauth/jwks
-            user-info-uri: ${my.oauth2-server}/user/me
+            user-info-uri: ${my.oauth2-server}/oauth/user_info
             user-name-attribute: name
 
           my-oauth2-client-credentials:
@@ -117,11 +117,11 @@ spring:
 
 eureka:
   instance:
-    #prefer-ip-address:              true
-    hostname: my-oauth2
+    #    prefer-ip-address: true
+    hostname: ${my.hostname}
     instance-id: ${eureka.instance.hostname}:${spring.application.name}:${server.port}
     appname: ${spring.application.name}
-    leaseRenewalIntervalInSeconds: 5
+    #    leaseRenewalIntervalInSeconds: 5
     health-check-url-path: /actuator/health
     metadata-map:
       management.context-path: ${server.servlet.context-path}/actuator
@@ -129,7 +129,7 @@ eureka:
       user.password: forsrc
   client:
     service-url:
-      defaultZone: ${my.eureka-server}
+      defaultZone: http://forsrc:forsrc@${my.eureka-server}/oauth2-eureka-server/eureka
 
 management:
   endpoints:

@@ -1,11 +1,11 @@
 my:
-  hostname: ${MY_HOST_NAME:my-oauth2}
+  hostname: ${MY_HOST_NAME:oauth2-admin-server}
   application-name: oauth2-admin-server
   context-path: /${my.application-name}
   session-name: ADMIN_SESSION
   port: 24000
-  eureka-server: ${MY_EUREKA_SERVER:http://forsrc:forsrc@my-oauth2:23000/oauth2-eureka-server/eureka}
-  admin-server: ${MY_ADMIN_SERVER:http://my-oauth2:24000/oauth2-admin-server}
+  eureka-server: ${MY_EUREKA_SERVER:oauth2-eureka-server:23000}
+
 
 server:
   port: ${my.port}
@@ -37,7 +37,7 @@ spring:
   boot:
     admin:
       client:
-        url: http://${eureka.instance.hostname}:${server.port}${server.servlet.context-path}
+        url: http://${my.hostname}:${server.port}${server.servlet.context-path}
         username: forsrc
         password: forsrc
         instance:
@@ -63,15 +63,15 @@ eureka:
     hostname: ${my.hostname}
     instance-id: ${eureka.instance.hostname}:${spring.application.name}:${server.port}
     appname: ${spring.application.name}
-    leaseRenewalIntervalInSeconds: 10
     health-check-url-path: /actuator/health
+    leaseRenewalIntervalInSeconds: 5
     metadata-map:
       management.context-path: ${server.servlet.context-path}/actuator
       user.name: forsrc
       user.password: forsrc
   client:
     service-url:
-      defaultZone: ${my.eureka-server}
+      defaultZone: http://forsrc:forsrc@${my.eureka-server}/oauth2-eureka-server/eureka
 
 management:
   endpoints:

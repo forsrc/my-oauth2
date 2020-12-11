@@ -1,15 +1,15 @@
 my:
-  hostname: ${MY_HOST_NAME:my-oauth2}
+  hostname: ${MY_HOST_NAME:oauth2-eureka-server}
   application-name: oauth2-eureka-server
   context-path: /${my.application-name}
   session-name: EUREKA_SESSION
   username: ${MY_USERNAME:forsrc}
   password: ${MY_PASSWORD:forsrc}
   port: 23000
-#  gateway-port: 8080
-#  gateway-port-to-port: 8080
-  eureka-server: ${MY_EUREKA_SERVER:http://forsrc:forsrc@my-oauth2:23000/oauth2-eureka-server/eureka}
-  admin-server: ${MY_ADMIN_SERVER:http://my-oauth2:24000/oauth2-admin-server}
+  #  gateway-port: 8080
+  #  gateway-port-to-port: 8080
+  #  eureka-server: ${MY_EUREKA_SERVER:localhost:23000}
+  admin-server: ${MY_ADMIN_SERVER:my-oauth2:24000}
 
 server:
   port: ${my.port}
@@ -48,7 +48,7 @@ spring:
   boot:
     admin:
       client:
-        url: ${my.admin-server}
+        url: http://${my.admin-server}/oauth2-admin-server
         username: ${my.username}
         password: ${my.password}
         instance:
@@ -81,7 +81,7 @@ eureka:
     fetchRegistry: false
     serviceUrl:
       defaultZone: http://${spring.security.user.name}:${spring.security.user.password}@${eureka.instance.hostname}:${server.port}${server.servlet.context-path}/eureka
-    initialInstanceInfoReplicationIntervalSeconds: 5
+  #    initialInstanceInfoReplicationIntervalSeconds: 5
   #    healthcheck:
   #      enabled:                      true
   server:

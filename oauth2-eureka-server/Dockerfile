@@ -17,7 +17,7 @@ ARG APP_PORT=23000
 #COPY ${JAR_FILE} /app/app.jar
 
 COPY --from=builder /app/target/*.jar /app/app.jar
-
+RUN chmod +x /app/app.jar
 
 EXPOSE $APP_PORT
 
