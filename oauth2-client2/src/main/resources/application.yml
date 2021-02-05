@@ -10,8 +10,8 @@ my:
   oauth2-server: ${my.gateway-base-url}/oauth2-server
   oauth2-rource-server: ${my.gateway-base-url}/oauth2-resource-server
   oauth2-client: ${my.gateway-base-url}/oauth2-client
-  eureka-server: ${MY_EUREKA_SERVER:my-oauth2:23000}
-  admin-server: ${MY_ADMIN_SERVER:my-oauth2:24000}
+  eureka-server: ${MY_EUREKA_SERVER:oauth2-eureka-server:23000}
+  admin-server: ${MY_ADMIN_SERVER:oauth2-admin-server:24000}
 server:
   port: ${my.port}
   servlet:
