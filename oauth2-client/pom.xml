@@ -83,6 +83,8 @@
 <!--            <artifactId>spring-boot-devtools</artifactId>-->
 <!--        </dependency>-->
 
+    </dependencies>
+
     <dependencyManagement>
         <dependencies>
             <dependency>
