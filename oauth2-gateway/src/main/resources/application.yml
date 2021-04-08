@@ -115,6 +115,7 @@ spring:
           predicates:
             - Path=/oauth2-server/**
           filters:
+            - CachingRequestBodyFilter
             - AddRequestHeader=gateway_enable, true
             - AddRequestHeader=gateway_oauth2_server, ${my.gateway-oauth2-server}
             - RewritePath=/oauth2-server/(?<segment>/?.*), /oauth2-server/$\{segment}
@@ -127,6 +128,7 @@ spring:
           predicates:
             - Path=/oauth2-resource-server/**
           filters:
+            - CachingRequestBodyFilter
             - AddRequestHeader=gateway_enable, true
             - AddRequestHeader=gateway_oauth2_server, ${my.gateway-oauth2-server}
             - RewritePath=/oauth2-resource-server(?<segment>/?.*), /oauth2-resource-server/$\{segment}
@@ -139,6 +141,7 @@ spring:
           predicates:
             - Path=/oauth2-client/**
           filters:
+            - CachingRequestBodyFilter
             - AddRequestHeader=gateway_enable, true
             - AddRequestHeader=gateway_oauth2_server, ${my.gateway-oauth2-server}
             - AddRequestHeader=gateway_oauth2_client, ${my.gateway-oauth2-client}
@@ -152,6 +155,7 @@ spring:
           predicates:
             - Path=/oauth2-eureka-server/**
           filters:
+            - CachingRequestBodyFilter
             - AddRequestHeader=gateway_enable, true
             - AddRequestHeader=gateway_oauth2_server, ${my.gateway-oauth2-server}
             - AddRequestHeader=gateway_oauth2_eureka_server, ${my.gateway-oauth2-eureka-server}
@@ -165,6 +169,7 @@ spring:
           predicates:
             - Path=/oauth2-admin-server/**
           filters:
+            - CachingRequestBodyFilter
             - AddRequestHeader=gateway_enable, true
             - AddRequestHeader=gateway_oauth2_server, ${my.gateway-oauth2-server}
             - AddRequestHeader=gateway_oauth2_eureka_server, ${my.gateway-oauth2-eureka-server}
