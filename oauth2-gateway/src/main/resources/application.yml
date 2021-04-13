@@ -218,8 +218,8 @@ management:
         include: "*"
   endpoint:
     hystrix:
-  stream:
-    enabled: true
+      stream:
+        enabled: true
     health:
       show-details: ALWAYS
 
