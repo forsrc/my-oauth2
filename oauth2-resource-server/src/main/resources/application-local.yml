@@ -1,0 +1,9 @@
+my:
+  hostname: ${MY_HOST_NAME:oauth2-resource-server}
+  application-name: oauth2-resource-server
+  context-path: /${my.application-name}
+  session-name: RESOURCE_SERVER_SESSION
+  port: 21000
+  oauth2-server: ${MY_OAUTH2_SERVER:oauth2-server:20000}
+  eureka-server: ${MY_EUREKA_SERVER:oauth2-eureka-server:23000}
+  admin-server: ${MY_ADMIN_SERVER:oauth2-admin-server:24000}

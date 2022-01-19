@@ -1,0 +1,93 @@
+my:
+  hostname: ${MY_HOST_NAME:oauth2-resource-server}
+  application-name: oauth2-resource-server
+  context-path: /${my.application-name}
+  session-name: RESOURCE_SERVER_SESSION
+  port: 21000
+  oauth2-server: ${MY_OAUTH2_SERVER:oauth2-server:20000}
+  eureka-server: ${MY_EUREKA_SERVER:oauth2-eureka-server:23000}
+  admin-server: ${MY_ADMIN_SERVER:oauth2-admin-server:24000}
+
+server:
+  port: ${my.port}
+  servlet:
+    context-path: ${my.context-path}
+    session:
+      cookie:
+        name: ${my.session-name}
+
+  ssl:
+    name: my-oauth2
+    key-store-provider: SUN
+    key-store-type: JKS
+    key-store: classpath:ssl/${server.ssl.name}.server.keystore
+    key-store-password: forsrc
+    key-alias: ${server.ssl.name}.server
+    enabled: false
+    #trust-store-provider: SUN
+    #trust-store-type:     JKS
+    #trust-store:          classpath:ssl/${server.ssl.name}.server.keystore
+    #trust-store-password: forsrc
+    #client-auth:          need 
+
+
+
+security:
+  oauth2:
+    client:
+      client-id: ui
+      client-secret: forsrc
+      scope: ui, read, write
+    resource:
+      #token-info-uri: ${my.oauth2-server}/oauth/check_token
+      user-info-uri: ${my.oauth2-server}/oauth2-server/oauth/user_info
+      #preferTokenInfo: true
+#      jwt:
+#        key-uri:      ${oauth2-server}/oauth/token_key
+
+
+#security:
+#  oauth2:
+#    resource:
+#      jwk:
+#        key-set-uri:   ${oauth2-server}/oauth/jwks
+spring:
+  application:
+    name: ${my.application-name}
+  boot:
+    admin:
+      client:
+        url: http://${my.admin-server}/oauth2-admin-server
+        username: forsrc
+        password: forsrc
+        instance:
+          management-base-url: http://${eureka.instance.hostname}:${server.port}${server.servlet.context-path}
+eureka:
+  instance:
+    prefer-ip-address: true
+    hostname: ${my.hostname}
+    instance-id: ${eureka.instance.hostname}:${spring.application.name}:${server.port}
+    appname: ${spring.application.name}
+    leaseRenewalIntervalInSeconds: 5
+    health-check-url-path: /actuator/health
+    metadata-map:
+      management.context-path: ${server.servlet.context-path}/actuator
+      user.name: forsrc
+      user.password: forsrc
+  client:
+    service-url:
+      defaultZone: http://forsrc:forsrc@${my.eureka-server}/oauth2-eureka-server/eureka
+
+management:
+  endpoints:
+
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: ALWAYS
+
+logging:
+  level:
+    org.springframework.security: info

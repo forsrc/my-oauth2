@@ -1,0 +1,83 @@
+my:
+  hostname: ${MY_HOST_NAME:oauth2-admin-server}
+  application-name: oauth2-admin-server
+  context-path: /${my.application-name}
+  session-name: ADMIN_SESSION
+  port: 8080
+  eureka-server: ${MY_EUREKA_SERVER:oauth2-eureka-server:23000}
+
+
+server:
+  port: ${my.port}
+  servlet:
+    context-path: ${my.context-path}
+    session:
+      cookie:
+        name: ${my.session-name}
+        path: ${my.context-path}
+
+  ssl:
+    name: my-oauth2
+    key-store-provider: SUN
+    key-store-type: JKS
+    key-store: classpath:ssl/${server.ssl.name}.server.keystore
+    key-store-password: forsrc
+    key-alias: ${server.ssl.name}.server
+    enabled: false
+    #trust-store-provider: SUN
+    #trust-store-type:     JKS
+    #trust-store:          classpath:ssl/${server.ssl.name}.server.keystore
+    #trust-store-password: forsrc
+    #client-auth:          need
+
+spring:
+  freemarker.prefer-file-system-access: false
+  application:
+    name: oauth2-admin-server
+  boot:
+    admin:
+      client:
+        url: http://${my.hostname}:${server.port}${server.servlet.context-path}
+        username: forsrc
+        password: forsrc
+        instance:
+          management-base-url: http://${eureka.instance.hostname}:${server.port}${server.servlet.context-path}
+  #  security:
+  #    basic:
+  #      enabled:  true
+  #    user:
+  #      name:     forsrc
+  #      password: forsrc
+
+  security:
+    basic:
+      enabled: true
+    user:
+      name: forsrc
+      password: forsrc
+
+
+eureka:
+  instance:
+    #prefer-ip-address:              true
+    hostname: ${my.hostname}
+    instance-id: ${eureka.instance.hostname}:${spring.application.name}:${server.port}
+    appname: ${spring.application.name}
+    health-check-url-path: /actuator/health
+    leaseRenewalIntervalInSeconds: 5
+    metadata-map:
+      management.context-path: ${server.servlet.context-path}/actuator
+      user.name: forsrc
+      user.password: forsrc
+  client:
+    service-url:
+      defaultZone: http://forsrc:forsrc@${my.eureka-server}/oauth2-eureka-server/eureka
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: ALWAYS

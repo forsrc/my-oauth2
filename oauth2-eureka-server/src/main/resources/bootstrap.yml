@@ -1,0 +1,101 @@
+my:
+  hostname: ${MY_HOST_NAME:oauth2-eureka-server}
+  application-name: oauth2-eureka-server
+  context-path: /${my.application-name}
+  session-name: EUREKA_SESSION
+  username: ${MY_USERNAME:forsrc}
+  password: ${MY_PASSWORD:forsrc}
+  port: 23000
+  #  gateway-port: 8080
+  #  gateway-port-to-port: 8080
+  #  eureka-server: ${MY_EUREKA_SERVER:localhost:23000}
+  admin-server: ${MY_ADMIN_SERVER:my-oauth2:24000}
+
+server:
+  port: ${my.port}
+  servlet:
+    context-path: ${my.context-path}
+    session:
+      cookie:
+        name: ${my.session-name}
+        path: ${my.context-path}
+
+  ssl:
+    name: my-oauth2
+    key-store-provider: SUN
+    key-store-type: JKS
+    key-store: classpath:ssl/${server.ssl.name}.server.keystore
+    key-store-password: forsrc
+    key-alias: ${server.ssl.name}.server
+    enabled: false
+    #trust-store-provider: SUN
+    #trust-store-type:     JKS
+    #trust-store:          classpath:ssl/${server.ssl.name}.server.keystore
+    #trust-store-password: forsrc
+    #client-auth:          need
+  forward-headers-strategy: framework
+spring:
+  freemarker.prefer-file-system-access: false
+  application:
+    name: ${my.application-name}
+  #  security:
+  #    basic:
+  #      enabled:  true
+  #    user:
+  #      name:     forsrc
+  #      password: forsrc
+
+  boot:
+    admin:
+      client:
+        url: http://${my.admin-server}/oauth2-admin-server
+        username: ${my.username}
+        password: ${my.password}
+        instance:
+          management-base-url: http://${eureka.instance.hostname}:${server.port}${server.servlet.context-path}
+
+  security:
+    basic:
+      enabled: true
+    user:
+      name: ${my.username}
+      password: ${my.password}
+
+eureka:
+  instance:
+    #prefer-ip-address:              true
+    hostname: ${my.hostname}
+    instance-id: ${eureka.instance.hostname}:${spring.application.name}:${server.port}
+    appname: ${spring.application.name}
+    health-check-url-path: /actuator/health
+    home-page-url: http://${eureka.instance.hostname}:${server.port}${server.servlet.context-path}
+    status-page-url: ${eureka.instance.home-page-url}/actuator
+    leaseRenewalIntervalInSeconds: 5
+    metadata-map:
+      management.context-path: ${server.servlet.context-path}/actuator
+      user.name: ${my.username}
+      user.password: ${my.password}
+  client:
+    registryFetchIntervalSeconds: 5
+    registerWithEureka: true
+    fetchRegistry: false
+    serviceUrl:
+      defaultZone: http://${spring.security.user.name}:${spring.security.user.password}@${eureka.instance.hostname}:${server.port}${server.servlet.context-path}/eureka
+  #    initialInstanceInfoReplicationIntervalSeconds: 5
+  #    healthcheck:
+  #      enabled:                      true
+  server:
+    enable-self-preservation: true
+    eviction-interval-timer-in-ms: 5000
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: ALWAYS
+hystrix:
+  dashboard:
+    proxy-stream-allow-list: "*"

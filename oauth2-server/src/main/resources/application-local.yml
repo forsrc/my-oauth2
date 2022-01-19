@@ -1,0 +1,12 @@
+my:
+  hostname: ${MY_HOST_NAME:oauth2-server}
+  application-name: oauth2-server
+  context-path: /${my.application-name}
+  session-name: AUTH_SERVER_SESSION
+  port: 20000
+#  gateway-port: 8080
+#  gateway-port-to-port: 8080
+
+  oauth2-client: ${MY_OAUTH2_CLIENT:oauth2-client:22000}
+  eureka-server: ${MY_EUREKA_SERVER:oauth2-eureka-server:23000}
+  admin-server: ${MY_ADMIN_SERVER:oauth2-admin-server:24000}
