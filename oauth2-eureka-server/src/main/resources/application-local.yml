@@ -1,7 +1,6 @@
 my:
   hostname: ${MY_HOST_NAME:oauth2-eureka-server}
   application-name: oauth2-eureka-server
-  context-path: /${my.application-name}
   session-name: EUREKA_SESSION
   username: ${MY_USERNAME:forsrc}
   password: ${MY_PASSWORD:forsrc}

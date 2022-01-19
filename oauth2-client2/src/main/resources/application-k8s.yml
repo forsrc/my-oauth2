@@ -1,7 +1,6 @@
 my:
   hostname: ${MY_HOST_NAME:oauth2-client}
   application-name: oauth2-client
-  context-path: /${my.application-name}
   session-name: CLIENT_SESSION
   port: ${MY_PORT:8080}
   #  gateway-port: 8080

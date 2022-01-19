@@ -1,7 +1,6 @@
 my:
   hostname: ${MY_HOST_NAME:oauth2-gateway}
   application-name: oauth2-gateway
-  context-path: /${my.application-name}
   session-name: GATEWAY_SESSION
   username: ${MY_USERNAME:forsrc}
   password: ${MY_PASSWORD:forsrc}
@@ -15,17 +14,15 @@ my:
   gateway-oauth2-client: ${my.gateway-base-url}/oauth2-client/
   gateway-oauth2-eureka-server: ${my.gateway-base-url}/oauth2-eureka-server/
   gateway-oauth2-admin-server: ${my.gateway-base-url}/oauth2-admin-server/
-  eureka-server: ${MY_EUREKA_SERVER:oauth2-eureka-server:23000}
-  admin-server: ${MY_ADMIN_SERVER:oauth2-admin-server:24000}
+  eureka-server: ${MY_EUREKA_SERVER:oauth2-eureka-server:8080}
+  admin-server: ${MY_ADMIN_SERVER:oauth2-admin-server:8080}
 
 server:
   port: ${my.port}
   servlet:
-    #context-path: /oauth2-gateway
     session:
       cookie:
         name: ${my.session-name}
-        path: ${my.context-path}
   forward-headers-strategy: framework
   tomcat:
     remoteip:
@@ -58,7 +55,7 @@ spring:
   boot:
     admin:
       client:
-        url: http://${my.admin-server}/oauth2-admin-server
+        url: http://${my.admin-server}
         username: ${my.username}
         password: ${my.password}
         instance:
@@ -118,7 +115,7 @@ spring:
             - CachingRequestBodyFilter
             - AddRequestHeader=gateway_enable, true
             - AddRequestHeader=gateway_oauth2_server, ${my.gateway-oauth2-server}
-            - RewritePath=/oauth2-server/(?<segment>/?.*), /oauth2-server/$\{segment}
+            - RewritePath=/oauth2-server/(?<segment>/?.*), /$\{segment}
             - name: Hystrix
               args:
                 name: oauth2-server
@@ -131,7 +128,7 @@ spring:
             - CachingRequestBodyFilter
             - AddRequestHeader=gateway_enable, true
             - AddRequestHeader=gateway_oauth2_server, ${my.gateway-oauth2-server}
-            - RewritePath=/oauth2-resource-server(?<segment>/?.*), /oauth2-resource-server/$\{segment}
+            - RewritePath=/oauth2-resource-server(?<segment>/?.*), /$\{segment}
             - name: Hystrix
               args:
                 name: oauth2-resource-server
@@ -145,7 +142,7 @@ spring:
             - AddRequestHeader=gateway_enable, true
             - AddRequestHeader=gateway_oauth2_server, ${my.gateway-oauth2-server}
             - AddRequestHeader=gateway_oauth2_client, ${my.gateway-oauth2-client}
-            - RewritePath=/oauth2-client/(?<segment>/?.*), /oauth2-client/$\{segment}
+            - RewritePath=/oauth2-client/(?<segment>/?.*), /$\{segment}
             - name: Hystrix
               args:
                 name: oauth2-client
@@ -159,7 +156,7 @@ spring:
             - AddRequestHeader=gateway_enable, true
             - AddRequestHeader=gateway_oauth2_server, ${my.gateway-oauth2-server}
             - AddRequestHeader=gateway_oauth2_eureka_server, ${my.gateway-oauth2-eureka-server}
-            - RewritePath=/oauth2-eureka-server/(?<segment>/?.*), /oauth2-eureka-server/$\{segment}
+            - RewritePath=/oauth2-eureka-server/(?<segment>/?.*), /$\{segment}
             - name: Hystrix
               args:
                 name: oauth2-eureka-server
@@ -173,7 +170,7 @@ spring:
             - AddRequestHeader=gateway_enable, true
             - AddRequestHeader=gateway_oauth2_server, ${my.gateway-oauth2-server}
             - AddRequestHeader=gateway_oauth2_eureka_server, ${my.gateway-oauth2-eureka-server}
-            - RewritePath=/oauth2-admin-server/(?<segment>/?.*), /oauth2-admin-server/$\{segment}
+            - RewritePath=/oauth2-admin-server/(?<segment>/?.*), /$\{segment}
             - name: Hystrix
               args:
                 name: oauth2-admin-server
@@ -209,7 +206,7 @@ eureka:
       user.password: forsrc
   client:
     service-url:
-      defaultZone: http://forsrc:forsrc@${my.eureka-server}/oauth2-eureka-server/eureka
+      defaultZone: http://forsrc:forsrc@${my.eureka-server}/eureka
 
 management:
   endpoints:

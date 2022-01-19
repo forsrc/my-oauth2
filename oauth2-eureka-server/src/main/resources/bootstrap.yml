@@ -1,24 +1,21 @@
 my:
   hostname: ${MY_HOST_NAME:oauth2-eureka-server}
   application-name: oauth2-eureka-server
-  context-path: /${my.application-name}
   session-name: EUREKA_SESSION
   username: ${MY_USERNAME:forsrc}
   password: ${MY_PASSWORD:forsrc}
-  port: 23000
+  port: 8080
   #  gateway-port: 8080
   #  gateway-port-to-port: 8080
-  #  eureka-server: ${MY_EUREKA_SERVER:localhost:23000}
-  admin-server: ${MY_ADMIN_SERVER:my-oauth2:24000}
+  #  eureka-server: ${MY_EUREKA_SERVER:localhost:8080}
+  admin-server: ${MY_ADMIN_SERVER:my-oauth2:8080}
 
 server:
   port: ${my.port}
   servlet:
-    context-path: ${my.context-path}
     session:
       cookie:
         name: ${my.session-name}
-        path: ${my.context-path}
 
   ssl:
     name: my-oauth2
@@ -48,11 +45,11 @@ spring:
   boot:
     admin:
       client:
-        url: http://${my.admin-server}/oauth2-admin-server
+        url: http://${my.admin-server}
         username: ${my.username}
         password: ${my.password}
         instance:
-          management-base-url: http://${eureka.instance.hostname}:${server.port}${server.servlet.context-path}
+          management-base-url: http://${eureka.instance.hostname}:${server.port}
 
   security:
     basic:
@@ -68,11 +65,11 @@ eureka:
     instance-id: ${eureka.instance.hostname}:${spring.application.name}:${server.port}
     appname: ${spring.application.name}
     health-check-url-path: /actuator/health
-    home-page-url: http://${eureka.instance.hostname}:${server.port}${server.servlet.context-path}
+    home-page-url: http://${eureka.instance.hostname}:${server.port}
     status-page-url: ${eureka.instance.home-page-url}/actuator
     leaseRenewalIntervalInSeconds: 5
     metadata-map:
-      management.context-path: ${server.servlet.context-path}/actuator
+      management.context-path: /actuator
       user.name: ${my.username}
       user.password: ${my.password}
   client:
@@ -80,7 +77,7 @@ eureka:
     registerWithEureka: true
     fetchRegistry: false
     serviceUrl:
-      defaultZone: http://${spring.security.user.name}:${spring.security.user.password}@${eureka.instance.hostname}:${server.port}${server.servlet.context-path}/eureka
+      defaultZone: http://${spring.security.user.name}:${spring.security.user.password}@${eureka.instance.hostname}:${server.port}/eureka
   #    initialInstanceInfoReplicationIntervalSeconds: 5
   #    healthcheck:
   #      enabled:                      true

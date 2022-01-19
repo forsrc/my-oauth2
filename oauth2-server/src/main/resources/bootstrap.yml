@@ -1,25 +1,22 @@
 my:
   hostname: ${MY_HOST_NAME:oauth2-server}
   application-name: oauth2-server
-  context-path: /${my.application-name}
   session-name: AUTH_SERVER_SESSION
-  port: 20000
+  port: 8080
 #  gateway-port: 8080
 #  gateway-port-to-port: 8080
 
-  oauth2-client: ${MY_OAUTH2_CLIENT:oauth2-client:22000}
-  eureka-server: ${MY_EUREKA_SERVER:oauth2-eureka-server:23000}
-  admin-server: ${MY_ADMIN_SERVER:oauth2-admin-server:24000}
+  oauth2-client: ${MY_OAUTH2_CLIENT:oauth2-client:8080}
+  eureka-server: ${MY_EUREKA_SERVER:oauth2-eureka-server:8080}
+  admin-server: ${MY_ADMIN_SERVER:oauth2-admin-server:8080}
 
 
 server:
   port: ${my.port}
   servlet:
-    context-path: ${my.context-path}
     session:
       cookie:
         name: ${my.session-name}
-        path: ${my.context-path}
   forward-headers-strategy: framework
   #  tomcat:
   #    remoteip:
@@ -58,8 +55,8 @@ security:
       auto-approve-scopes: .*
       authorized-grant-types: authorization_code, client_credentials, refresh_token, password, implicit
       registered-redirect-uri:
-        - ${my.oauth2-client}/oauth2-client/login
-        - ${my.oauth2-client}/oauth2-client/login/oauth2/code/my-oauth2
+        - ${my.oauth2-client}/login
+        - ${my.oauth2-client}/login/oauth2/code/my-oauth2
     authorization:
       check-token-access: permitAll()
 #    resource:
@@ -92,7 +89,7 @@ spring:
         username: forsrc
         password: forsrc
         instance:
-          management-base-url: http://${eureka.instance.hostname}:${server.port}${server.servlet.context-path}
+          management-base-url: http://${eureka.instance.hostname}:${server.port}
 
 eureka:
   instance:
@@ -103,12 +100,12 @@ eureka:
     leaseRenewalIntervalInSeconds: 10
     health-check-url-path: /actuator/health
     metadata-map:
-      management.context-path: ${server.servlet.context-path}/actuator
+      management.context-path: /actuator
       user.name: forsrc
       user.password: forsrc
   client:
     service-url:
-      defaultZone: http://forsrc:forsrc@${my.eureka-server}/oauth2-eureka-server/eureka
+      defaultZone: http://forsrc:forsrc@${my.eureka-server}/eureka
 
 management:
   endpoints:

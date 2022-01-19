@@ -1,7 +1,6 @@
 my:
   hostname: ${MY_HOST_NAME:oauth2-gateway}
   application-name: oauth2-gateway
-  context-path: /${my.application-name}
   session-name: GATEWAY_SESSION
   username: ${MY_USERNAME:forsrc}
   password: ${MY_PASSWORD:forsrc}

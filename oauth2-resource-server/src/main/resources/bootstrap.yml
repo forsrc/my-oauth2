@@ -1,17 +1,15 @@
 my:
   hostname: ${MY_HOST_NAME:oauth2-resource-server}
   application-name: oauth2-resource-server
-  context-path: /${my.application-name}
   session-name: RESOURCE_SERVER_SESSION
-  port: 21000
-  oauth2-server: ${MY_OAUTH2_SERVER:oauth2-server:20000}
-  eureka-server: ${MY_EUREKA_SERVER:oauth2-eureka-server:23000}
-  admin-server: ${MY_ADMIN_SERVER:oauth2-admin-server:24000}
+  port: 8080
+  oauth2-server: ${MY_OAUTH2_SERVER:oauth2-server:8080}
+  eureka-server: ${MY_EUREKA_SERVER:oauth2-eureka-server:8080}
+  admin-server: ${MY_ADMIN_SERVER:oauth2-admin-server:8080}
 
 server:
   port: ${my.port}
   servlet:
-    context-path: ${my.context-path}
     session:
       cookie:
         name: ${my.session-name}
@@ -40,7 +38,7 @@ security:
       scope: ui, read, write
     resource:
       #token-info-uri: ${my.oauth2-server}/oauth/check_token
-      user-info-uri: ${my.oauth2-server}/oauth2-server/oauth/user_info
+      user-info-uri: ${my.oauth2-server}/oauth/user_info
       #preferTokenInfo: true
 #      jwt:
 #        key-uri:      ${oauth2-server}/oauth/token_key
@@ -57,11 +55,11 @@ spring:
   boot:
     admin:
       client:
-        url: http://${my.admin-server}/oauth2-admin-server
+        url: http://${my.admin-server}
         username: forsrc
         password: forsrc
         instance:
-          management-base-url: http://${eureka.instance.hostname}:${server.port}${server.servlet.context-path}
+          management-base-url: http://${eureka.instance.hostname}:${server.port}
 eureka:
   instance:
     prefer-ip-address: true
@@ -71,12 +69,12 @@ eureka:
     leaseRenewalIntervalInSeconds: 5
     health-check-url-path: /actuator/health
     metadata-map:
-      management.context-path: ${server.servlet.context-path}/actuator
+      management.context-path: /actuator
       user.name: forsrc
       user.password: forsrc
   client:
     service-url:
-      defaultZone: http://forsrc:forsrc@${my.eureka-server}/oauth2-eureka-server/eureka
+      defaultZone: http://forsrc:forsrc@${my.eureka-server}/eureka
 
 management:
   endpoints:

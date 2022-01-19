@@ -1,25 +1,22 @@
 my:
   hostname: ${MY_HOST_NAME:oauth2-client}
   application-name: oauth2-client
-  context-path: /${my.application-name}
   session-name: CLIENT_SESSION
-  port: ${MY_PORT:22000}
+  port: ${MY_PORT:8080}
   #  gateway-port: 8080
   #  gateway-port-to-port: 8080
   gateway-base-url: ${MY_GATEWAY:https://oauth2-gateway}
   oauth2-server: ${my.gateway-base-url}/oauth2-server
   oauth2-rource-server: ${my.gateway-base-url}/oauth2-resource-server
   oauth2-client: ${my.gateway-base-url}/oauth2-client
-  eureka-server: ${MY_EUREKA_SERVER:oauth2-eureka-server:23000}
-  admin-server: ${MY_ADMIN_SERVER:oauth2-admin-server:24000}
+  eureka-server: ${MY_EUREKA_SERVER:oauth2-eureka-server:8080}
+  admin-server: ${MY_ADMIN_SERVER:oauth2-admin-server:8080}
 server:
   port: ${my.port}
   servlet:
-    context-path: ${my.context-path}
     session:
       cookie:
         name: ${my.session-name}
-        path: ${my.context-path}
   forward-headers-strategy: framework
   #  tomcat:
   #    redirect-context-root:  false
@@ -74,11 +71,11 @@ spring:
   boot:
     admin:
       client:
-        url: ${my.admin-server}/oauth2-admin-server
+        url: ${my.admin-server}
         username: forsrc
         password: forsrc
         instance:
-          management-base-url: http://${eureka.instance.hostname}:${server.port}${server.servlet.context-path}
+          management-base-url: http://${eureka.instance.hostname}:${server.port}
   security:
     oauth2:
       client:
@@ -124,12 +121,12 @@ eureka:
     #    leaseRenewalIntervalInSeconds: 5
     health-check-url-path: /actuator/health
     metadata-map:
-      management.context-path: ${server.servlet.context-path}/actuator
+      management.context-path: /actuator
       user.name: forsrc
       user.password: forsrc
   client:
     service-url:
-      defaultZone: http://forsrc:forsrc@${my.eureka-server}/oauth2-eureka-server/eureka
+      defaultZone: http://forsrc:forsrc@${my.eureka-server}/eureka
 
 management:
   endpoints:
