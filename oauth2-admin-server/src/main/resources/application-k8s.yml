@@ -3,4 +3,4 @@ my:
   application-name: oauth2-admin-server
   session-name: ADMIN_SESSION
   port: 8080
-  eureka-server: ${MY_EUREKA_SERVER:oauth2-eureka-server:8080}
+  eureka-server: ${MY_EUREKA_SERVER:http://forsrc:forsrc@oauth2-eureka-server:8080/eureka}

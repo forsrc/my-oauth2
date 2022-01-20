@@ -4,5 +4,5 @@ my:
   session-name: RESOURCE_SERVER_SESSION
   port: 8080
   oauth2-server: ${MY_OAUTH2_SERVER:oauth2-server:8080}
-  eureka-server: ${MY_EUREKA_SERVER:oauth2-eureka-server:8080}
+  eureka-server: ${MY_EUREKA_SERVER:http://forsrc:forsrc@oauth2-eureka-server:8080/eureka}
   admin-server: ${MY_ADMIN_SERVER:oauth2-admin-server:8080}

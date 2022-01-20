@@ -7,5 +7,5 @@ my:
   port: 23000
   #  gateway-port: 8080
   #  gateway-port-to-port: 8080
-  #  eureka-server: ${MY_EUREKA_SERVER:localhost:23000}
+  eureka-server: ${MY_EUREKA_SERVER:http://forsrc:forsrc@oauth2-eureka-server:23000/eureka}
   admin-server: ${MY_ADMIN_SERVER:my-oauth2:24000}

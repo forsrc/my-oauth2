@@ -14,7 +14,7 @@ my:
   gateway-oauth2-client: ${my.gateway-base-url}/oauth2-client/
   gateway-oauth2-eureka-server: ${my.gateway-base-url}/oauth2-eureka-server/
   gateway-oauth2-admin-server: ${my.gateway-base-url}/oauth2-admin-server/
-  eureka-server: ${MY_EUREKA_SERVER:oauth2-eureka-server:8080}
+  eureka-server: ${MY_EUREKA_SERVER:http://forsrc:forsrc@oauth2-eureka-server:8080/eureka}
   admin-server: ${MY_ADMIN_SERVER:oauth2-admin-server:8080}
 
 server:
@@ -206,7 +206,8 @@ eureka:
       user.password: forsrc
   client:
     service-url:
-      defaultZone: http://forsrc:forsrc@${my.eureka-server}/eureka
+      # defaultZone: http://forsrc:forsrc@${my.eureka-server}/eureka
+      defaultZone: ${my.eureka-server}
 
 management:
   endpoints:

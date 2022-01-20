@@ -68,7 +68,8 @@ eureka:
       user.password: forsrc
   client:
     service-url:
-      defaultZone: http://forsrc:forsrc@${my.eureka-server}/eureka
+      # defaultZone: http://forsrc:forsrc@${my.eureka-server}/eureka
+      defaultZone: ${my.eureka-server}
 
 management:
   endpoints:
