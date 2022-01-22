@@ -34,7 +34,7 @@ spec:
           env:
             - name: MY_EUREKA_SERVER
               # value: http://forsrc:forsrc@oauth2-eureka-server:8080/eureka
-              value: http://forsrc:forsrc@oauth2-eureka-server-0.oauth2-eureka-server.oauth2.svc.cluster.local:8080/eureka, http://forsrc:forsrc@oauth2-eureka-server-1.oauth2-eureka-server.oauth2.svc.cluster.local:8080/eureka            
+              value: http://forsrc:forsrc@oauth2-eureka-server:8080/eureka, http://forsrc:forsrc@oauth2-eureka-server-0.oauth2-eureka-server.oauth2.svc.cluster.local:8080/eureka, http://forsrc:forsrc@oauth2-eureka-server-1.oauth2-eureka-server.oauth2.svc.cluster.local:8080/eureka            
             # - name: JVM_OPTS
             #   value: "-Xms1g -Xmx1g"
           livenessProbe:

@@ -62,3 +62,32 @@ spec:
     targetPort: 8080
     name: oauth2-gateway
   type: ClusterIP
+
+---
+# kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/master/deploy/static/provider/cloud/deploy.yaml
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: oauth2-gateway
+  namespace: oauth2
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    nginx.ingress.kubernetes.io/affinity: "cookie"
+    nginx.ingress.kubernetes.io/session-cookie-name: "GATEWAY_SESSION"
+    nginx.ingress.kubernetes.io/session-cookie-expires: "172800"
+    nginx.ingress.kubernetes.io/session-cookie-max-age: "172800"
+    nginx.ingress.kubernetes.io/session-cookie-path: /
+spec:
+  rules:
+  - host: oauth2-gateway
+    http:
+      paths:
+      - path: /
+        pathType: Prefix #"Exact", "Prefix", or "ImplementationSpecific"
+        backend:
+          service:
+            name: oauth2-gateway
+            port:
+              number: 8080
