@@ -1,0 +1,13 @@
+my:
+  hostname: ${MY_HOST_NAME:oauth2-client}
+  application-name: oauth2-client
+  session-name: CLIENT_SESSION
+  port: ${MY_PORT:8080}
+  #  gateway-port: 8080
+  #  gateway-port-to-port: 8080
+  gateway-base-url: ${MY_GATEWAY:https://oauth2-gateway}
+  oauth2-server: ${my.gateway-base-url}/oauth2-server
+  oauth2-rource-server: ${my.gateway-base-url}/oauth2-resource-server
+  oauth2-client: ${my.gateway-base-url}/oauth2-client
+  eureka-server: ${MY_EUREKA_SERVER:http://forsrc:forsrc@oauth2-eureka-server:8080/eureka}
+  admin-server: ${MY_ADMIN_SERVER:oauth2-admin-server:8080}

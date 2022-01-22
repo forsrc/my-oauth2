@@ -1,0 +1,8 @@
+my:
+  hostname: ${MY_HOST_NAME:oauth2-resource-server}
+  application-name: oauth2-resource-server
+  session-name: RESOURCE_SERVER_SESSION
+  port: 8080
+  oauth2-server: ${MY_OAUTH2_SERVER:oauth2-server:8080}
+  eureka-server: ${MY_EUREKA_SERVER:http://forsrc:forsrc@oauth2-eureka-server:8080/eureka}
+  admin-server: ${MY_ADMIN_SERVER:oauth2-admin-server:8080}

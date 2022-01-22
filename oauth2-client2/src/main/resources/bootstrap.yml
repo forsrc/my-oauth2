@@ -1,0 +1,147 @@
+my:
+  hostname: ${MY_HOST_NAME:oauth2-client}
+  application-name: oauth2-client
+  session-name: CLIENT_SESSION
+  port: ${MY_PORT:8080}
+  #  gateway-port: 8080
+  #  gateway-port-to-port: 8080
+  gateway-base-url: ${MY_GATEWAY:https://oauth2-gateway}
+  oauth2-server: ${my.gateway-base-url}/oauth2-server
+  oauth2-rource-server: ${my.gateway-base-url}/oauth2-resource-server
+  oauth2-client: ${my.gateway-base-url}/oauth2-client
+  eureka-server: ${MY_EUREKA_SERVER:http://forsrc:forsrc@oauth2-eureka-server:8080/eureka}
+  admin-server: ${MY_ADMIN_SERVER:oauth2-admin-server:8080}
+server:
+  port: ${my.port}
+  servlet:
+    session:
+      cookie:
+        name: ${my.session-name}
+  forward-headers-strategy: framework
+  #  tomcat:
+  #    redirect-context-root:  false
+  #    remoteip:
+  #      remote-ip-header:     x-forwarded-for
+  #      protocol-header:      x-forwarded-proto
+  #      port-header:          x-forwarded-port
+  #      host-header:          x-forwarded-host
+  #      internal-proxies:     ".*"
+  ssl:
+    name: my-oauth2
+    key-store-provider: SUN
+    key-store-type: JKS
+    key-store: classpath:ssl/${server.ssl.name}.server.keystore
+    key-store-password: forsrc
+    key-alias: ${server.ssl.name}.server
+    enabled: false
+    #trust-store-provider: SUN
+    #trust-store-type:     JKS
+    #trust-store:          classpath:ssl/${server.ssl.name}.server.keystore
+    #trust-store-password: forsrc
+    #client-auth:          need
+
+
+
+
+
+
+#security:
+#  oauth2:
+#    client:
+#      client-id:                    forsrc
+#      client-secret:                forsrc
+#      access-token-uri:             ${oauth2-server}/oauth/token
+#      user-authorization-uri:       ${oauth2-server}/oauth/authorize
+##      grant-type:                   client_credentials
+#      scope:                        ui, read, write
+#    resource:
+#      token-info-uri:               ${oauth2-server}/oauth/check_token
+#      user-info-uri:                ${oauth2-server}/user/me
+##      jwt:
+##        key-uri:      ${oauth2-server}/oauth/token_key
+
+
+spring:
+  application:
+    name: ${my.application-name}
+  main.allow-bean-definition-overriding: true
+  thymeleaf:
+    prefix: classpath:/templates/
+    suffix: .html
+  boot:
+    admin:
+      client:
+        url: ${my.admin-server}
+        username: forsrc
+        password: forsrc
+        instance:
+          management-base-url: http://${eureka.instance.hostname}:${server.port}
+  security:
+    oauth2:
+      client:
+        registration:
+          my-oauth2:
+            client-id: ui
+            client-secret: forsrc
+            client-authentication-method: basic
+            authorization-grant-type: authorization_code
+            #redirect-uri:                 '{baseUrl}/login/oauth2/code/{registrationId}'
+            redirect-uri: ${my.oauth2-client}/login/oauth2/code/my-oauth2
+            scope: ui, read, write
+        #          my-oauth2-client-credentials:
+        #            client-id:                    forsrc
+        #            client-secret:                forsrc
+        #            authorization-grant-type:     client_credentials
+        #            scope:                        ui
+        #          my-oauth2-password:
+        #            client-id:                    forsrc
+        #            client-secret:                forsrc
+        #            authorization-grant-type:     password
+        #            scope:                        ui
+        provider:
+          my-oauth2:
+            authorization-uri: ${my.oauth2-server}/oauth/authorize
+            token-uri: ${my.oauth2-server}/oauth/token
+            logout-uri: ${my.oauth2-server}/oauth/logout?referer=${my.oauth2-client}&gateway_referer=gateway_oauth2_client
+            jwk-set-uri: ${my.oauth2-server}/oauth/jwks
+            user-info-uri: ${my.oauth2-server}/oauth/user_info
+            user-name-attribute: name
+
+          my-oauth2-client-credentials:
+            token-uri: ${my.oauth2-server}/oauth/token
+          my-oauth2-password:
+            token-uri: ${my.oauth2-server}/oauth/token
+
+eureka:
+  instance:
+    #    prefer-ip-address: true
+    hostname: ${my.hostname}
+    instance-id: ${eureka.instance.hostname}:${spring.application.name}:${server.port}
+    appname: ${spring.application.name}
+    #    leaseRenewalIntervalInSeconds: 5
+    health-check-url-path: /actuator/health
+    metadata-map:
+      management.context-path: /actuator
+      user.name: forsrc
+      user.password: forsrc
+  client:
+    service-url:
+      # defaultZone: http://forsrc:forsrc@${my.eureka-server}/eureka
+      defaultZone: ${my.eureka-server}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: ALWAYS
+      probes:
+        enabled: true
+
+logging:
+  level:
+    org.springframework.security: info
+
+#debug: true

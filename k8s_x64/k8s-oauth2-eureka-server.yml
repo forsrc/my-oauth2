@@ -1,0 +1,87 @@
+# kubectl port-forward --address=0.0.0.0 -n oauth2 oauth2-eureka-server-0 8080
+
+
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: oauth2-eureka-server
+  namespace: oauth2
+spec:
+  serviceName: oauth2-eureka-server
+  replicas: 2
+  selector:
+    matchLabels:
+      app: oauth2-eureka-server
+  template:
+    metadata:
+      labels:
+        app: oauth2-eureka-server
+    spec:
+      containers:
+        - name: oauth2-eureka-server
+          image: forsrc/my-oauth2:oauth2-eureka-server
+          ports:
+            - containerPort: 8080
+          imagePullPolicy: IfNotPresent #Always
+          # resources:
+          #   requests:
+          #     memory: "1Gi"
+          #     cpu: "500m"
+          #   limits:
+          #     memory: "1200Mi"
+          #     cpu: "500m"
+          env:
+            - name: MY_EUREKA_SERVER
+              # value: http://forsrc:forsrc@oauth2-eureka-server:8080/eureka
+              value: http://forsrc:forsrc@oauth2-eureka-server-0.oauth2-eureka-server.oauth2.svc.cluster.local:8080/eureka, http://forsrc:forsrc@oauth2-eureka-server-1.oauth2-eureka-server.oauth2.svc.cluster.local:8080/eureka            
+            # - name: JVM_OPTS
+            #   value: "-Xms1g -Xmx1g"
+          livenessProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: 8080
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /actuator/health/readiness
+              port: 8080
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: oauth2-eureka-server
+  namespace: oauth2
+  labels:
+    app: oauth2-eureka-server
+spec:
+  selector:
+    app: oauth2-eureka-server
+  clusterIP: None
+  ports:
+    - port: 8080
+      targetPort: 8080
+      name: oauth2-eureka-server
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: lb-oauth2-eureka-server
+  namespace: oauth2
+  labels:
+    app: oauth2-eureka-server
+spec:
+  selector:
+    app: oauth2-eureka-server
+  type: LoadBalancer
+  ports:
+    - port: 8080
+      targetPort: 8080
