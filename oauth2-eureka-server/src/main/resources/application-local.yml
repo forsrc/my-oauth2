@@ -8,4 +8,4 @@ my:
   #  gateway-port: 8080
   #  gateway-port-to-port: 8080
   eureka-server: ${MY_EUREKA_SERVER:http://forsrc:forsrc@oauth2-eureka-server:23000/eureka}
-  admin-server: ${MY_ADMIN_SERVER:my-oauth2:24000}
+  admin-server: ${MY_ADMIN_SERVER:oauth2-admin-server:24000}

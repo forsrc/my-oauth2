@@ -8,7 +8,7 @@ my:
   #  gateway-port: 8080
   #  gateway-port-to-port: 8080
   eureka-server: ${MY_EUREKA_SERVER:http://forsrc:forsrc@oauth2-eureka-server:8080/eureka}
-  admin-server: ${MY_ADMIN_SERVER:my-oauth2:8080}
+  admin-server: ${MY_ADMIN_SERVER:oauth2-admin-server:8080}
 
 server:
   port: ${my.port}
@@ -94,7 +94,9 @@ management:
   endpoint:
     health:
       show-details: ALWAYS
-      probes:        enabled: true
+      probes:
+        enabled: true
+
 hystrix:
   dashboard:
     proxy-stream-allow-list: "*"
