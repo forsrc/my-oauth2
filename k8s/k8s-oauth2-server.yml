@@ -2,19 +2,19 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    app: oauth2-client
-  name: oauth2-client
+    app: oauth2-server
+  name: oauth2-server
   namespace: oauth2
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: oauth2-client
+      app: oauth2-server
   strategy: {}
   template:
     metadata:
       labels:
-        app: oauth2-client
+        app: oauth2-server
       # annotations:
       #   co.elastic.logs/enabled: "true"
       #   co.elastic.logs.json-logging/json.keys_under_root: "true"
@@ -22,8 +22,8 @@ spec:
       #   co.elastic.logs.json-logging/json.message_key: "message"
     spec:
       containers:
-      - image: forsrc/my-oauth2-arm64:oauth2-client
-        name: oauth2-client
+      - image: forsrc/my-oauth2-arm64:oauth2-server
+        name: oauth2-server
         ports:
         - containerPort: 8080
         imagePullPolicy: IfNotPresent #Always
@@ -51,13 +51,13 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: oauth2-client
+  name: oauth2-server
   namespace: oauth2
 spec:
   selector:
-    app: oauth2-client
+    app: oauth2-server
   ports:
   - port: 8080
     targetPort: 8080
-    name: oauth2-client
+    name: oauth2-server
   type: ClusterIP
