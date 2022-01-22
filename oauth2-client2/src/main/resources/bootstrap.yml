@@ -5,7 +5,7 @@ my:
   port: ${MY_PORT:8080}
   #  gateway-port: 8080
   #  gateway-port-to-port: 8080
-  gateway-base-url: ${MY_GATEWAY:https://oauth2-gateway}
+  gateway-base-url: ${MY_GATEWAY:http://oauth2-gateway:8080}
   oauth2-server: ${my.gateway-base-url}/oauth2-server
   oauth2-rource-server: ${my.gateway-base-url}/oauth2-resource-server
   oauth2-client: ${my.gateway-base-url}/oauth2-client
