@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserController {
 
 
-    @GetMapping(path = "/me/", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(path = "/me", produces = MediaType.APPLICATION_JSON_VALUE)
     //@PreAuthorize("isAuthenticated()")
     public ResponseEntity<Principal> user(Principal principal) {
         System.out.println("-> Principal: " + principal);
