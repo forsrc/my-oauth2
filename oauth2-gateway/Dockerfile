@@ -12,7 +12,7 @@ RUN mkdir /app/
 WORKDIR /app
 
 ARG JAR_FILE=target/*.jar
-ARG APP_PORT=8080
+ARG APP_PORT=80
 
 #COPY ${JAR_FILE} /app/app.jar
 

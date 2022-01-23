@@ -25,24 +25,24 @@ spec:
       - image: forsrc/my-oauth2:oauth2-gateway
         name: oauth2-gateway
         ports:
-        - containerPort: 8080
+        - containerPort: 80
         imagePullPolicy: IfNotPresent #Always
         resources:
         env:
           - name: MY_EUREKA_SERVER
-            value: http://forsrc:forsrc@oauth2-eureka-server:8080/eureka
-            # value: http://forsrc:forsrc@oauth2-eureka-server-0.oauth2-eureka-server.oauth2.svc.cluster.local:8080/eureka, http://forsrc:forsrc@oauth2-eureka-server-1.oauth2-eureka-server.oauth2.svc.cluster.local:8080/eureka
+            value: http://forsrc:forsrc@oauth2-eureka-server:80/eureka
+            # value: http://forsrc:forsrc@oauth2-eureka-server-0.oauth2-eureka-server.oauth2.svc.cluster.local:80/eureka, http://forsrc:forsrc@oauth2-eureka-server-1.oauth2-eureka-server.oauth2.svc.cluster.local:80/eureka
         livenessProbe:
             httpGet:
               path: /actuator/health/liveness
-              port: 8080
+              port: 80
             initialDelaySeconds: 30
             periodSeconds: 10
             timeoutSeconds: 5
         readinessProbe:
           httpGet:
             path: /actuator/health/readiness
-            port: 8080
+            port: 80
           initialDelaySeconds: 30
           periodSeconds: 10
           timeoutSeconds: 5
@@ -58,8 +58,8 @@ spec:
   selector:
     app: oauth2-gateway
   ports:
-  - port: 8080
-    targetPort: 8080
+  - port: 80
+    targetPort: 80
     name: oauth2-gateway
   type: ClusterIP
 
@@ -90,4 +90,4 @@ spec:
           service:
             name: oauth2-gateway
             port:
-              number: 8080
+              number: 80
