@@ -1,0 +1,190 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: oauth2-gateway
+  name: oauth2-gateway
+  namespace: oauth2
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: oauth2-gateway
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        app: oauth2-gateway
+      # annotations:
+      #   co.elastic.logs/enabled: "true"
+      #   co.elastic.logs.json-logging/json.keys_under_root: "true"
+      #   co.elastic.logs.json-logging/json.add_error_key: "true"
+      #   co.elastic.logs.json-logging/json.message_key: "message"
+    spec:
+      containers:
+      - image: forsrc/my-oauth2-arm64:oauth2-gateway
+        name: oauth2-gateway
+        ports:
+        - containerPort: 80
+        imagePullPolicy: IfNotPresent #Always
+        resources:
+        env:
+          - name: MY_EUREKA_SERVER
+            value: http://forsrc:forsrc@oauth2-eureka-server:8080/eureka
+        livenessProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: 80
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+        readinessProbe:
+          httpGet:
+            path: /actuator/health/readiness
+            port: 80
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: oauth2-gateway
+  namespace: oauth2
+spec:
+  selector:
+    app: oauth2-gateway
+  ports:
+  - port: 80
+    targetPort: 80
+    name: oauth2-gateway
+  type: ClusterIP
+
+
+---
+# kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/master/deploy/static/provider/cloud/deploy.yaml
+# kubectl delete -A ValidatingWebhookConfiguration ingress-nginx-admission
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: oauth2-gateway
+  namespace: oauth2
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    nginx.ingress.kubernetes.io/affinity: "cookie"
+    nginx.ingress.kubernetes.io/session-cookie-name: "GATEWAY_SESSION"
+    nginx.ingress.kubernetes.io/session-cookie-expires: "172800"
+    nginx.ingress.kubernetes.io/session-cookie-max-age: "172800"
+    nginx.ingress.kubernetes.io/session-cookie-path: /
+spec:
+  rules:
+  - host: oauth2-gateway
+    http:
+      paths:
+      - path: /
+        pathType: Exact #"Exact", "Prefix", or "ImplementationSpecific"
+        backend:
+          service:
+            name: oauth2-gateway
+            port:
+              number: 80
+
+---
+# openssl genrsa -out oauth2-gateway.key 2048
+# openssl req -new -x509 -key oauth2-gateway.key -out oauth2-gateway.crt -subj /C=CN/ST=forsrc/L=forsrc/O=devops/CN=oauth2-gateway
+# kubectl create secret tls oauth2-gateway -n oauth2 --cert=oauth2-gateway.crt --key=oauth2-gateway.key
+
+
+apiVersion: v1
+kind: Secret
+metadata:
+  name: oauth2-gateway
+  namespace: oauth2
+type: kubernetes.io/tls
+data:
+  # cat oauth2-gateway.crt | base64
+  tls.crt: |
+    MIIDkzCCAnugAwIBAgIUPDCKzrbz59YVuIe3NlN+oE81lewwDQYJKoZIhvcNAQEL
+    BQAwWTELMAkGA1UEBhMCQ04xDzANBgNVBAgMBmZvcnNyYzEPMA0GA1UEBwwGZm9y
+    c3JjMQ8wDQYDVQQKDAZkZXZvcHMxFzAVBgNVBAMMDm9hdXRoMi1nYXRld2F5MB4X
+    DTIyMDEyMzA5MTk1MFoXDTIyMDIyMjA5MTk1MFowWTELMAkGA1UEBhMCQ04xDzAN
+    BgNVBAgMBmZvcnNyYzEPMA0GA1UEBwwGZm9yc3JjMQ8wDQYDVQQKDAZkZXZvcHMx
+    FzAVBgNVBAMMDm9hdXRoMi1nYXRld2F5MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8A
+    MIIBCgKCAQEAruJxlzGxKVVG1CY1wSZwQHwrxBauHwWeM19cebW4ddvy9Q9yGpQr
+    ZYOELGXdxBtUMYS55rMT9cGbB0qWh0iyimD41MLLIfKjzZxjgxhfYkBLOPPmAjB0
+    DzdUmVe1x4ZCxwLppjrt/Hulfl0DcJzIq3hc3f5zYkAgL6RWkrJ3YSg4xkYgG0ps
+    85ySHKYa+gHePIGActeiZiMPTlAylZyceN0vFGNI04J9gX0p2acZbnU3N595Up/D
+    PMO4NM4uO+xJQ85otLHDt9YE/njmJGkdFvZgtPhWgkSVTvXgfQRDlpovNVXdremI
+    YnPSV/lxEd9WztOimw3kuNZgoEm8s52SzwIDAQABo1MwUTAdBgNVHQ4EFgQUgOGh
+    zEtYP2Z1svvc30+cDKXxghAwHwYDVR0jBBgwFoAUgOGhzEtYP2Z1svvc30+cDKXx
+    ghAwDwYDVR0TAQH/BAUwAwEB/zANBgkqhkiG9w0BAQsFAAOCAQEAm1AqTgqgUBGK
+    6j9KOwfgcAazmJFAw7UyPUiqWxOSwQfTqaAs03bLRcnTFpLAbj9s9fMKylr7nlfn
+    MkOBGf45sOl4GA0MVqGVDcT18lJu07usZoyxYQEytA1uIQMYqFG9Vii7/vKPG07q
+    +qWnaFuSf9hYwSBN44wj5JG3vj123c/rEjlEysHi2AR5xm5ckngrngHib6zQ9A2q
+    laneelMXIm287/okrR37MXA2fXgKnxVJGzHTW9VeOIoAx3jvt77XDAGkSotuF0hf
+    4Bp6rw9sHgVVo01og+wVqysArGghgonv/i+vPwYlwCGhCCLzkKFo2s51bySlGs6h
+    B+q+N2TYFA==
+  # cat oauth2-gateway.key | base64
+  tls.key:  |
+    MIIEpAIBAAKCAQEAruJxlzGxKVVG1CY1wSZwQHwrxBauHwWeM19cebW4ddvy9Q9y
+    GpQrZYOELGXdxBtUMYS55rMT9cGbB0qWh0iyimD41MLLIfKjzZxjgxhfYkBLOPPm
+    AjB0DzdUmVe1x4ZCxwLppjrt/Hulfl0DcJzIq3hc3f5zYkAgL6RWkrJ3YSg4xkYg
+    G0ps85ySHKYa+gHePIGActeiZiMPTlAylZyceN0vFGNI04J9gX0p2acZbnU3N595
+    Up/DPMO4NM4uO+xJQ85otLHDt9YE/njmJGkdFvZgtPhWgkSVTvXgfQRDlpovNVXd
+    remIYnPSV/lxEd9WztOimw3kuNZgoEm8s52SzwIDAQABAoIBAGs/xYeCWvJNMM2j
+    zS1xpD93puNvQUMXD+jTX4PodIIa7Alren9gRKjRmbockn7Uf7KKgfM/+Uqqe6di
+    D6RRaeTBCXh5KVfdVKUgdkqMJNq9MSRxNqo7CsHWHdSYXItLBCLF34Io+4/uSBSR
+    eC2UiN/XRaSCikJDrzloYAtA1UNIAfsg3AH5nDpSNJoArVCklZ7s/eiiAJJw+Wce
+    e0aaOoxZFw75PnZzQmXXYotp8sMgRj3TY0UX6hwlfQjJhUWQAJY/rphHOwXREuAG
+    qad30LW0IHLuMfcm1CDK0xC4R/74kya+JWk0C7yU4wrNwx0yyOgSZ8+bWlKw5kaV
+    QV07VQkCgYEA5bdmvsraIAtTdG1Hw2uPM/yv4muE/EfrutSI3NKACunADi5FsA/w
+    QIHw/C+rWK3d91yBRWOyA5ZjYJ4chapRN70HrHm5BL2/4fkWtC2aHPqA1F2Wz5DL
+    zaOz4XBreZP9tcm77r3od/FTgDD4T71C3UYaIuF0FMLXec+oltDfQosCgYEAwuT3
+    1QTPA83Xu0EnYHjJHIKRc36yIK9lBR9whxz4chozzTijVg0FTKdunvyP239qv8nV
+    UktHt70N+3UL2fbhYaD3YXuub77N21FmsbLsyJJKijAj5UswT7goEQ10W1zOqnUt
+    5DccffaB/Pet/Q/14koIfShxfKjBtzFfrORwjU0CgYApQzRVeSKNNvuaojaNx7hF
+    YlJFnYKZvmF9gcfDwpv1Wd+BrJYf9fz12WFsKzPgDfsc/6TIzguf0VewdzYwXFOS
+    a4YBWSv+yga5lICbhMV2Bxk1DEqWpi+1lH4vNH5ZrFeaW85CKCKlyNdy41j3Gcv0
+    6y6urUioogcKfl6OGJ7B2QKBgQCN46bvBkY07crPAHtLiARa5lBAto+2rhss5JvH
+    MndKkvr9wOthfa9LBGbMBvIxCo3MPYQ6GqaHBXPFi4xqTov9yPPxm9r+bfpvXs8W
+    Nj6fM6pi+vNXPytYDqnU6Ge7EFFB1nfnu5vZtPskEaoxIEqSSfXuMOCWskH+Pkr6
+    k4HBzQKBgQDWa+Nlq0EtM/CWcxG4qOv5OfMBvNR3S6xrhRMk9CSj6iHOD7lEMrHt
+    bWwCo44V6hObXz3NNsSvEXBcilmeeMee0xynOFpFxfRFY61KB00uel/sfWmJBg3I
+    SS44Tf7PIKMXsFq15PBdju60n8Ob4NzOHPtXX4G7yAxeDY80H3Be/A==
+
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: oauth2-gateway-https
+  namespace: oauth2
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/affinity: "cookie"
+    nginx.ingress.kubernetes.io/session-cookie-name: "GATEWAY_SESSION"
+    nginx.ingress.kubernetes.io/session-cookie-expires: "172800"
+    nginx.ingress.kubernetes.io/session-cookie-max-age: "172800"
+    nginx.ingress.kubernetes.io/session-cookie-path: /
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+spec:
+  tls:
+  - hosts:
+    - oauth2-gateway
+    secretName: oauth2-gateway
+  rules:
+  - host: oauth2-gateway
+    http:
+      paths:
+      - path: /
+        pathType: Prefix #"Exact", "Prefix", or "ImplementationSpecific"
+        backend:
+          service:
+            name: oauth2-gateway
+            port:
+              number: 80
