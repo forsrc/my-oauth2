@@ -128,7 +128,7 @@ spring:
             - CachingRequestBodyFilter
             - AddRequestHeader=gateway_enable, true
             - AddRequestHeader=gateway_oauth2_server, ${my.gateway-oauth2-server}
-            - RewritePath=/oauth2-resource-server(?<segment>/?.*), /$\{segment}
+            - RewritePath=/oauth2-resource-server/(?<segment>/?.*), /$\{segment}
             - name: Hystrix
               args:
                 name: oauth2-resource-server

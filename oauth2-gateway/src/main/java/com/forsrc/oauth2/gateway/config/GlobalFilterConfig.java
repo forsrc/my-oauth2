@@ -1,6 +1,7 @@
 package com.forsrc.oauth2.gateway.config;
 
 import java.nio.charset.StandardCharsets;
+import java.security.Principal;
 import java.util.HashMap;
 
 import org.springframework.cloud.gateway.filter.GatewayFilter;
@@ -17,6 +18,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
+import org.springframework.web.server.ServerWebExchange;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -47,10 +49,20 @@ public class GlobalFilterConfig {
 		}
 	}
 
+	public static ServerWebExchange withBearerAuth(ServerWebExchange exchange, String clientName) {
+        return exchange.mutate()
+                .request(r -> r.headers(headers -> headers.add("X-client-name", clientName))).build();
+    }
+	
 	@Bean
 	@Order(-1)
 	public GlobalFilter a() {
 		return (exchange, chain) -> {
+			
+			exchange.getPrincipal()
+            .map(Principal::getName)
+            .map(clientName -> withBearerAuth(exchange, clientName))
+            .defaultIfEmpty(exchange).flatMap(chain::filter);
 
 			ServerHttpRequest request = exchange.getRequest();
 
