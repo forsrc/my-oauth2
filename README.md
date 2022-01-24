@@ -25,7 +25,7 @@ ACCESS_TOKEN=$(curl -k --request POST -u forsrc:forsrc "https://oauth2-gateway/o
 
 curl -k --request GET "https://oauth2-gateway/oauth2-server/user/me?access_token=$ACCESS_TOKEN"
 
-curl -k -X GET --header "Accept: application/json" --header "Authorization: Bearer $ACCESS_TOKEN" "https://oauth2-gateway/oauth2-server/usr/me"
+curl -k -X GET --header "Accept: application/json" --header "Authorization: Bearer $ACCESS_TOKEN" "https://oauth2-gateway/oauth2-server/user/me"
 
 curl -k -X GET --header "Accept: application/json" --header "Authorization: Bearer $ACCESS_TOKEN" "https://oauth2-gateway/oauth2-resource-server/api/test"
 

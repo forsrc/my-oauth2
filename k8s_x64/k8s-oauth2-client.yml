@@ -46,6 +46,10 @@ spec:
           initialDelaySeconds: 30
           periodSeconds: 10
           timeoutSeconds: 5
+      initContainers:
+      - name: init-waiting
+        image: busybox:1.28
+        command: ['sh', '-c', 'until nc -z oauth2-eureka-server 8080; do echo waiting for oauth2-eureka-server 8080; sleep 2; done;']
 
 ---
 
