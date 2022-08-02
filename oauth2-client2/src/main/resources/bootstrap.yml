@@ -102,7 +102,7 @@ spring:
           my-oauth2:
             authorization-uri: ${my.oauth2-server}/oauth/authorize
             token-uri: ${my.oauth2-server}/oauth/token
-            logout-uri: ${my.oauth2-server}/oauth/logout?referer=${my.oauth2-client}&gateway_referer=gateway_oauth2_client
+            logout-uri: ${my.oauth2-server}/oauth/logout?referer=${my.oauth2-client}/&gateway_referer=gateway_oauth2_client
             jwk-set-uri: ${my.oauth2-server}/oauth/jwks
             user-info-uri: ${my.oauth2-server}/oauth/user_info
             user-name-attribute: name
